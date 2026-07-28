@@ -6,10 +6,18 @@ Evidence: `scripts/test_connections.py` discovery run in ap-south-1
 
 ## Decision
 
-- **Generation + no-retrieval baseline:** `gpt-4o-mini` (OpenAI, direct API)
-- **Judge:** Claude Sonnet 4.6 via Amazon Bedrock, model id
-  `global.anthropic.claude-sonnet-4-6` (cross-region inference profile)
-- Auth: OpenAI API key; Bedrock long-term API key (`AWS_BEARER_TOKEN_BEDROCK`)
+- **Generation + no-retrieval baseline:** Claude Haiku 4.5 via Bedrock,
+  `global.anthropic.claude-haiku-4-5-20251001-v1:0`
+- **Judge:** Claude Sonnet 4.6 via Bedrock, `global.anthropic.claude-sonnet-4-6`
+- Auth: one Bedrock long-term API key (`AWS_BEARER_TOKEN_BEDROCK`), region
+  ap-south-1
+
+Interim single-provider setup: both roles run on Bedrock for simplicity.
+Known trade-offs, accepted for now: same-family judging carries mild
+self-preference bias (Phase 1 human calibration is the check), and eval
+numbers are not directly comparable to the predecessor project's
+gpt-4o-mini generator. Adding `OPENAI_API_KEY` later switches generation
+to `gpt-4o-mini` and restores both properties.
 
 ## Why
 

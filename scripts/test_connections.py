@@ -21,7 +21,7 @@ PROMPT = "Reply with exactly: OK"
 def check_env_vars() -> bool:
     missing = [
         name
-        for name in ("OPENAI_API_KEY", "AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION")
+        for name in ("AWS_BEARER_TOKEN_BEDROCK", "AWS_REGION")
         if not os.environ.get(name)
     ]
     for name in missing:
@@ -30,6 +30,10 @@ def check_env_vars() -> bool:
 
 
 def check_openai() -> bool:
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("skip  OpenAI: no key set — generation runs on Bedrock Haiku for now (ADR 0001)")
+        return True
+
     from openai import OpenAI
 
     try:
@@ -83,21 +87,29 @@ def check_bedrock(region: str) -> bool:
         print(f"        {model}")
 
     runtime = boto3.client("bedrock-runtime", region_name=region)
-    for model_id in judge_candidates(models):
-        try:
-            response = runtime.converse(
-                modelId=model_id,
-                messages=[{"role": "user", "content": [{"text": PROMPT}]}],
-                inferenceConfig={"maxTokens": 5},
-            )
-            text = response["output"]["message"]["content"][0]["text"]
-            print(f"OK    Bedrock {model_id} responded: {text!r}")
-            print(f"      --> judge model id for config: {model_id}")
-            return True
-        except Exception as exc:
-            print(f"note  {model_id}: {exc}")
-    print("FAIL  Bedrock: models visible but none invocable — check Model access in the console")
-    return False
+
+    def invoke_first(candidates: list[str], role: str) -> bool:
+        for model_id in candidates:
+            try:
+                response = runtime.converse(
+                    modelId=model_id,
+                    messages=[{"role": "user", "content": [{"text": PROMPT}]}],
+                    inferenceConfig={"maxTokens": 5},
+                )
+                text = response["output"]["message"]["content"][0]["text"]
+                print(f"OK    Bedrock {model_id} responded: {text!r}")
+                print(f"      --> {role} model id for config: {model_id}")
+                return True
+            except Exception as exc:
+                print(f"note  {model_id}: {exc}")
+        print(f"FAIL  Bedrock: no invocable {role} model — check Model access in the console")
+        return False
+
+    haikus = sorted(
+        (m for m in models if "haiku-4" in m.lower()),
+        key=lambda m: "." not in m.split(".")[0],
+    )
+    return invoke_first(judge_candidates(models), "judge") & invoke_first(haikus, "generation")
 
 
 def main() -> int:
