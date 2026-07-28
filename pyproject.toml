@@ -1,0 +1,21 @@
+[project]
+name = "deepresearch"
+version = "0.1.0"
+description = "Production-grade RAG for academic research, built eval-first"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=1.60",
+    "boto3>=1.40",
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+    "jupyter>=1.1",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"

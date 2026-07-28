@@ -106,6 +106,11 @@ not just demoed.
 |---|---|
 | 2026-07-28 | Repo created; spec.md and project-status.md written; roadmap agreed |
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
+| 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
+
+## Decisions made
+
+- Generation: gpt-4o-mini; Judge: Claude Sonnet 4.6 on Bedrock — [ADR 0001](adr/0001-model-choices.md)
 
 ## Decisions pending
 
