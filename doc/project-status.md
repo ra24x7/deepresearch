@@ -38,9 +38,15 @@ Write-path intelligence: each paper produces four artifacts.
       chunks/papers, link counts stored for damping
 - [ ] Structured metadata in Postgres
 - [ ] Hash-based claim dedup; batch-first with per-item fallback
+- [ ] Solvability audit: every golden-dataset evidence quote is findable in
+      an indexed chunk (else retrieval failures are ambiguous — bad retriever
+      vs evidence destroyed by chunking). Pattern from APS-RAG (2607.24663).
+- [ ] Frozen eval snapshot: golden questions evaluate against a pinned paper
+      list / index snapshot, kept fixed while the production corpus grows
 
 **Exit criteria:** 500+ papers ingested; claim-extraction quality
-spot-checked; cost-per-paper is a tracked number.
+spot-checked; cost-per-paper is a tracked number; solvability audit passes
+on the frozen eval snapshot.
 
 ### Phase 3 — Staged Retrieval Engine
 

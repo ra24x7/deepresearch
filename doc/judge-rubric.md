@@ -38,6 +38,15 @@ The judge returns exactly one verdict per (question, answer, evidence) triple:
    Any difference that changes the mathematics (missing term, wrong
    operation, wrong constant) is WRONG.
 
+## Revisit conditions
+
+- **Rule 3 (no partial credit):** if Phase 1 calibration shows this rule
+  producing verdicts the human labeler finds unfair on multi-part questions,
+  consider nugget decomposition for v3 — reference answers split into atomic
+  nuggets labeled vital/okay, scored as vital-nugget recall (pattern from
+  APS-RAG, arXiv 2607.24663). Trade-off: more authoring work per entry and a
+  per-nugget judge task.
+
 ## Changelog
 
 | Version | Date | Change |
