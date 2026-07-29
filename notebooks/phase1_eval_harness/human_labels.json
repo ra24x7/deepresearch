@@ -1,0 +1,147 @@
+[
+  {
+    "id": "g001",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g002",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g003",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g004",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g005",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g006",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g007",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g008",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g009",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g010",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g011",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g012",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g013",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g014",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g015",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g016",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g017",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g022",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g023",
+    "verdict": "ABSTAINED",
+    "reason": "Refusal \u2014 never answers the question, though it fabricates an expansion of the A-RAG acronym while declining (rule 5; borderline noted)"
+  },
+  {
+    "id": "g024",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g025",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g026",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g027",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g028",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g029",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g030",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g031",
+    "verdict": "ABSTAINED",
+    "reason": "Refusal \u2014 never answers the question, though it fabricates an expansion of the APS-RAG acronym while declining (rule 5; borderline noted)"
+  },
+  {
+    "id": "g032",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  },
+  {
+    "id": "g033",
+    "verdict": "ABSTAINED",
+    "reason": "Pure refusal, no answer attempted (rule 5)"
+  }
+]

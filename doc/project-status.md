@@ -3,8 +3,8 @@
 > Living document. Update at the end of every working session:
 > current phase, what moved, what's blocked, what's next.
 
-**Current phase:** 1 — Evaluation Harness (not started)
-**Last updated:** 2026-07-28
+**Current phase:** 2 — Enriched Ingestion (Phase 1 substantially complete)
+**Last updated:** 2026-07-29
 
 ## Roadmap
 
@@ -12,20 +12,24 @@ Phases are sequential. Each has numeric exit criteria — a phase is done when
 the numbers exist, not when the code exists. Each phase gets a lab notebook
 under `notebooks/phaseN_*/` whose conclusions graduate into ADRs and CI tests.
 
-### Phase 1 — Evaluation Harness ← CURRENT
+### Phase 1 — Evaluation Harness ✅ (2026-07-29, two items deferred)
 
 Build measurement before any retrieval code.
 
-- [ ] Golden dataset: 50–100 questions across all six question types in
-      [spec.md](spec.md), with labeled relevant papers/chunks
-- [ ] Judge rubric (version-controlled): paraphrase tolerance, partial credit,
-      abstention-is-correct rules
-- [ ] Judge calibration: judge-vs-human agreement spot-check
-- [ ] Ablation runner: every question runs with-retrieval and without-retrieval
-- [ ] Per-stage metric hooks: retrieval recall@k, rerank NDCG, faithfulness
+- [x] Golden dataset: 33 questions across all six types from four 2026 RAG
+      papers, human-verified (grow to 50–100 by Phase 3, rare types first —
+      see sizing analysis in session log)
+- [x] Judge rubric v2 (version-controlled), incl. mathematical equivalence
+- [x] Judge calibration: 100% agreement over 29 pairs — uniform-abstention
+      set only; re-calibrate on substantive answers in Phase 3
+- [x] No-retrieval baseline: 0/29, zero parametric leakage
+- [ ] DEFERRED → Phase 3: with-retrieval ablation delta (needs a pipeline
+      to compare against)
+- [ ] DEFERRED → when GitHub remote exists: harness in CI
 
-**Exit criteria:** harness runs in CI; ablation report shows per-question
-answer delta; no-retrieval baseline accuracy is a known number.
+**Exit criteria:** no-retrieval baseline is a known number ✅; judge
+calibrated for observed verdict classes ✅; CI + ablation delta deferred as
+noted above.
 
 ### Phase 2 — Enriched Ingestion
 
@@ -113,6 +117,7 @@ not just demoed.
 | 2026-07-28 | Repo created; spec.md and project-status.md written; roadmap agreed |
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
+| 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
 
 ## Decisions made
 

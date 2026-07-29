@@ -24,3 +24,6 @@ venv/
 
 # Local scratch
 *.log
+
+# Paper PDFs — large binaries, re-downloadable by arXiv id
+data/papers/

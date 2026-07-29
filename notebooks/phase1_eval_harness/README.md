@@ -25,11 +25,24 @@
 - Ablation report shows per-question answer delta
 - No-retrieval baseline accuracy is a known number
 
-## Conclusions
+## Conclusions (2026-07-29)
 
-> Fill in when experiments complete. Each conclusion cites the notebook
-> section that produced it and graduates into an ADR and/or CI test.
-
-- Judge–human agreement: _pending_
-- No-retrieval baseline accuracy: _pending_
-- Dataset revisions made: _pending_
+- **Judge–human agreement: 100% over 29 pairs, rubric v2, zero disagreements**
+  (`judge_verdicts.json`). Caveat: the calibration set was uniform — all 29
+  baseline answers were refusals, so every ground-truth verdict was
+  ABSTAINED. This certifies the judge on refusal-vs-answer discrimination
+  only; re-calibrate on substantive answers when Phase 3 produces them
+  (CORRECT / WRONG / incomplete distinctions are untested).
+- **No-retrieval baseline: 0/29 correct — 29/29 clean abstentions.** Zero
+  parametric leakage: the all-2026 corpus is fully outside Haiku 4.5's
+  training data, and it abstained rather than fabricated on every question.
+  Any future RAG accuracy above 0% is attributable to retrieval alone.
+- **Dataset:** 33 questions (29 answerable) drawn from four 2026 RAG papers,
+  human-verified via draft-and-verify. No questions needed rewriting for
+  fame; the recency selection did its job. Formula evidence carries
+  linearized transcriptions in a `formula` field (quotes stay verbatim).
+- **Rubric:** v2 (added mathematical-equivalence rule 8). Nugget
+  decomposition documented as v3 candidate with trigger conditions.
+- **Baseline labels:** drafted by the assistant, verified by the human — an
+  acceptable shortcut only because the answer set was uniform refusals;
+  Phase 3 labels must be human-first.

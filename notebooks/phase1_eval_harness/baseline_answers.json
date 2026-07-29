@@ -1,0 +1,147 @@
+[
+  {
+    "id": "g001",
+    "question": "What three retrieval tools does the A-RAG framework provide to the agent?",
+    "answer": "I don't know the specific details of the A-RAG framework and its three retrieval tools. While there are various retrieval-augmented generation (RAG) frameworks in machine learning research, I'm not certain which framework you're referring to or what its exact three retrieval tools are.\n\nCould you provide more context, such as the paper title or authors, so I can better assist you?"
+  },
+  {
+    "id": "g002",
+    "question": "What chunk size does A-RAG use when partitioning the corpus for its hierarchical index?",
+    "answer": "I don't know. I'm not familiar with the specific chunk size used by A-RAG for its hierarchical index partitioning. To get this information, I'd recommend checking the A-RAG paper directly or its official documentation."
+  },
+  {
+    "id": "g003",
+    "question": "In A-RAG, what does the chunk-read tool return when the agent tries to read a chunk it has already read?",
+    "answer": "I don't know the specific behavior of the chunk-read tool in A-RAG when attempting to re-read an already-read chunk. I'm not familiar enough with this particular system's design to answer reliably.\n\nIf you have access to the A-RAG paper or documentation, the answer would likely be found in the methods section or tool specification. You might also check if there are implementation details available in any associated code repository."
+  },
+  {
+    "id": "g004",
+    "question": "Which four datasets does A-RAG evaluate on?",
+    "answer": "I don't know which four datasets A-RAG evaluates on. I'm not familiar with a specific paper or method called \"A-RAG\" with certainty, and I don't want to guess incorrectly about which datasets it uses.\n\nIf you could provide more context (such as the authors, publication venue, or a link to the paper), I'd be happy to help you find this information."
+  },
+  {
+    "id": "g005",
+    "question": "How many training samples does the EvoTrain-180K dataset actually contain?",
+    "answer": "I don't know. I'm not familiar with a dataset called \"EvoTrain-180K\" in machine learning research. It's possible this is a very recent dataset, a specialized/niche dataset, or the name might be slightly different than stated. If you could provide more context or a source, I'd be happy to help."
+  },
+  {
+    "id": "g006",
+    "question": "What training speedup does EvoEmbedding's dynamic segment-batching technique achieve?",
+    "answer": "I don't know. I'm not familiar with a machine learning method or paper called \"EvoEmbedding\" or its dynamic segment-batching technique. This could be a recent paper, a specialized technique from a specific domain, or it may be known by a different name. \n\nIf you could provide more context (like the paper title, authors, or venue), I'd be happy to help further."
+  },
+  {
+    "id": "g007",
+    "question": "Which model is used for retrieval labeling and sample verification in the EvoTrain-180K construction pipeline?",
+    "answer": "I don't know which model is used for retrieval labeling and sample verification in the EvoTrain-180K construction pipeline. I don't have reliable information about this specific dataset or its construction methodology in my training data.\n\nTo find this answer, I'd recommend checking the official paper or documentation for EvoTrain-180K if available."
+  },
+  {
+    "id": "g008",
+    "question": "How many latent tokens does EvoEmbedding's memory queue store, and what is that memory footprint comparable to?",
+    "answer": "I don't know. I'm not familiar with a machine learning model or method called \"EvoEmbedding\" or its specific technical details regarding latent tokens and memory queue configuration. \n\nIf this is a recent paper or method, I may not have information about it in my training data. I'd recommend checking the original paper or documentation for EvoEmbedding directly."
+  },
+  {
+    "id": "g009",
+    "question": "How many entities and relations are in ChartWalker's global hierarchical knowledge graph?",
+    "answer": "I don't know the specific number of entities and relations in ChartWalker's global hierarchical knowledge graph. While ChartWalker is a system related to chart understanding and data extraction, I don't have reliable information about the exact scale of its knowledge graph components.\n\nIf you need this information, I'd recommend checking the original ChartWalker paper or documentation directly."
+  },
+  {
+    "id": "g010",
+    "question": "What are the four query types in ChartWalker-Bench?",
+    "answer": "I don't know the specific four query types in ChartWalker-Bench. While I'm familiar with chart understanding and question-answering systems in machine learning, I don't have reliable information about the particular query types defined in this specific benchmark.\n\nIf you're researching this, I'd recommend checking the original ChartWalker-Bench paper or documentation."
+  },
+  {
+    "id": "g011",
+    "question": "How does ChartWalker select the anchor entity that starts each sampled reasoning path?",
+    "answer": "I don't know. I'm not familiar with a machine learning method or paper called \"ChartWalker\" or how it selects anchor entities for reasoning paths. This could be a recent paper, a specialized tool, or a method I don't have information about.\n\nIf you could provide more context (such as the paper title, authors, or venue), I'd be happy to help further."
+  },
+  {
+    "id": "g012",
+    "question": "In the APS-RAG paper, what happens to strict vital recall when the cross-encoder reranker is removed and the LLM scores relevance instead?",
+    "answer": "I don't know the answer to this question. I'm not familiar with the specific details of the APS-RAG paper or what happens to strict vital recall when the cross-encoder reranker is removed in favor of LLM-based relevance scoring. To get an accurate answer, I'd recommend checking the paper directly or consulting recent ML research databases."
+  },
+  {
+    "id": "g013",
+    "question": "Which dense embedding model and vector store does the deployed APS-RAG system use?",
+    "answer": "I don't know which specific dense embedding model and vector store the deployed APS-RAG system uses. I don't have access to information about this particular system's implementation details or deployment configuration.\n\nIf you're looking for this information, I'd recommend checking the system's documentation, technical papers, or contacting the team that developed/deployed it."
+  },
+  {
+    "id": "g014",
+    "question": "How many questions does the APS-Bench evaluation dataset contain?",
+    "answer": "I don't know. I'm not familiar with a dataset called \"APS-Bench\" or its specific size. If you could provide more context about this dataset (such as the paper or project it's associated with), I'd be better able to help."
+  },
+  {
+    "id": "g015",
+    "question": "What are the three user-selectable query modes in APS-RAG?",
+    "answer": "I don't know what the three user-selectable query modes in APS-RAG are. I'm not familiar with this specific system or its documentation. If you could provide more context or a source, I'd be happy to help you understand it better."
+  },
+  {
+    "id": "g016",
+    "question": "Which dense embedding models are used by A-RAG's experiments versus the deployed APS-RAG system?",
+    "answer": "I don't know the answer to this question. I'm not familiar with the specific details of A-RAG's experimental setup or the APS-RAG deployed system, including which dense embedding models each uses. To get this information, you would need to consult the relevant research papers or technical documentation for these systems."
+  },
+  {
+    "id": "g017",
+    "question": "How do A-RAG and APS-RAG differ in how they chunk documents for indexing?",
+    "answer": "I don't know how A-RAG and APS-RAG differ in their document chunking approaches for indexing.\n\nWhile these appear to be specific RAG (Retrieval-Augmented Generation) variants, I'm not familiar with their particular implementations or technical details. To get an accurate answer, I'd recommend checking the original papers or documentation for these methods."
+  },
+  {
+    "id": "g022",
+    "question": "What is the relevance scoring formula used by A-RAG's keyword search tool?",
+    "answer": "I don't know the specific relevance scoring formula used by A-RAG's keyword search tool. \n\nTo find this information, I'd recommend checking the A-RAG paper directly or its official documentation. If you have access to the paper, the methodology section would likely describe the scoring mechanism in detail."
+  },
+  {
+    "id": "g023",
+    "question": "In A-RAG's failure analysis on MuSiQue, what category caused the majority of failures, and what was its most common sub-type?",
+    "answer": "I don't know the specific details about A-RAG's failure analysis on MuSiQue. While A-RAG (Adaptive Retrieval-Augmented Generation) is a real concept in RAG research, and MuSiQue is a multi-hop question answering dataset, I don't have reliable information about the specific failure categories and sub-types from a particular paper's analysis.\n\nTo get this information, I'd recommend checking the original A-RAG paper or technical report directly."
+  },
+  {
+    "id": "g024",
+    "question": "On MuSiQue, how do A-RAG (Naive) and A-RAG (Full) compare in retrieved tokens?",
+    "answer": "I don't know the specific comparison of retrieved tokens between A-RAG (Naive) and A-RAG (Full) on MuSiQue. While I'm familiar with retrieval-augmented generation (RAG) approaches and the MuSiQue dataset for multi-hop question answering, I don't have reliable information about the exact retrieved token counts for these specific A-RAG variants.\n\nTo find this information, I'd recommend checking the A-RAG paper directly or its supplementary materials."
+  },
+  {
+    "id": "g025",
+    "question": "In EvoEmbedding's contrastive loss, what role does the log(N+1) term play, and what temperature value is used?",
+    "answer": "I don't know the specific details of EvoEmbedding's contrastive loss function, including the role of a log(N+1) term or the temperature value used. I'm not familiar enough with this particular method to answer accurately.\n\nIf you could point me to the paper or provide more context, I'd be happy to help interpret those technical details."
+  },
+  {
+    "id": "g026",
+    "question": "How many latent tokens does EvoEmbedding generate per segment step, and what is its final embedding dimension?",
+    "answer": "I don't know. I'm not familiar with a machine learning model or method called \"EvoEmbedding.\" This could be a recent paper, a specialized technique, or a model I don't have reliable information about. \n\nTo get accurate details about the number of latent tokens per segment step and final embedding dimension, I'd recommend:\n1. Checking the original paper if it exists\n2. Looking at the official documentation or code repository\n3. Searching recent ML preprint servers like arXiv\n\nIf you can provide more context or a link to the paper, I'd be happy to help further."
+  },
+  {
+    "id": "g027",
+    "question": "On which two LongMemEval subtasks does EvoEmbedding-4B achieve near-perfect accuracy?",
+    "answer": "I don't know which two LongMemEval subtasks EvoEmbedding-4B achieves near-perfect accuracy on. I don't have reliable information about this specific model's performance on LongMemEval subtasks."
+  },
+  {
+    "id": "g028",
+    "question": "After post-verification quality filtering, how many QA pairs constitute the final ChartWalker benchmark, and what was the overall pass rate?",
+    "answer": "I don't know the specific details about the ChartWalker benchmark's final QA pair count and overall pass rate after post-verification quality filtering. While ChartWalker appears to be a dataset for chart question-answering tasks, I don't have reliable access to these particular metrics from the paper or documentation.\n\nTo get accurate information, I'd recommend consulting the original ChartWalker paper or dataset documentation directly."
+  },
+  {
+    "id": "g029",
+    "question": "What four actions can the ChartWalker agent choose from at each turn?",
+    "answer": "I don't know what the four actions are that the ChartWalker agent can choose from. I'm not familiar with this specific agent or system. Could you provide more context about ChartWalker or point me to the relevant paper or documentation?"
+  },
+  {
+    "id": "g030",
+    "question": "What fusion formula does APS-RAG use to merge its three retrieval channels, and what smoothing constant does it use?",
+    "answer": "I don't know the specific fusion formula or smoothing constant that APS-RAG uses. While I'm familiar with retrieval-augmented generation (RAG) systems generally, I don't have reliable information about the particular implementation details of APS-RAG's multi-channel retrieval fusion mechanism in my training data.\n\nTo find this information, I'd recommend checking the APS-RAG paper directly or its official documentation."
+  },
+  {
+    "id": "g031",
+    "question": "What formula does APS-RAG's corrective evaluator use to score each draft answer?",
+    "answer": "I don't know the specific formula that APS-RAG's corrective evaluator uses to score draft answers. While APS-RAG (Adaptive Prompt Selection with Retrieval-Augmented Generation) is a research topic in this space, I'm not familiar with the precise scoring mechanism of its corrective evaluator component.\n\nIf you're working with this method, I'd recommend checking the original paper or documentation for the exact formula."
+  },
+  {
+    "id": "g032",
+    "question": "Which model powers APS-RAG's self-critique gate, and what does it check?",
+    "answer": "I don't know this. \"APS-RAG\" doesn't appear to be a widely recognized model or system in my training data. To answer your question accurately, I would need more context about what APS-RAG is or a reference to where this work was published.\n\nIf you could provide more details or a citation, I'd be happy to help."
+  },
+  {
+    "id": "g033",
+    "question": "How many nodes and edges does APS-RAG's troubleshooting knowledge graph contain?",
+    "answer": "I don't know. I'm not familiar with a system called \"APS-RAG\" or its specific knowledge graph specifications. This appears to be a specialized system that I don't have reliable information about. \n\nIf you're looking for this information, I'd recommend checking the original paper or documentation for APS-RAG directly."
+  }
+]

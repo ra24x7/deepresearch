@@ -1,0 +1,234 @@
+[
+  {
+    "id": "g001",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question, which per Rule 5 counts as an abstention miss rather than a wrong answer."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g002",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, constituting a miss rather than a hallucination."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g003",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question, which per Rule 5 counts as a miss distinct from WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g004",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question, constituting an abstention on a question with a clear reference answer (Rule 5)."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g005",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question, constituting an abstention on a question with a known reference answer of 184,137 samples."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g006",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question (Rule 5), explicitly stating it does not know rather than providing the correct 3.8\u00d7 speedup figure supported by the evidence."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g007",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question, constituting an abstention on a question with a known reference answer (Rule 5)."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g008",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as a miss distinct from WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g009",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to provide the specific figures (8,802 entities and 21,436 relations), instead admitting ignorance and redirecting to external sources, which constitutes an abstention on an answerable question."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g010",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to provide a substantive answer to an answerable question, recommending external sources instead (Rule 5)."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g011",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question, scoring as an abstention miss per Rule 5."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g012",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which is scored as an abstention miss."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g013",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as a miss distinct from WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g014",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as an abstention miss."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g015",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question (Rule 5), failing to identify the three modes despite supporting evidence being available."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g016",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as a miss distinct from WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g017",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question (Rule 5), which is scored as an abstention miss rather than WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g022",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as an abstention miss."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g023",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to provide a substantive answer, invoking Rule 5 (abstention on an answerable question is scored as ABSTAINED/miss)."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g024",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which counts as a miss."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g025",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the question is answerable per the reference evidence, but the candidate declined to provide a substantive answer."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g026",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, constituting a miss rather than a hallucination."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g027",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "Rule 5: the system declined to answer an answerable question, which is scored as an abstention miss."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g028",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to provide a substantive answer on an answerable question (Rule 5)."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g029",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question, qualifying as abstention on a question with a known reference answer."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g030",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question (Rule 5), providing no substantive response about the RRF formula or k=60 smoothing constant."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g031",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to provide a substantive answer to an answerable question, which per Rule 5 is scored as ABSTAINED rather than WRONG."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g032",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The system declined to answer an answerable question, which per Rule 5 is scored as ABSTAINED rather than WRONG to distinguish over-abstention from hallucination."
+    },
+    "human": "ABSTAINED"
+  },
+  {
+    "id": "g033",
+    "judge": {
+      "verdict": "ABSTAINED",
+      "reason": "The candidate declined to answer an answerable question, which per Rule 5 is scored as ABSTAINED rather than WRONG to distinguish over-abstention from hallucination."
+    },
+    "human": "ABSTAINED"
+  }
+]
