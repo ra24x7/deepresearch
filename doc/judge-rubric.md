@@ -1,4 +1,4 @@
-# Judge Rubric — v1
+# Judge Rubric — v2
 
 > This rubric is part of the system. Reported accuracy is a function of
 > dataset + system + judge prompt, so every change here bumps the version
@@ -31,9 +31,16 @@ The judge returns exactly one verdict per (question, answer, evidence) triple:
    a fabricated citation is WRONG.
 7. **Explanation required.** Every verdict includes a one-sentence reason
    naming the deciding rule.
+8. **Mathematical equivalence.** A formula is CORRECT if mathematically
+   equivalent to the reference regardless of notation — symbolic vs verbal
+   ("Σ count(k,T)·|k|" vs "sum of each keyword's frequency times its
+   character length"), renamed variables, or reordered commutative terms.
+   Any difference that changes the mathematics (missing term, wrong
+   operation, wrong constant) is WRONG.
 
 ## Changelog
 
 | Version | Date | Change |
 |---|---|---|
 | v1 | 2026-07-28 | Initial rubric, pre-calibration |
+| v2 | 2026-07-29 | Rule 8: mathematical equivalence for formula answers |
