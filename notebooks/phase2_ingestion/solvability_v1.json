@@ -1,0 +1,328 @@
+{
+  "quotes": [
+    {
+      "question": "g001",
+      "arxiv_id": "2602.03442",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::full-text-a-rag-scaling-agentic-retrieval-augmented-generation-via-hierarchical-retrieval-interfaces::0"
+    },
+    {
+      "question": "g002",
+      "arxiv_id": "2602.03442",
+      "where": "sec 3.1 Chunking, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::3-methodology-3-1-hierarchical-index-construction::0"
+    },
+    {
+      "question": "g003",
+      "arxiv_id": "2602.03442",
+      "where": "sec 3.3 Context Tracker, p5",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2602.03442::3-3-agent-loop::0"
+    },
+    {
+      "question": "g004",
+      "arxiv_id": "2602.03442",
+      "where": "sec 4.1 Datasets, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::4-experiments-4-1-experimental-setting::0"
+    },
+    {
+      "question": "g005",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.3, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-3-construction-of-evotrain-180k::0"
+    },
+    {
+      "question": "g006",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.1 Dynamic Segment-Batching, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-1-evoembedding::0"
+    },
+    {
+      "question": "g007",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.3 Stage 3, p6",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2606.21649::3-3-construction-of-evotrain-180k::0"
+    },
+    {
+      "question": "g008",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.1 Latent Memory Queue, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-1-evoembedding::0"
+    },
+    {
+      "question": "g009",
+      "arxiv_id": "2606.23997",
+      "where": "sec 3.4 Benchmark Construction, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.23997::3-4-benchmark-construction::0"
+    },
+    {
+      "question": "g010",
+      "arxiv_id": "2606.23997",
+      "where": "sec 3.4 Query types, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.23997::3-4-benchmark-construction::0"
+    },
+    {
+      "question": "g011",
+      "arxiv_id": "2606.23997",
+      "where": "sec 3.3 Anchor Selection, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.23997::3-3-path-sampling-and-qa-synthesis::0"
+    },
+    {
+      "question": "g012",
+      "arxiv_id": "2607.24663",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::full-text-a-corrective-agentic-hybrid-rag-and-an-operations-grounded-evaluation-for-a-scientific-facility::0"
+    },
+    {
+      "question": "g013",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.C, p4",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2607.24663::b-data-ingestion-and-indexing::0"
+    },
+    {
+      "question": "g014",
+      "arxiv_id": "2607.24663",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2607.24663::full-text-a-corrective-agentic-hybrid-rag-and-an-operations-grounded-evaluation-for-a-scientific-facility::0"
+    },
+    {
+      "question": "g015",
+      "arxiv_id": "2607.24663",
+      "where": "Fig. 1 caption, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::i-introduction::0"
+    },
+    {
+      "question": "g016",
+      "arxiv_id": "2602.03442",
+      "where": "sec 4.1 Implementation, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::4-experiments-4-1-experimental-setting::0"
+    },
+    {
+      "question": "g016",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.C, p4",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2607.24663::b-data-ingestion-and-indexing::0"
+    },
+    {
+      "question": "g017",
+      "arxiv_id": "2602.03442",
+      "where": "sec 3.1 Chunking, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::3-methodology-3-1-hierarchical-index-construction::0"
+    },
+    {
+      "question": "g017",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.B/C, p3-4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::b-data-ingestion-and-indexing::0"
+    },
+    {
+      "question": "g022",
+      "arxiv_id": "2602.03442",
+      "where": "sec 3.2 Keyword Search, Eq. 1, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::3-2-hierarchical-retrieval-interfaces::0"
+    },
+    {
+      "question": "g023",
+      "arxiv_id": "2602.03442",
+      "where": "sec 5.3 + Fig. 5, p8",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2602.03442::5-3-failure-mode-analysis-6-conclusion::0"
+    },
+    {
+      "question": "g024",
+      "arxiv_id": "2602.03442",
+      "where": "sec 5.2 + Table 3, p8",
+      "stage_a_found": true,
+      "stage_a_match": "fuzzy",
+      "stage_b_found": true,
+      "stage_b_match": "fuzzy",
+      "stage_b_chunk_id": "2602.03442::5-2-context-efficiency-analysis::0"
+    },
+    {
+      "question": "g025",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.2, Eq. 5 and following text, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-2-training-and-optimization::0"
+    },
+    {
+      "question": "g026",
+      "arxiv_id": "2606.21649",
+      "where": "sec 4.1 Implementation Details, p7-8",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::4-1-experimental-setup::0"
+    },
+    {
+      "question": "g027",
+      "arxiv_id": "2606.21649",
+      "where": "sec 4.2(b), p9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::4-2-main-results::0"
+    },
+    {
+      "question": "g028",
+      "arxiv_id": "2606.23997",
+      "where": "sec 3.4 Post-verification, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.23997::3-4-benchmark-construction::0"
+    },
+    {
+      "question": "g029",
+      "arxiv_id": "2606.23997",
+      "where": "sec 4 Environment and Action Space, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.23997::4-chartwalker-agent::0"
+    },
+    {
+      "question": "g030",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.D, Eq. 1, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::d-adaptive-three-way-retrieval-fusion::0"
+    },
+    {
+      "question": "g031",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.E, Eq. 2, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::e-corrective-agentic-loop-and-self-critique-gate::0"
+    },
+    {
+      "question": "g032",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.E, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::e-corrective-agentic-loop-and-self-critique-gate::0"
+    },
+    {
+      "question": "g033",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.F, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::f-a-troubleshooting-oriented-knowledge-graph::0"
+    }
+  ],
+  "summary": {
+    "total_quotes": 31,
+    "papers_missing": 0,
+    "stage_a_passed": 31,
+    "stage_b_passed": 31,
+    "fuzzy_matches_need_review": [
+      "g003",
+      "g007",
+      "g013",
+      "g014",
+      "g016",
+      "g024"
+    ]
+  }
+}

@@ -35,18 +35,21 @@ noted above.
 
 Write-path intelligence: each paper produces four artifacts.
 
-- [ ] Airflow DAG: fetch → Docling parse → enrich → index
-- [ ] Section-aware chunks
+- [~] Airflow DAG: fetch → Docling parse → enrich → index (stack up +
+      healthcheck DAG green; full ingestion DAG lands in 2.6)
+- [x] Section-aware chunks (100–800-word policy; captions deferred to
+      section end; 4 golden papers → 150 chunks, 100% in band, deterministic)
 - [ ] Claims: LLM extracts 5–15 atomic contributions per paper (once, at ingest)
 - [ ] Entities: authors, method acronyms, datasets, arXiv IDs — linked to
       chunks/papers, link counts stored for damping
-- [ ] Structured metadata in Postgres
+- [x] Structured metadata in Postgres (papers/chunks live; claims/entities/
+      ingestion_runs tables migrated, filled by 2.4/2.6)
 - [ ] Hash-based claim dedup; batch-first with per-item fallback
-- [ ] Solvability audit: every golden-dataset evidence quote is findable in
-      an indexed chunk (else retrieval failures are ambiguous — bad retriever
-      vs evidence destroyed by chunking). Pattern from APS-RAG (2607.24663).
-- [ ] Frozen eval snapshot: golden questions evaluate against a pinned paper
-      list / index snapshot, kept fixed while the production corpus grows
+- [x] Solvability audit v1: 31/31 evidence quotes pass Stage A (parsed text)
+      and Stage B (single chunk); 6 fuzzy matches pending user review;
+      Stage C (live index) re-runs in 2.6. Pattern from APS-RAG (2607.24663).
+- [~] Frozen eval snapshot: `data/eval_snapshot.json` pins evalv1 (4 golden
+      + 50 distractors, 2026-07-30); distractor ingest happens with 2.5
 
 **Exit criteria:** 500+ papers ingested; claim-extraction quality
 spot-checked; cost-per-paper is a tracked number; solvability audit passes
@@ -118,6 +121,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-07-30 | Phase 2.1–2.3: Docker stack (OpenSearch/Postgres/Airflow, lifted from predecessor + local Postgres) all healthy; fetch/parse/chunk modules TDD'd (68 tests); 4 golden papers → 150 chunks in Postgres; solvability audit v1 31/31 both stages after fixing math-tokenization matching and caption interleaving; evalv1 snapshot pinned (4+50 papers). Embeddings decided: Cohere Embed v4 on Bedrock (`global.cohere.embed-v4:0`, 1024-dim). 6 fuzzy audit matches await user review. |
 
 ## Decisions made
 

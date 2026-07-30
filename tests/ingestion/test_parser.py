@@ -126,3 +126,30 @@ class TestFileSizeCap:
 
         with pytest.raises(PDFTooLargeError, match="MB"):
             parse_pdf(big, ParserSettings(max_pages=50, max_file_size_mb=1))
+
+
+class TestCaptionDeferral:
+    def test_caption_between_body_elements_is_moved_to_section_end(self):
+        doc = _stub_doc(
+            [
+                _elem("section_header", "5.3 Failure Analysis"),
+                _elem("text", "the majority of failures stem from reasoning"),
+                _elem("caption", "Figure 5: failure mode distribution."),
+                _elem("text", "chain errors. among these, entity confusion is common."),
+            ]
+        )
+
+        sections = _map_sections(doc)
+
+        assert len(sections) == 1
+        body = sections[0].text
+        assert "reasoning\nchain errors" in body
+        assert body.endswith("Figure 5: failure mode distribution.")
+
+    def test_caption_only_section_is_still_flushed(self):
+        doc = _stub_doc([_elem("section_header", "Figures"), _elem("caption", "Figure 1: overview.")])
+
+        sections = _map_sections(doc)
+
+        assert len(sections) == 1
+        assert sections[0].text == "Figure 1: overview."

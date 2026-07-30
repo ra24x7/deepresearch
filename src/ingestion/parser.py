@@ -5,6 +5,7 @@ from ingestion.exceptions import ParserError, PDFTooLargeError
 from ingestion.schemas import PaperSection, PdfContent
 
 _SECTION_LABELS = {"title", "section_header"}
+_CAPTION_LABEL = "caption"
 _FALLBACK_TITLE = "Full Text"
 _PDF_HEADER = b"%PDF-"
 _BYTES_PER_MB = 1024 * 1024
@@ -30,7 +31,11 @@ def parse_pdf(path: Path, settings: ParserSettings) -> PdfContent:
     page_count = _page_count(doc)
     _validate_page_count(page_count, settings)
 
-    return PdfContent(raw_text=doc.export_to_text(), sections=_map_sections(doc), page_count=page_count)
+    sections = _map_sections(doc)
+    # raw_text mirrors the section view (captions deferred) so parse-level and
+    # chunk-level audits see the same text; export_to_text is the no-section fallback.
+    raw_text = "\n\n".join(f"{s.title}\n{s.text}" for s in sections) if sections else doc.export_to_text()
+    return PdfContent(raw_text=raw_text, sections=sections, page_count=page_count)
 
 
 def _validate_pdf_file(path: Path, settings: ParserSettings) -> None:
@@ -58,18 +63,25 @@ def _map_sections(doc) -> tuple[PaperSection, ...]:
     sections: tuple[PaperSection, ...] = ()
     current_title = _FALLBACK_TITLE
     current_lines: tuple[str, ...] = ()
+    current_captions: tuple[str, ...] = ()
 
     for element in doc.texts:
         text = (getattr(element, "text", "") or "").strip()
         if not text:
             continue
-        if getattr(element, "label", None) in _SECTION_LABELS:
-            sections = _flush_section(sections, current_title, current_lines)
-            current_title, current_lines = text, ()
+        label = getattr(element, "label", None)
+        if label in _SECTION_LABELS:
+            sections = _flush_section(sections, current_title, current_lines + current_captions)
+            current_title, current_lines, current_captions = text, (), ()
+            continue
+        # Figure/table captions sit mid-paragraph in layout order and split
+        # running sentences; defer them to the end of their section.
+        if label == _CAPTION_LABEL:
+            current_captions += (text,)
             continue
         current_lines += (text,)
 
-    return _flush_section(sections, current_title, current_lines)
+    return _flush_section(sections, current_title, current_lines + current_captions)
 
 
 def _flush_section(sections: tuple[PaperSection, ...], title: str, lines: tuple[str, ...]) -> tuple[PaperSection, ...]:
