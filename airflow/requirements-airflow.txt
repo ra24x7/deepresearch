@@ -1,0 +1,20 @@
+# Dependencies for DAG tasks (Airflow itself is installed with constraints
+# in the Dockerfile; keep this list to task-level libraries only).
+httpx>=0.27.0
+sqlalchemy>=1.4.36,<2.0.0
+pydantic>=2.0.0,<3.0.0
+pydantic-settings>=2.0.0
+python-dateutil>=2.8.0
+alembic>=1.13.0
+
+# PDF processing
+docling>=2.0.0
+
+# Search engine
+opensearch-py>=2.4.0
+
+# Database driver
+psycopg2-binary>=2.9.0
+
+# Bedrock (LLM enrichment + Cohere embeddings)
+boto3>=1.40.0

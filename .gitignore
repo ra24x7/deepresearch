@@ -24,6 +24,7 @@ venv/
 
 # Local scratch
 *.log
+airflow/logs/
 
 # Paper PDFs — large binaries, re-downloadable by arXiv id
 data/papers/

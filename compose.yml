@@ -1,0 +1,124 @@
+name: deepresearch
+
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.19.5
+    container_name: dr-opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - DISABLE_SECURITY_PLUGIN=true
+      - bootstrap.memory_lock=true
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - dr-network
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.19.5
+    container_name: dr-dashboards
+    ports:
+      - "5601:5601"
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    volumes:
+      - ./docker/opensearch-dashboards/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+    depends_on:
+      - opensearch
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - dr-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: dr-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-deepresearch}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-deepresearch}
+      - POSTGRES_DB=deepresearch
+    ports:
+      # 5433 on the host — 5432 is held by another project's container
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-deepresearch} -d deepresearch" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - dr-network
+
+  airflow:
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    container_name: dr-airflow
+    depends_on:
+      opensearch:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW_HOME=/opt/airflow
+      - PYTHONPATH=/opt/airflow/src
+      - OPENSEARCH__HOST=http://opensearch:9200
+      - POSTGRES__DSN=postgresql://${POSTGRES_USER:-deepresearch}:${POSTGRES_PASSWORD:-deepresearch}@postgres:5432/deepresearch
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-deepresearch}:${POSTGRES_PASSWORD:-deepresearch}@postgres:5432/airflow
+      # Suppress FutureWarnings emitted by Airflow's own internal config
+      # migration code (core/sql_alchemy_conn → database/sql_alchemy_conn).
+      - PYTHONWARNINGS=ignore::FutureWarning:airflow,ignore::DeprecationWarning:airflow
+      # entrypoint.sh runs `airflow sync-perm` once before the webserver starts,
+      # so gunicorn workers can skip the slow per-boot permission sync.
+      - AIRFLOW__WEBSERVER__UPDATE_FAB_PERMS=False
+      # Basic Auth for the REST API (default session auth only works in a browser).
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - airflow_logs:/opt/airflow/logs
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    networks:
+      - dr-network
+
+volumes:
+  opensearch_data:
+  postgres_data:
+  airflow_logs:
+
+networks:
+  dr-network:
+    driver: bridge
