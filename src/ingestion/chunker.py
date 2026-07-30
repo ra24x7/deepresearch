@@ -37,12 +37,14 @@ def _process_section(text: str, section_title: str, arxiv_id: str, settings: Chu
     return _split_large_section(text, section_title, arxiv_id, settings)
 
 
-def _split_large_section(text: str, section_title: str, arxiv_id: str, settings: ChunkingSettings) -> tuple[Chunk, ...]:
+def _split_large_section(
+    text: str, section_title: str, arxiv_id: str, settings: ChunkingSettings, first_part_index: int = 0
+) -> tuple[Chunk, ...]:
     words = text.split()
     step = settings.split_size - settings.overlap
     parts: tuple[Chunk, ...] = ()
     start = 0
-    part_index = 0
+    part_index = first_part_index
 
     while start < len(words):
         end = min(start + settings.split_size, len(words))
@@ -69,6 +71,9 @@ def _merge_trailing(
 
     last = chunks[-1]
     merged_text = f"{last.text} {pending_text}".strip()
+    if len(merged_text.split()) > settings.max_words:
+        tail = _split_large_section(merged_text, last.section_title, arxiv_id, settings, last.part_index)
+        return chunks[:-1] + tail
     merged = _make_chunk(arxiv_id, last.section_title, last.part_index, merged_text)
     return chunks[:-1] + (merged,)
 

@@ -12,10 +12,17 @@ _PDF_HEADER = b"%PDF-"
 def parse_pdf(path: Path, settings: ParserSettings) -> PdfContent:
     _validate_pdf_file(path)
 
-    from docling.document_converter import DocumentConverter
+    from docling.datamodel.base_models import InputFormat
+    from docling.datamodel.pipeline_options import PdfPipelineOptions
+    from docling.document_converter import DocumentConverter, PdfFormatOption
 
+    # arXiv PDFs are born-digital; OCR is unnecessary and pulls model downloads
+    # into read-only site-packages inside the container.
+    converter = DocumentConverter(
+        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=PdfPipelineOptions(do_ocr=False))}
+    )
     try:
-        result = DocumentConverter().convert(str(path), max_num_pages=settings.max_pages)
+        result = converter.convert(str(path), max_num_pages=settings.max_pages)
     except Exception as exc:
         raise ParserError(f"Failed to parse PDF {path}: {exc}") from exc
 

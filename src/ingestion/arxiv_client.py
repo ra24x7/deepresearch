@@ -1,3 +1,4 @@
+import re
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -56,7 +57,7 @@ def _get_text_with_retry(url: str, params: dict, settings: ArxivSettings) -> str
                 response = client.get(url, params=params)
                 response.raise_for_status()
                 return response.text
-        except (httpx.HTTPStatusError, httpx.TimeoutException) as exc:
+        except (httpx.HTTPStatusError, httpx.TransportError) as exc:
             last_error = exc
     raise ArxivAPIError(f"arXiv API request failed after {settings.max_retries} attempts: {last_error}")
 
@@ -70,7 +71,7 @@ def _get_bytes_with_retry(url: str, settings: ArxivSettings) -> bytes:
                 response = client.get(url)
                 response.raise_for_status()
                 return response.content
-        except (httpx.HTTPStatusError, httpx.TimeoutException) as exc:
+        except (httpx.HTTPStatusError, httpx.TransportError) as exc:
             last_error = exc
     raise PDFDownloadError(f"PDF download failed after {settings.max_retries} attempts: {last_error}")
 
@@ -85,7 +86,8 @@ def _parse_atom_xml(xml_text: str) -> list[ArxivMetadata]:
 
 
 def _parse_entry(entry: ET.Element) -> ArxivMetadata:
-    arxiv_id = entry.find("atom:id", _ATOM_NAMESPACE).text.split("/")[-1]
+    # Canonical versionless id — the golden dataset and all evidence joins use bare ids.
+    arxiv_id = re.sub(r"v\d+$", "", entry.find("atom:id", _ATOM_NAMESPACE).text.split("/")[-1])
     title = " ".join(entry.find("atom:title", _ATOM_NAMESPACE).text.split())
     abstract = " ".join(entry.find("atom:summary", _ATOM_NAMESPACE).text.split())
     published = date_parser.isoparse(entry.find("atom:published", _ATOM_NAMESPACE).text).date()

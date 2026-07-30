@@ -206,3 +206,38 @@ class TestChunkIdStability:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestTrailingMergeSizeCeiling:
+    def test_trailing_merge_that_exceeds_max_words_is_resplit(self):
+        big = PaperSection(title="Method", text=_words(800), level=1)
+        tail = PaperSection(title="Ack", text=_words(99, prefix="ack"), level=1)
+        content = _pdf_content((big, tail))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        assert all(c.word_count <= SETTINGS.max_words for c in chunks)
+        assert len(chunks) == 2
+        assert [c.part_index for c in chunks] == [0, 1]
+        joined = set(" ".join(c.text for c in chunks).split())
+        assert "ack98" in joined and "word799" in joined
+
+    def test_trailing_merge_within_max_words_stays_single_chunk(self):
+        big = PaperSection(title="Method", text=_words(700), level=1)
+        tail = PaperSection(title="Ack", text=_words(50, prefix="ack"), level=1)
+        content = _pdf_content((big, tail))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        assert len(chunks) == 1
+        assert chunks[0].word_count == 750
+
+
+class TestChunkingSettingsValidation:
+    def test_overlap_equal_to_split_size_is_rejected(self):
+        with pytest.raises(ValueError, match="overlap"):
+            ChunkingSettings(min_words=10, max_words=50, split_size=100, overlap=100)
+
+    def test_overlap_greater_than_split_size_is_rejected(self):
+        with pytest.raises(ValueError, match="overlap"):
+            ChunkingSettings(min_words=10, max_words=50, split_size=100, overlap=150)

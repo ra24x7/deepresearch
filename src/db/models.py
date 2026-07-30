@@ -46,7 +46,7 @@ class Entity(Base):
     entity_key = Column(String, primary_key=True)
     surface_forms = Column(JSON, nullable=False)
     entity_type = Column(String, nullable=False)
-    link_count = Column(Integer, nullable=False, default=0)
+    link_count = Column(Integer, nullable=False, server_default="0")
 
 
 class EntityLink(Base):

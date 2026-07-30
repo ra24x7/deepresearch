@@ -49,7 +49,7 @@ class TestFetchByIds:
 
         assert len(results) == 2
         first = results[0]
-        assert first.arxiv_id == "2501.00001v1"
+        assert first.arxiv_id == "2501.00001"
         assert first.title == "A Great Paper About RAG"
         assert first.authors == ("Jane Doe", "John Smith")
         assert first.categories == ("cs.AI", "cs.CL")
@@ -107,7 +107,7 @@ class TestFetchByQuery:
 class TestDownloadPdf:
     def _metadata(self):
         return ArxivMetadata(
-            arxiv_id="2501.00001v1",
+            arxiv_id="2501.00001",
             title="A Paper",
             authors=("Jane Doe",),
             abstract="abstract",
@@ -125,7 +125,7 @@ class TestDownloadPdf:
 
         result_path = download_pdf(self._metadata(), tmp_path, SETTINGS)
 
-        assert result_path == tmp_path / "2501.00001v1.pdf"
+        assert result_path == tmp_path / "2501.00001.pdf"
         assert result_path.read_bytes() == b"%PDF-1.4 fake pdf bytes"
 
     def test_download_pdf_raises_typed_error_after_max_retries(self, mocker, tmp_path):
@@ -138,3 +138,20 @@ class TestDownloadPdf:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestTransportErrorRetry:
+    def test_connect_error_is_retried_then_succeeds(self, mocker):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        _patch_client(mocker, [httpx.ConnectError("dns failure"), _ok_response()])
+
+        results = fetch_by_ids(["2501.00001"], SETTINGS)
+
+        assert len(results) == 2
+
+    def test_connect_error_exhausting_retries_raises_typed_error(self, mocker):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        _patch_client(mocker, [httpx.ConnectError("dns failure")] * SETTINGS.max_retries)
+
+        with pytest.raises(ArxivAPIError, match="dns failure"):
+            fetch_by_ids(["2501.00001"], SETTINGS)
