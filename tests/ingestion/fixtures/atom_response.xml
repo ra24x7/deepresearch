@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>http://arxiv.org/abs/2501.00001v1</id>
+    <published>2025-01-15T18:30:00Z</published>
+    <title>A Great Paper About RAG</title>
+    <summary>
+      This paper studies retrieval augmented generation in depth.
+    </summary>
+    <author>
+      <name>Jane Doe</name>
+    </author>
+    <author>
+      <name>John Smith</name>
+    </author>
+    <category term="cs.AI" />
+    <category term="cs.CL" />
+    <link href="http://arxiv.org/abs/2501.00001v1" rel="alternate" type="text/html" />
+    <link href="http://arxiv.org/pdf/2501.00001v1" rel="related" type="application/pdf" />
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.00002v2</id>
+    <published>2025-02-20T09:00:00Z</published>
+    <title>Another Interesting Paper</title>
+    <summary>
+      A second abstract for testing purposes.
+    </summary>
+    <author>
+      <name>Alice Lee</name>
+    </author>
+    <category term="cs.IR" />
+    <link href="http://arxiv.org/abs/2501.00002v2" rel="alternate" type="text/html" />
+    <link href="http://arxiv.org/pdf/2501.00002v2" rel="related" type="application/pdf" />
+  </entry>
+</feed>
