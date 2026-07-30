@@ -7,20 +7,20 @@ from ingestion.schemas import PaperSection, PdfContent
 _SECTION_LABELS = {"title", "section_header"}
 _FALLBACK_TITLE = "Full Text"
 _PDF_HEADER = b"%PDF-"
+_BYTES_PER_MB = 1024 * 1024
 
 
 def parse_pdf(path: Path, settings: ParserSettings) -> PdfContent:
-    _validate_pdf_file(path)
+    _validate_pdf_file(path, settings)
 
     from docling.datamodel.base_models import InputFormat
     from docling.datamodel.pipeline_options import PdfPipelineOptions
     from docling.document_converter import DocumentConverter, PdfFormatOption
 
-    # arXiv PDFs are born-digital; OCR is unnecessary and pulls model downloads
-    # into read-only site-packages inside the container.
-    converter = DocumentConverter(
-        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=PdfPipelineOptions(do_ocr=False))}
-    )
+    # do_ocr defaults off: arXiv PDFs are born-digital, and OCR pulls model
+    # downloads into read-only site-packages inside the container.
+    pipeline_options = PdfPipelineOptions(do_ocr=settings.do_ocr, do_table_structure=settings.do_table_structure)
+    converter = DocumentConverter(format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)})
     try:
         result = converter.convert(str(path), max_num_pages=settings.max_pages)
     except Exception as exc:
@@ -33,9 +33,12 @@ def parse_pdf(path: Path, settings: ParserSettings) -> PdfContent:
     return PdfContent(raw_text=doc.export_to_text(), sections=_map_sections(doc), page_count=page_count)
 
 
-def _validate_pdf_file(path: Path) -> None:
+def _validate_pdf_file(path: Path, settings: ParserSettings) -> None:
     if not path.exists() or path.stat().st_size == 0:
         raise ParserError(f"PDF file is missing or empty: {path}")
+    size_mb = path.stat().st_size / _BYTES_PER_MB
+    if size_mb > settings.max_file_size_mb:
+        raise PDFTooLargeError(f"PDF is {size_mb:.1f} MB, exceeding limit of {settings.max_file_size_mb} MB: {path}")
     with path.open("rb") as fh:
         header = fh.read(len(_PDF_HEADER))
     if header != _PDF_HEADER:

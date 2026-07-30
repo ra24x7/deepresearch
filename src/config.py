@@ -1,9 +1,13 @@
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class ArxivSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="ARXIV__", env_nested_delimiter="__")
+class FrozenSettings(BaseSettings):
+    model_config = SettingsConfigDict(frozen=True, env_nested_delimiter="__")
+
+
+class ArxivSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="ARXIV__")
 
     base_url: str = "https://export.arxiv.org/api/query"
     rate_limit_seconds: float = 3.0
@@ -12,14 +16,17 @@ class ArxivSettings(BaseSettings):
     pdf_cache_dir: str = "data/papers"
 
 
-class ParserSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="PARSER__", env_nested_delimiter="__")
+class ParserSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="PARSER__")
 
     max_pages: int = 50
+    max_file_size_mb: int = 20
+    do_ocr: bool = False
+    do_table_structure: bool = True
 
 
-class ChunkingSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="CHUNKING__", env_nested_delimiter="__")
+class ChunkingSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="CHUNKING__")
 
     min_words: int = 100
     max_words: int = 800
@@ -34,26 +41,33 @@ class ChunkingSettings(BaseSettings):
         return self
 
 
-class OpenSearchSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="OPENSEARCH__", env_nested_delimiter="__")
+class OpenSearchSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="OPENSEARCH__")
 
     host: str = "localhost:9200"
 
 
-class PostgresSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="POSTGRES__", env_nested_delimiter="__")
+class PostgresSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="POSTGRES__")
 
     dsn: str = "postgresql://deepresearch:deepresearch@localhost:5433/deepresearch"
 
+    @field_validator("dsn")
+    @classmethod
+    def _dsn_must_be_postgres(cls, value: str) -> str:
+        if not value.startswith(("postgresql://", "postgresql+psycopg2://")):
+            raise ValueError("dsn must start with 'postgresql://' or 'postgresql+psycopg2://'")
+        return value
 
-class BedrockSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="BEDROCK__", env_nested_delimiter="__")
+
+class BedrockSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="BEDROCK__")
 
     region: str = "ap-south-1"
 
 
-class EmbeddingSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="EMBEDDING__", env_nested_delimiter="__")
+class EmbeddingSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="EMBEDDING__")
 
     provider: str = "cohere_bedrock"
     model_id: str = "global.cohere.embed-v4:0"

@@ -117,3 +117,12 @@ class TestParsePdfFileValidation:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestFileSizeCap:
+    def test_oversized_pdf_raises_pdf_too_large(self, tmp_path):
+        big = tmp_path / "big.pdf"
+        big.write_bytes(b"%PDF-" + b"x" * (2 * 1024 * 1024))
+
+        with pytest.raises(PDFTooLargeError, match="MB"):
+            parse_pdf(big, ParserSettings(max_pages=50, max_file_size_mb=1))

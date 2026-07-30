@@ -241,3 +241,15 @@ class TestChunkingSettingsValidation:
     def test_overlap_greater_than_split_size_is_rejected(self):
         with pytest.raises(ValueError, match="overlap"):
             ChunkingSettings(min_words=10, max_words=50, split_size=100, overlap=150)
+
+
+class TestSettingsAdoptions:
+    def test_settings_are_frozen(self):
+        with pytest.raises(ValueError):
+            SETTINGS.max_words = 900
+
+    def test_postgres_dsn_scheme_is_validated(self):
+        from config import PostgresSettings
+
+        with pytest.raises(ValueError, match="postgresql"):
+            PostgresSettings(dsn="mysql://nope")
