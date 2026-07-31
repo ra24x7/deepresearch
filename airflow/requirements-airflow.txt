@@ -18,3 +18,4 @@ psycopg2-binary>=2.9.0
 
 # Bedrock (LLM enrichment + Cohere embeddings)
 boto3>=1.40.0
+rapidfuzz>=3.0

@@ -1,12 +1,11 @@
-import re
-import unicodedata
 from typing import NamedTuple
 
 from rapidfuzz import fuzz
 
-_PUNCTUATION_MAP = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-", "−": "-", "‐": "-"})
-_LINE_BREAK_HYPHEN = re.compile(r"(\w)-\n(\w)")
-_WHITESPACE_RUN = re.compile(r"\s+")
+from textnorm import normalize
+
+__all__ = ["AuditResult", "QuoteMatch", "audit_quote", "normalize", "quote_in_text"]
+
 # A text meaningfully shorter than the quote cannot wholly contain it; without this
 # guard partial_ratio scores a half-quote chunk 100 by sliding it over the quote.
 _MIN_TEXT_LENGTH_RATIO = 0.9
@@ -22,14 +21,6 @@ class AuditResult(NamedTuple):
     stage_b_found: bool
     stage_b_match: str
     stage_b_chunk_id: str | None
-
-
-def normalize(text: str) -> str:
-    text = unicodedata.normalize("NFKC", text)
-    text = text.translate(_PUNCTUATION_MAP)
-    text = _LINE_BREAK_HYPHEN.sub(r"\1\2", text)
-    text = _WHITESPACE_RUN.sub(" ", text)
-    return text.strip().lower()
 
 
 def quote_in_text(quote: str, text: str, threshold: int = 95) -> QuoteMatch:

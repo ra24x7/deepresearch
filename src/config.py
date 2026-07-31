@@ -72,3 +72,14 @@ class EmbeddingSettings(FrozenSettings):
     provider: str = "cohere_bedrock"
     model_id: str = "global.cohere.embed-v4:0"
     dimension: int = 1024
+
+
+class EnrichmentSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="ENRICHMENT__")
+
+    model_id: str = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+    max_tokens: int = 4096
+    temperature: float = 0.0
+    timeout_seconds: float = 60.0
+    max_retries: int = 3
+    prompt_max_chars: int = 12000
