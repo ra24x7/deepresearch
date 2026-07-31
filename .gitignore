@@ -28,3 +28,6 @@ airflow/logs/
 
 # Paper PDFs — large binaries, re-downloadable by arXiv id
 data/papers/
+
+# Coverage artifacts
+.coverage
