@@ -1,4 +1,5 @@
 import json
+import time
 from typing import Any
 
 from botocore.exceptions import ClientError
@@ -9,6 +10,10 @@ from ingestion.embeddings.exceptions import EmbeddingInvocationError
 _MAX_BATCH_SIZE = 96
 _INPUT_TYPE_PASSAGE = "search_document"
 _INPUT_TYPE_QUERY = "search_query"
+_THROTTLING_ERROR_CODE = "ThrottlingException"
+# Bedrock enforces a tokens-per-minute ceiling; backoff must be able to outwait
+# a full window, so the doubling sequence sums past 60s within max_retries.
+_BACKOFF_BASE_SECONDS = 4.0
 
 
 class CohereBedrockProvider:
@@ -43,9 +48,19 @@ class CohereBedrockProvider:
             "embedding_types": ["float"],
             "output_dimension": self._settings.dimension,
         }
-        try:
-            response = self._client.invoke_model(modelId=self._settings.model_id, body=json.dumps(payload))
-        except ClientError as exc:
-            raise EmbeddingInvocationError(f"Cohere Bedrock embed call failed: {exc}") from exc
-        body = json.loads(response["body"].read())
-        return body["embeddings"]["float"]
+        last_error: Exception | None = None
+        for attempt in range(self._settings.max_retries):
+            if attempt > 0:
+                time.sleep(_BACKOFF_BASE_SECONDS * (2 ** (attempt - 1)))
+            try:
+                response = self._client.invoke_model(modelId=self._settings.model_id, body=json.dumps(payload))
+            except ClientError as exc:
+                if exc.response.get("Error", {}).get("Code", "") != _THROTTLING_ERROR_CODE:
+                    raise EmbeddingInvocationError(f"Cohere Bedrock embed call failed: {exc}") from exc
+                last_error = exc
+                continue
+            body = json.loads(response["body"].read())
+            return body["embeddings"]["float"]
+        raise EmbeddingInvocationError(
+            f"Cohere Bedrock embed call throttled after {self._settings.max_retries} attempts: {last_error}"
+        )

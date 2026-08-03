@@ -72,6 +72,7 @@ class EmbeddingSettings(FrozenSettings):
     provider: str = "cohere_bedrock"
     model_id: str = "global.cohere.embed-v4:0"
     dimension: int = 1024
+    max_retries: int = 6
 
 
 class EnrichmentSettings(FrozenSettings):

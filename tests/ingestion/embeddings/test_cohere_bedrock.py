@@ -111,3 +111,51 @@ class TestEmbedQuery:
 
         with pytest.raises(EmbeddingInvocationError):
             CohereBedrockProvider(client, SETTINGS).embed_query("a question")
+
+
+def _throttling_error() -> ClientError:
+    return ClientError({"Error": {"Code": "ThrottlingException", "Message": "slow down"}}, "InvokeModel")
+
+
+class TestThrottleRetry:
+    def test_throttling_is_retried_then_succeeds(self, mocker):
+        sleep_mock = mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
+        client = MagicMock()
+        client.invoke_model.side_effect = [_throttling_error(), _response([[0.1, 0.2, 0.3, 0.4]])]
+
+        vectors = CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+        assert vectors == [[0.1, 0.2, 0.3, 0.4]]
+        assert sleep_mock.call_count == 1
+
+    def test_throttling_backoff_grows_between_attempts(self, mocker):
+        sleep_mock = mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
+        client = MagicMock()
+        client.invoke_model.side_effect = [
+            _throttling_error(),
+            _throttling_error(),
+            _response([[0.1, 0.2, 0.3, 0.4]]),
+        ]
+
+        CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+        waits = [call.args[0] for call in sleep_mock.call_args_list]
+        assert waits == sorted(waits) and waits[1] > waits[0]
+
+    def test_throttling_exhausting_retries_raises_typed_error(self, mocker):
+        mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
+        client = MagicMock()
+        client.invoke_model.side_effect = _throttling_error()
+
+        with pytest.raises(EmbeddingInvocationError, match="slow down"):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+    def test_non_throttling_error_is_not_retried(self, mocker):
+        mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
+        client = MagicMock()
+        client.invoke_model.side_effect = _client_error()
+
+        with pytest.raises(EmbeddingInvocationError):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+        assert client.invoke_model.call_count == 1
