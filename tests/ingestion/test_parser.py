@@ -153,3 +153,20 @@ class TestCaptionDeferral:
 
         assert len(sections) == 1
         assert sections[0].text == "Figure 1: overview."
+
+
+class TestNulByteSanitisation:
+    def test_nul_bytes_are_stripped_from_section_text(self):
+        doc = _stub_doc([_elem("section_header", "Intro"), _elem("text", "before\x00after")])
+
+        sections = _map_sections(doc)
+
+        assert "\x00" not in sections[0].text
+        assert sections[0].text == "beforeafter"
+
+    def test_nul_bytes_are_stripped_from_section_titles(self):
+        doc = _stub_doc([_elem("section_header", "Ti\x00tle"), _elem("text", "body text here")])
+
+        sections = _map_sections(doc)
+
+        assert sections[0].title == "Title"

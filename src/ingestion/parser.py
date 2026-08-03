@@ -34,7 +34,9 @@ def parse_pdf(path: Path, settings: ParserSettings) -> PdfContent:
     sections = _map_sections(doc)
     # raw_text mirrors the section view (captions deferred) so parse-level and
     # chunk-level audits see the same text; export_to_text is the no-section fallback.
-    raw_text = "\n\n".join(f"{s.title}\n{s.text}" for s in sections) if sections else doc.export_to_text()
+    raw_text = (
+        "\n\n".join(f"{s.title}\n{s.text}" for s in sections) if sections else _sanitize(doc.export_to_text())
+    )
     return PdfContent(raw_text=raw_text, sections=sections, page_count=page_count)
 
 
@@ -59,6 +61,11 @@ def _validate_page_count(page_count: int, settings: ParserSettings) -> None:
         raise PDFTooLargeError(f"PDF has {page_count} pages, exceeding limit of {settings.max_pages}")
 
 
+def _sanitize(text: str) -> str:
+    # Postgres text columns reject NUL; some PDFs decode with embedded 0x00.
+    return text.replace("\x00", "")
+
+
 def _map_sections(doc) -> tuple[PaperSection, ...]:
     sections: tuple[PaperSection, ...] = ()
     current_title = _FALLBACK_TITLE
@@ -66,7 +73,7 @@ def _map_sections(doc) -> tuple[PaperSection, ...]:
     current_captions: tuple[str, ...] = ()
 
     for element in doc.texts:
-        text = (getattr(element, "text", "") or "").strip()
+        text = _sanitize((getattr(element, "text", "") or "").strip())
         if not text:
             continue
         label = getattr(element, "label", None)
