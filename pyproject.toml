@@ -15,6 +15,7 @@ dependencies = [
     "alembic>=1.13",
     "python-dateutil>=2.9",
     "rapidfuzz>=3.0",
+    "opensearch-py>=3.2.0",
 ]
 
 [project.optional-dependencies]
