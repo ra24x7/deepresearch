@@ -39,12 +39,16 @@ Write-path intelligence: each paper produces four artifacts.
       healthcheck DAG green; full ingestion DAG lands in 2.6)
 - [x] Section-aware chunks (100–800-word policy; captions deferred to
       section end; 4 golden papers → 150 chunks, 100% in band, deterministic)
-- [ ] Claims: LLM extracts 5–15 atomic contributions per paper (once, at ingest)
-- [ ] Entities: authors, method acronyms, datasets, arXiv IDs — linked to
-      chunks/papers, link counts stored for damping
+- [x] Claims: LLM extracts 5–15 atomic contributions per paper (once, at ingest)
+      — 45 claims over the golden papers, $0.0079/paper measured (Gate A)
+- [x] Entities: authors, method acronyms, datasets, arXiv IDs — linked to
+      chunks/papers, link counts stored for damping (177 entities, 500 links)
 - [x] Structured metadata in Postgres (papers/chunks live; claims/entities/
       ingestion_runs tables migrated, filled by 2.4/2.6)
-- [ ] Hash-based claim dedup; batch-first with per-item fallback
+- [x] Hash-based claim dedup; batch-first with per-item fallback
+- [x] Embedding + indexing: Cohere Embed v4 behind a swappable provider
+      interface (ADR 0002); 1,518 chunks / 45 claims / 177 entities in
+      OpenSearch, bibliographies excluded (ADR 0003)
 - [x] Solvability audit v1: 31/31 evidence quotes pass Stage A (parsed text)
       and Stage B (single chunk); 6 fuzzy matches pending user review;
       Stage C (live index) re-runs in 2.6. Pattern from APS-RAG (2607.24663).
@@ -121,11 +125,14 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-03 | Phase 2.4–2.5: enrichment live (Gate A, $0.0079/paper), evalv1 grown to 54 papers / 1,624 chunks, embedded with Cohere Embed v4 (~$0.08) into OpenSearch — 1,518 chunks indexed after excluding bibliographies (ADR 0003). Real-vector semantic search returns correct sections. Bugs found only at scale: container OOM at 50 papers, duplicate section-title id collision, NUL bytes in one PDF. Bedrock quota discovered to be token-bound (300k/min), so embed calls now retry on throttling. |
 | 2026-07-30 | Phase 2.1–2.3: Docker stack (OpenSearch/Postgres/Airflow, lifted from predecessor + local Postgres) all healthy; fetch/parse/chunk modules TDD'd (68 tests); 4 golden papers → 150 chunks in Postgres; solvability audit v1 31/31 both stages after fixing math-tokenization matching and caption interleaving; evalv1 snapshot pinned (4+50 papers). Embeddings decided: Cohere Embed v4 on Bedrock (`global.cohere.embed-v4:0`, 1024-dim). 6 fuzzy audit matches await user review. |
 
 ## Decisions made
 
 - Generation: gpt-4o-mini; Judge: Claude Sonnet 4.6 on Bedrock — [ADR 0001](adr/0001-model-choices.md)
+- Embeddings: Cohere Embed v4 on Bedrock, behind a swappable provider interface; provider re-decided in Phase 3 on measured recall — [ADR 0002](adr/0002-embedding-provider.md)
+- Bibliographies excluded from the search index, captured as citation entities instead — [ADR 0003](adr/0003-exclude-bibliography-from-index.md)
 
 ## Decisions pending
 

@@ -23,6 +23,27 @@ What it took to get there — three parser/matching defects the audit surfaced:
    the section view so parse- and chunk-level text agree.
 3. Without those, 3/31 quotes failed outright and 12 matched only fuzzily.
 
+## Corpus and indexing (2026-08-03)
+
+`evalv1` is complete and searchable: **54 papers** (4 golden + 50 distractors),
+**1,624 chunks** in Postgres, of which **1,518 are indexed** (bibliographies
+excluded, ADR 0003), plus 45 claims and 177 entities.
+
+- Enrichment (Gate A): 45 claims, all 4 golden papers inside the 5–15 band,
+  **$0.0079/paper** measured — 20–25x under the original estimate, which
+  reprices the eventual 500-paper backfill from ~$12 to ~$4.
+- Embedding: Cohere Embed v4 (ADR 0002), ~$0.08 for the corpus, 0 failures.
+- Sanity check on real vectors: *"how do agents decide which retrieval tool to
+  use?"* → A-RAG §3.2 Hierarchical Retrieval Interfaces (0.785);
+  *"what causes reasoning failures in multi-hop QA?"* → the failure-mode
+  appendix (0.743). Retrieval quality is not yet measured — that is Phase 3.
+
+Three bugs were found only by running real data at scale, none by the tests:
+the container was OOM-killed at 50 papers (docling reloads models per paper —
+now batched across processes with per-paper commits), a paper with repeated
+section titles collided on the chunk-id primary key, and one PDF decoded with
+NUL bytes Postgres rejects. Each is now covered by a regression test.
+
 ## Caveats
 
 - **6 fuzzy-only matches await human review** (g003, g007, g013, g014, g016,
