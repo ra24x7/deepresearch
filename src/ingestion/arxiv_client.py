@@ -13,6 +13,10 @@ from ingestion.schemas import ArxivMetadata
 _ATOM_NAMESPACE = {"atom": "http://www.w3.org/2005/Atom"}
 _BACKOFF_BASE_SECONDS = 5.0
 
+# Monotonic timestamp of the last request issued by this process. Process-wide
+# state is the point: the courtesy interval is owed to arXiv, not to a call site.
+_last_request_at: float | None = None
+
 
 def fetch_by_ids(ids: list[str], settings: ArxivSettings) -> list[ArxivMetadata]:
     params = {"id_list": ",".join(ids), "max_results": len(ids)}
@@ -44,8 +48,21 @@ def download_pdf(metadata: ArxivMetadata, dest_dir: Path, settings: ArxivSetting
 
 
 def _wait_before_attempt(attempt: int, settings: ArxivSettings) -> None:
-    wait_seconds = settings.rate_limit_seconds if attempt == 0 else _BACKOFF_BASE_SECONDS * (2 ** (attempt - 1))
-    time.sleep(wait_seconds)
+    # Retry backoff widens the same inter-request interval rather than adding a
+    # second sleep on top of it — one wait per attempt, measured from the last request.
+    min_interval = settings.rate_limit_seconds
+    if attempt > 0:
+        min_interval = max(min_interval, _BACKOFF_BASE_SECONDS * (2 ** (attempt - 1)))
+    _throttle(min_interval)
+
+
+def _throttle(min_interval_seconds: float) -> None:
+    global _last_request_at
+    if _last_request_at is not None:
+        remaining = min_interval_seconds - (time.monotonic() - _last_request_at)
+        if remaining > 0:
+            time.sleep(remaining)
+    _last_request_at = time.monotonic()
 
 
 def _get_text_with_retry(url: str, params: dict, settings: ArxivSettings) -> str:

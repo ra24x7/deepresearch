@@ -26,8 +26,16 @@ def find_or_download_pdf(metadata, papers_dir: Path, settings: ArxivSettings) ->
     return download_pdf(metadata, papers_dir, settings)
 
 
-def ingest(arxiv_ids: list[str], corpus: str, papers_dir: Path) -> None:
+def ingest(arxiv_ids: list[str], corpus: str, papers_dir: Path, skip_existing: bool = False) -> None:
     arxiv_settings = ArxivSettings()
+    if skip_existing:
+        session_factory = get_session_factory(get_engine(PostgresSettings()))
+        with session_factory() as session:
+            done = {row[0] for row in session.query(Paper.arxiv_id).all()}
+        arxiv_ids = [aid for aid in arxiv_ids if aid not in done]
+        if not arxiv_ids:
+            print("nothing to ingest — all requested papers already present")
+            return
     metadata_list = fetch_by_ids(arxiv_ids, arxiv_settings)
     parser_settings = ParserSettings()
     chunking_settings = ChunkingSettings()
@@ -72,8 +80,14 @@ def ingest(arxiv_ids: list[str], corpus: str, papers_dir: Path) -> None:
                 )
                 for c in chunks
             )
-            print(f"{metadata.arxiv_id}: {content.page_count} pages, {len(chunks)} chunks")
-        session.commit()
+            # Commit per paper: a long ingest that dies (docling is memory-hungry)
+            # must not lose the papers it already parsed.
+            session.commit()
+            print(f"{metadata.arxiv_id}: {content.page_count} pages, {len(chunks)} chunks", flush=True)
+
+    if not all_chunks:
+        print("no chunks produced")
+        return
 
     in_band = sum(1 for c in all_chunks if chunking_settings.min_words <= c.word_count <= chunking_settings.max_words)
     zero = sum(1 for c in all_chunks if c.word_count == 0)
@@ -88,10 +102,11 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", required=True)
     ap.add_argument("--papers-dir", default="data/papers")
+    ap.add_argument("--skip-existing", action="store_true")
     ap.add_argument("arxiv_ids", nargs="+")
     args = ap.parse_args()
     try:
-        ingest(args.arxiv_ids, args.corpus, Path(args.papers_dir))
+        ingest(args.arxiv_ids, args.corpus, Path(args.papers_dir), args.skip_existing)
     except Exception as exc:
         print(f"ingest failed: {exc}", file=sys.stderr)
         raise

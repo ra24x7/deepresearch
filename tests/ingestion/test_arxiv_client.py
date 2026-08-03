@@ -6,6 +6,7 @@ import httpx
 import pytest
 
 from config import ArxivSettings
+from ingestion import arxiv_client
 from ingestion.arxiv_client import download_pdf, fetch_by_ids, fetch_by_query
 from ingestion.exceptions import ArxivAPIError, PDFDownloadError
 from ingestion.schemas import ArxivMetadata
@@ -14,6 +15,11 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 ATOM_XML = (FIXTURES_DIR / "atom_response.xml").read_text()
 
 SETTINGS = ArxivSettings(rate_limit_seconds=3.0, max_retries=3, timeout_seconds=10.0)
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter():
+    arxiv_client._last_request_at = None
 
 
 def _ok_response(text: str = ATOM_XML) -> MagicMock:
@@ -63,7 +69,8 @@ class TestFetchByIds:
         results = fetch_by_ids(["2501.00001"], SETTINGS)
 
         assert len(results) == 2
-        assert sleep_mock.call_count == 2
+        # first attempt needs no throttle wait in a fresh process; the retry backs off
+        assert sleep_mock.call_count == 1
 
     def test_raises_typed_error_after_max_retries_exhausted(self, mocker):
         mocker.patch("ingestion.arxiv_client.time.sleep")
@@ -72,26 +79,27 @@ class TestFetchByIds:
         with pytest.raises(ArxivAPIError):
             fetch_by_ids(["2501.00001"], SETTINGS)
 
-    def test_respects_rate_limit_before_first_request(self, mocker):
+    def test_first_request_in_a_fresh_process_does_not_wait(self, mocker):
         sleep_mock = mocker.patch("ingestion.arxiv_client.time.sleep")
         _patch_client(mocker, [_ok_response()])
 
         fetch_by_ids(["2501.00001"], SETTINGS)
 
-        sleep_mock.assert_any_call(SETTINGS.rate_limit_seconds)
+        sleep_mock.assert_not_called()
 
-    def test_sleep_happens_before_the_http_call_each_attempt(self, mocker):
+    def test_backoff_sleep_happens_before_the_retry_http_call(self, mocker):
         call_order = []
         mocker.patch("ingestion.arxiv_client.time.sleep", side_effect=lambda _: call_order.append("sleep"))
+        responses = [_error_response(500), _ok_response()]
         client_instance = MagicMock()
-        client_instance.get.side_effect = lambda *a, **kw: call_order.append("get") or _ok_response()
+        client_instance.get.side_effect = lambda *a, **kw: call_order.append("get") or responses.pop(0)
         client_instance.__enter__.return_value = client_instance
         client_instance.__exit__.return_value = False
         mocker.patch("ingestion.arxiv_client.httpx.Client", return_value=client_instance)
 
         fetch_by_ids(["2501.00001"], SETTINGS)
 
-        assert call_order == ["sleep", "get"]
+        assert call_order == ["get", "sleep", "get"]
 
 
 class TestFetchByQuery:
@@ -155,3 +163,27 @@ class TestTransportErrorRetry:
 
         with pytest.raises(ArxivAPIError, match="dns failure"):
             fetch_by_ids(["2501.00001"], SETTINGS)
+
+
+class TestStatefulRateLimiting:
+    def test_second_request_waits_only_the_remaining_interval(self, mocker):
+        sleep_mock = mocker.patch("ingestion.arxiv_client.time.sleep")
+        # first request at t=100, second issued at t=101 -> only 2s of the 3s left
+        mocker.patch("ingestion.arxiv_client.time.monotonic", side_effect=[100.0, 101.0, 101.0])
+        _patch_client(mocker, [_ok_response(), _ok_response()])
+
+        fetch_by_ids(["2501.00001"], SETTINGS)
+        fetch_by_ids(["2501.00002"], SETTINGS)
+
+        sleep_mock.assert_called_once_with(pytest.approx(2.0))
+
+    def test_no_wait_when_interval_already_elapsed_naturally(self, mocker):
+        sleep_mock = mocker.patch("ingestion.arxiv_client.time.sleep")
+        # a slow parse between calls: 45s elapsed, well past the 3s interval
+        mocker.patch("ingestion.arxiv_client.time.monotonic", side_effect=[100.0, 145.0, 145.0])
+        _patch_client(mocker, [_ok_response(), _ok_response()])
+
+        fetch_by_ids(["2501.00001"], SETTINGS)
+        fetch_by_ids(["2501.00002"], SETTINGS)
+
+        sleep_mock.assert_not_called()
