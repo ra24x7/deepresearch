@@ -37,7 +37,11 @@ with DAG(
     default_args=default_args,
     description="Ingest arXiv papers: parse, chunk, enrich, embed, index",
     start_date=datetime(2026, 8, 1),
-    schedule="@daily",
+    # Manual-trigger only while the corpus is being built: every run costs money,
+    # so automatic daily ingestion is a production decision, not a default. A
+    # paused DAG cannot execute manual runs either, so the schedule — not the
+    # pause toggle — is what keeps spending deliberate.
+    schedule=None,
     catchup=False,
     max_active_runs=1,
     tags=["phase2", "ingestion"],
