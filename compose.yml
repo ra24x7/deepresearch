@@ -87,6 +87,8 @@ services:
     environment:
       - AIRFLOW_HOME=/opt/airflow
       - PYTHONPATH=/opt/airflow/src
+      # 69 bundled example DAGs otherwise bury the two that are ours
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - OPENSEARCH__HOST=http://opensearch:9200
       - POSTGRES__DSN=postgresql://${POSTGRES_USER:-deepresearch}:${POSTGRES_PASSWORD:-deepresearch}@postgres:5432/deepresearch
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-deepresearch}:${POSTGRES_PASSWORD:-deepresearch}@postgres:5432/airflow
