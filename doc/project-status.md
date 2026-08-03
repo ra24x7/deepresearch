@@ -55,14 +55,50 @@ Write-path intelligence: each paper produces four artifacts.
 - [~] Frozen eval snapshot: `data/eval_snapshot.json` pins evalv1 (4 golden
       + 50 distractors, 2026-07-30); distractor ingest happens with 2.5
 
-**Exit criteria:** 500+ papers ingested; claim-extraction quality
-spot-checked; cost-per-paper is a tracked number; solvability audit passes
-on the frozen eval snapshot.
+**Exit criteria:** ~~500+ papers ingested~~ (amended 2026-08-04, see below);
+claim-extraction quality spot-checked; cost-per-paper is a tracked number ✅
+($0.0079/paper measured); solvability audit passes on the frozen eval
+snapshot ✅ (31/31).
+
+**Amendment — the 500-paper backfill moves after Phase 3.** The number was
+set before any of this existed. Two facts now argue against spending it
+early: the eval snapshot is *frozen* at 54 papers, so growing the
+production corpus does not make Phase 3's measurement harder or more
+meaningful; and if Phase 3 changes chunking or enrichment, 500 papers must
+be re-parsed and re-enriched — paying ~$5 twice. The operational value of
+scale-testing was already banked at 50 papers (OOM, duplicate-slug
+collision, NUL bytes). Remaining justification for 500 is product
+usefulness and pipeline durability, not evaluation quality; the
+SLO-realism argument is dropped (~14k chunks is not where index
+performance gets interesting).
 
 ### Phase 3 — Staged Retrieval Engine
 
 The core of the project. Explicit stages, clean interfaces, each testable.
 
+**Prerequisite — grow the golden set to ~150 questions before measuring.**
+The error bar on recall is governed by the number of *questions*, not the
+size of the corpus, so 29 answerable questions is a smoke test, not an
+instrument. Sakai's power tables put ~110–180 topics as the requirement to
+detect the ~10-point differences a reranker or chunking change actually
+produces — which is exactly the size of effect this phase's exit criterion
+asks us to act on. Two defects found in the existing set while checking
+this (2026-08-04):
+
+- **Lexical give-aways.** Mean question↔evidence word overlap is 0.30, but
+  g015 (0.80), g026 (0.64) and g004 (0.60) hand BM25 the answer, biasing
+  any hybrid-vs-dense comparison. Paraphrase before measuring — needs user
+  sign-off, they are verified entries.
+- **Multi-chunk evidence.** g013, g016 and g017 have their quote in two
+  chunks each, both parts of one section: our own 100-word chunk overlap.
+  Scoring must therefore treat relevance as *any chunk containing the
+  evidence quote*, not a single pinned chunk id — otherwise recall is
+  deflated for returning correct content. This also survives chunking
+  changes, which a pinned id list would not.
+
+- [ ] Golden set grown to ~150 questions, stratified (adds `negation` and
+      `definitional` to the existing types); 15 drafted 2026-08-04 awaiting
+      user verification
 - [ ] Router: computable → SQL | semantic | entity-anchored | out-of-domain
 - [ ] Fan-out: BM25 + dense (chunks), dense (claims), entity channel with
       IDF-style damping; over-fetch max(4×top_k, 60)
@@ -71,6 +107,9 @@ The core of the project. Explicit stages, clean interfaces, each testable.
 
 **Exit criteria:** recall@10 and NDCG measured per-retriever and fused on the
 golden set; each retriever proves added recall or is deleted (ADR either way).
+The number is evidence for a decision, not a certification — Voorhees & Buckley
+found >10% gaps that still mis-ranked systems at 50 topics, so a hard recall
+figure for a Phase 6 SLO must come from production traffic, not this set.
 
 ### Phase 4 — Cost-Aware Agent Orchestration
 

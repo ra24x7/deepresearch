@@ -46,12 +46,17 @@ checklists, session log, pending decisions.
 
 1. Append one JSON line to `data/golden_dataset.jsonl` with: `id` (next
    `gNNN`), `type` (`factual_single` | `entity_anchored` | `computable` |
-   `multi_paper` | `unanswerable` | `out_of_domain`), `question`, `papers`
+   `multi_paper` | `unanswerable` | `out_of_domain` | `negation` |
+   `definitional`), `question`, `papers`
    (arXiv ids), `evidence` (list of `arxiv_id` / `where` / verbatim `quote`,
    plus `formula` for equations), `expected_behavior`, `reference_answer`,
    and `status: "draft_unverified"`. Add `notes` for traps or context.
 2. The status stays until the user verifies the entry and removes it —
    entries without `status` are human-verified.
+3. Keep question wording lexically distinct from the evidence quote —
+   shared content words hand BM25 the answer and bias retriever
+   comparisons. Validate drafts by running the solvability audit, which
+   proves each quote is verbatim and lands inside one chunk.
 
 ### Write an ADR
 
