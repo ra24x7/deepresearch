@@ -21,6 +21,7 @@ from config import BedrockSettings, EmbeddingSettings, OpenSearchSettings, Postg
 from db.models import Chunk, Claim, Entity, EntityLink, Paper
 from db.session import get_engine, get_session_factory
 from ingestion.embeddings.factory import build_provider
+from search.filters import is_indexable_section
 from search.indexer import create_indices, index_chunks, index_claims, index_entities
 from search.indices import chunks_index_name
 
@@ -48,7 +49,7 @@ def already_indexed(client, corpus: str, arxiv_id: str) -> bool:
     return client.count(index=chunks_index_name(corpus), body=body)["count"] > 0
 
 
-def main(corpus: str, skip_existing: bool, dry_run: bool) -> int:
+def main(corpus: str, skip_existing: bool, dry_run: bool, force: bool = False) -> int:
     load_dotenv()
     embedding = EmbeddingSettings()
     provider, client = build_clients(embedding)
@@ -56,7 +57,7 @@ def main(corpus: str, skip_existing: bool, dry_run: bool) -> int:
 
     print(f"provider={provider.model_id} dim={provider.dimension} corpus={corpus}")
     if not dry_run:
-        create_indices(client, corpus, provider.dimension)
+        create_indices(client, corpus, provider.dimension, force=force)
 
     total_chunks = total_claims = total_failed = 0
     errors: list[str] = []
@@ -80,6 +81,7 @@ def main(corpus: str, skip_existing: bool, dry_run: bool) -> int:
                     "text": c.text,
                 }
                 for c in session.query(Chunk).filter_by(arxiv_id=arxiv_id).all()
+                if is_indexable_section(c.section_title)
             ]
             claims = [
                 {
@@ -136,5 +138,6 @@ if __name__ == "__main__":
     ap.add_argument("--corpus", required=True)
     ap.add_argument("--skip-existing", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--force", action="store_true", help="delete and recreate indices first")
     args = ap.parse_args()
-    sys.exit(main(args.corpus, args.skip_existing, args.dry_run))
+    sys.exit(main(args.corpus, args.skip_existing, args.dry_run, args.force))
