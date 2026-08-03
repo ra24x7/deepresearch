@@ -309,13 +309,163 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.24663::f-a-troubleshooting-oriented-knowledge-graph::0"
+    },
+    {
+      "question": "g034",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.D Adaptive three-way retrieval fusion, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::d-adaptive-three-way-retrieval-fusion::0"
+    },
+    {
+      "question": "g035",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.D, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::d-adaptive-three-way-retrieval-fusion::0"
+    },
+    {
+      "question": "g036",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.F, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::f-effect-of-the-embedding-model-and-corrective-rounds::0"
+    },
+    {
+      "question": "g037",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.F, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::f-effect-of-the-embedding-model-and-corrective-rounds::0"
+    },
+    {
+      "question": "g038",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.F, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::f-effect-of-the-embedding-model-and-corrective-rounds::0"
+    },
+    {
+      "question": "g039",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.E, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::e-corrective-agentic-loop-and-self-critique-gate::0"
+    },
+    {
+      "question": "g040",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.E, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::e-corrective-agentic-loop-and-self-critique-gate::0"
+    },
+    {
+      "question": "g041",
+      "arxiv_id": "2607.24663",
+      "where": "sec III.F, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.24663::f-effect-of-the-embedding-model-and-corrective-rounds::0"
+    },
+    {
+      "question": "g042",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.1 footnote 2, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-1-evoembedding::0"
+    },
+    {
+      "question": "g043",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.1 Latent Memory Queue, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-1-evoembedding::0"
+    },
+    {
+      "question": "g044",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.2 Training and Optimization, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-2-training-and-optimization::0"
+    },
+    {
+      "question": "g045",
+      "arxiv_id": "2606.21649",
+      "where": "sec 1 Introduction, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::1-introduction::1"
+    },
+    {
+      "question": "g046",
+      "arxiv_id": "2606.21649",
+      "where": "sec 3.3 Stage2 Dynamic QA Generation, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::3-3-construction-of-evotrain-180k::0"
+    },
+    {
+      "question": "g047",
+      "arxiv_id": "2606.21649",
+      "where": "sec 1 Introduction, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::1-introduction::0"
+    },
+    {
+      "question": "g048",
+      "arxiv_id": "2606.21649",
+      "where": "sec 1 Introduction, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2606.21649::1-introduction::1"
     }
   ],
   "summary": {
-    "total_quotes": 31,
+    "total_quotes": 46,
     "papers_missing": 0,
-    "stage_a_passed": 31,
-    "stage_b_passed": 31,
+    "stage_a_passed": 46,
+    "stage_b_passed": 46,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
