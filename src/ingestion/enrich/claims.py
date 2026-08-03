@@ -66,7 +66,9 @@ def _build_claims(raw_claims: list[dict], arxiv_id: str) -> tuple[tuple[Extracte
 
     claims = tuple(
         ExtractedClaim(
-            claim_hash=hashlib.sha256(normalize(c["text"]).encode()).hexdigest(),
+            # arxiv_id in the hash input: identical wording in two papers must not
+            # collide on the claims primary key (the second would silently vanish).
+            claim_hash=hashlib.sha256(f"{arxiv_id}:{normalize(c['text'])}".encode()).hexdigest(),
             arxiv_id=arxiv_id,
             claim_text=c["text"],
             section_title=c["section_title"],

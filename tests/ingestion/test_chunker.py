@@ -253,3 +253,29 @@ class TestSettingsAdoptions:
 
         with pytest.raises(ValueError, match="postgresql"):
             PostgresSettings(dsn="mysql://nope")
+
+
+class TestDuplicateSectionTitles:
+    def test_two_sections_with_same_title_get_distinct_chunk_ids(self):
+        first = PaperSection(title="Answer", text=_words(150), level=1)
+        second = PaperSection(title="Answer", text=_words(200, prefix="other"), level=1)
+        content = _pdf_content((first, second))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        ids = [c.chunk_id for c in chunks]
+        assert len(ids) == len(set(ids))
+        assert ids[0] == "2501.00001::answer::0"
+        assert ids[1] == "2501.00001::answer-2::0"
+
+    def test_second_duplicate_section_splits_keep_consistent_suffix(self):
+        first = PaperSection(title="Answer", text=_words(150), level=1)
+        second = PaperSection(title="Answer", text=_words(900, prefix="other"), level=1)
+        content = _pdf_content((first, second))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        ids = [c.chunk_id for c in chunks]
+        assert len(ids) == len(set(ids))
+        assert "2501.00001::answer-2::0" in ids
+        assert "2501.00001::answer-2::1" in ids

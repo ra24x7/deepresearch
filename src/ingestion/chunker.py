@@ -10,6 +10,7 @@ def chunk_paper(metadata: ArxivMetadata, pdf_content: PdfContent, settings: Chun
     sections = pdf_content.sections or (PaperSection(title="Full Text", text=pdf_content.raw_text, level=1),)
 
     chunks: tuple[Chunk, ...] = ()
+    slug_counts: dict[str, int] = {}
     pending_text = ""
     pending_titles: tuple[str, ...] = ()
 
@@ -22,23 +23,35 @@ def chunk_paper(metadata: ArxivMetadata, pdf_content: PdfContent, settings: Chun
             continue
 
         section_title = " + ".join(titles)
-        chunks += _process_section(text, section_title, metadata.arxiv_id, settings)
+        slug = _unique_slug(section_title, slug_counts)
+        chunks += _process_section(text, section_title, slug, metadata.arxiv_id, settings)
         pending_text, pending_titles = "", ()
 
     if pending_text:
-        chunks = _merge_trailing(chunks, pending_text, pending_titles, metadata.arxiv_id, settings)
+        chunks = _merge_trailing(chunks, pending_text, pending_titles, slug_counts, metadata.arxiv_id, settings)
 
     return list(chunks)
 
 
-def _process_section(text: str, section_title: str, arxiv_id: str, settings: ChunkingSettings) -> tuple[Chunk, ...]:
+def _unique_slug(section_title: str, slug_counts: dict[str, int]) -> str:
+    # Real papers repeat section titles (e.g. per-figure "Answer" blocks); the
+    # slug is part of the chunk_id primary key, so repeats must be suffixed.
+    base = _SLUG_NON_ALNUM.sub("-", section_title.lower()).strip("-")
+    occurrence = slug_counts.get(base, 0) + 1
+    slug_counts[base] = occurrence
+    return base if occurrence == 1 else f"{base}-{occurrence}"
+
+
+def _process_section(
+    text: str, section_title: str, slug: str, arxiv_id: str, settings: ChunkingSettings
+) -> tuple[Chunk, ...]:
     if len(text.split()) <= settings.max_words:
-        return (_make_chunk(arxiv_id, section_title, 0, text),)
-    return _split_large_section(text, section_title, arxiv_id, settings)
+        return (_make_chunk(arxiv_id, section_title, slug, 0, text),)
+    return _split_large_section(text, section_title, slug, arxiv_id, settings)
 
 
 def _split_large_section(
-    text: str, section_title: str, arxiv_id: str, settings: ChunkingSettings, first_part_index: int = 0
+    text: str, section_title: str, slug: str, arxiv_id: str, settings: ChunkingSettings, first_part_index: int = 0
 ) -> tuple[Chunk, ...]:
     words = text.split()
     step = settings.split_size - settings.overlap
@@ -49,7 +62,7 @@ def _split_large_section(
     while start < len(words):
         end = min(start + settings.split_size, len(words))
         part_text = " ".join(words[start:end])
-        parts += (_make_chunk(arxiv_id, section_title, part_index, part_text),)
+        parts += (_make_chunk(arxiv_id, section_title, slug, part_index, part_text),)
         if end >= len(words):
             break
         start += step
@@ -62,33 +75,31 @@ def _merge_trailing(
     chunks: tuple[Chunk, ...],
     pending_text: str,
     pending_titles: tuple[str, ...],
+    slug_counts: dict[str, int],
     arxiv_id: str,
     settings: ChunkingSettings,
 ) -> tuple[Chunk, ...]:
     if not chunks:
         section_title = " + ".join(pending_titles)
-        return _process_section(pending_text, section_title, arxiv_id, settings)
+        slug = _unique_slug(section_title, slug_counts)
+        return _process_section(pending_text, section_title, slug, arxiv_id, settings)
 
     last = chunks[-1]
+    last_slug = last.chunk_id.split("::")[1]
     merged_text = f"{last.text} {pending_text}".strip()
     if len(merged_text.split()) > settings.max_words:
-        tail = _split_large_section(merged_text, last.section_title, arxiv_id, settings, last.part_index)
+        tail = _split_large_section(merged_text, last.section_title, last_slug, arxiv_id, settings, last.part_index)
         return chunks[:-1] + tail
-    merged = _make_chunk(arxiv_id, last.section_title, last.part_index, merged_text)
+    merged = _make_chunk(arxiv_id, last.section_title, last_slug, last.part_index, merged_text)
     return chunks[:-1] + (merged,)
 
 
-def _make_chunk(arxiv_id: str, section_title: str, part_index: int, text: str) -> Chunk:
-    chunk_id = f"{arxiv_id}::{_slugify(section_title)}::{part_index}"
+def _make_chunk(arxiv_id: str, section_title: str, slug: str, part_index: int, text: str) -> Chunk:
     return Chunk(
-        chunk_id=chunk_id,
+        chunk_id=f"{arxiv_id}::{slug}::{part_index}",
         arxiv_id=arxiv_id,
         text=text,
         section_title=section_title,
         part_index=part_index,
         word_count=len(text.split()),
     )
-
-
-def _slugify(title: str) -> str:
-    return _SLUG_NON_ALNUM.sub("-", title.lower()).strip("-")

@@ -13,7 +13,9 @@ from functools import partial
 from pathlib import Path
 
 import boto3
+from botocore.config import Config
 from dotenv import load_dotenv
+from sqlalchemy import func
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
@@ -59,6 +61,7 @@ def persist(session, result, metadata, sections, chunks) -> tuple[int, int, int]
             new_claims += 1
 
     all_entities = merge_entities(result.entities, metadata, sections)
+    normalized_chunks = {chunk.chunk_id: normalize(chunk.text) for chunk in chunks}
     new_links = 0
     for entity in all_entities:
         if session.get(Entity, entity.entity_key) is None:
@@ -72,16 +75,20 @@ def persist(session, result, metadata, sections, chunks) -> tuple[int, int, int]
             session.flush()
         for chunk in chunks:
             link_key = (entity.entity_key, chunk.arxiv_id, chunk.chunk_id)
-            if entity.entity_key in normalize(chunk.text) and session.get(EntityLink, link_key) is None:
+            if entity.entity_key in normalized_chunks[chunk.chunk_id] and session.get(EntityLink, link_key) is None:
                 session.add(EntityLink(entity_key=entity.entity_key, arxiv_id=chunk.arxiv_id, chunk_id=chunk.chunk_id))
                 new_links += 1
     return new_claims, len(all_entities), new_links
 
 
 def refresh_link_counts(session) -> None:
+    counts = dict(
+        session.query(EntityLink.entity_key, func.count(func.distinct(EntityLink.arxiv_id)))
+        .group_by(EntityLink.entity_key)
+        .all()
+    )
     for entity in session.query(Entity).all():
-        papers = {link.arxiv_id for link in session.query(EntityLink).filter_by(entity_key=entity.entity_key)}
-        entity.link_count = len(papers)
+        entity.link_count = counts.get(entity.entity_key, 0)
 
 
 def write_spotcheck(session) -> int:
@@ -106,7 +113,11 @@ def main(arxiv_ids: list[str]) -> int:
     load_dotenv()
     bedrock = BedrockSettings()
     enrichment = EnrichmentSettings()
-    client = boto3.client("bedrock-runtime", region_name=bedrock.region)
+    client = boto3.client(
+        "bedrock-runtime",
+        region_name=bedrock.region,
+        config=Config(read_timeout=enrichment.timeout_seconds, connect_timeout=enrichment.timeout_seconds),
+    )
     llm = partial(invoke_json, client=client, settings=enrichment)
 
     session_factory = get_session_factory(get_engine(PostgresSettings()))

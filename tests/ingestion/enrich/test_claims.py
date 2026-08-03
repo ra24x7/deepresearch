@@ -145,3 +145,13 @@ class TestPromptConstruction:
 
         assert "A Great Paper" in llm.last_prompt
         assert "An abstract." in llm.last_prompt
+
+
+class TestClaimHashPaperScoping:
+    def test_identical_claim_text_in_different_papers_gets_different_hashes(self):
+        data = {"claims": [_claim("This paper proposes a novel method.")] * 5, "entities": []}
+
+        result_a = extract_claims_and_entities(_metadata("2501.00001"), [], _stub_llm(data), SETTINGS)
+        result_b = extract_claims_and_entities(_metadata("2501.00002"), [], _stub_llm(data), SETTINGS)
+
+        assert result_a.claims[0].claim_hash != result_b.claims[0].claim_hash

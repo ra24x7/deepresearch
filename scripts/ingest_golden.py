@@ -12,22 +12,23 @@ from pathlib import Path
 
 from config import ArxivSettings, ChunkingSettings, ParserSettings, PostgresSettings
 from db.models import Chunk as ChunkRow
-from db.models import Paper
+from db.models import EntityLink, Paper
 from db.session import get_engine, get_session_factory
-from ingestion.arxiv_client import fetch_by_ids
+from ingestion.arxiv_client import download_pdf, fetch_by_ids
 from ingestion.chunker import chunk_paper
 from ingestion.parser import parse_pdf
 
 
-def find_pdf(arxiv_id: str, papers_dir: Path) -> Path:
-    matches = sorted(papers_dir.glob(f"{arxiv_id}.pdf")) + sorted(papers_dir.glob(f"{arxiv_id}v*.pdf"))
-    if not matches:
-        raise FileNotFoundError(f"no local PDF for {arxiv_id} in {papers_dir}")
-    return matches[-1]
+def find_or_download_pdf(metadata, papers_dir: Path, settings: ArxivSettings) -> Path:
+    matches = sorted(papers_dir.glob(f"{metadata.arxiv_id}.pdf")) + sorted(papers_dir.glob(f"{metadata.arxiv_id}v*.pdf"))
+    if matches:
+        return matches[-1]
+    return download_pdf(metadata, papers_dir, settings)
 
 
 def ingest(arxiv_ids: list[str], corpus: str, papers_dir: Path) -> None:
-    metadata_list = fetch_by_ids(arxiv_ids, ArxivSettings())
+    arxiv_settings = ArxivSettings()
+    metadata_list = fetch_by_ids(arxiv_ids, arxiv_settings)
     parser_settings = ParserSettings()
     chunking_settings = ChunkingSettings()
     session_factory = get_session_factory(get_engine(PostgresSettings()))
@@ -35,10 +36,13 @@ def ingest(arxiv_ids: list[str], corpus: str, papers_dir: Path) -> None:
     all_chunks = []
     with session_factory() as session:
         for metadata in metadata_list:
-            content = parse_pdf(find_pdf(metadata.arxiv_id, papers_dir), parser_settings)
+            content = parse_pdf(find_or_download_pdf(metadata, papers_dir, arxiv_settings), parser_settings)
             chunks = chunk_paper(metadata, content, chunking_settings)
             all_chunks.extend(chunks)
 
+            # Re-ingest drops the paper's entity links (they reference chunk ids);
+            # they are rebuilt by the enrichment pass, not here.
+            session.query(EntityLink).filter_by(arxiv_id=metadata.arxiv_id).delete()
             session.query(ChunkRow).filter_by(arxiv_id=metadata.arxiv_id).delete()
             session.query(Paper).filter_by(arxiv_id=metadata.arxiv_id).delete()
             session.flush()
