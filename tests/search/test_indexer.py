@@ -198,3 +198,16 @@ class TestIndexEntities:
         action = client.bulk.call_args.kwargs["body"][0]
         assert action["index"]["_id"] == "model-x"
         assert action["index"]["_index"] == entities_index_name("corpusA")
+
+
+class TestFailureReporting:
+    def test_on_error_receives_failed_doc_id_and_exception(self):
+        client = MagicMock()
+        client.bulk.side_effect = RuntimeError("mapping rejected")
+        seen = []
+
+        indexed, failed = index_entities(client, "corpusA", [_entity("model-x")], on_error=lambda i, e: seen.append((i, str(e))))
+
+        assert (indexed, failed) == (0, 1)
+        assert seen[0][0] == "model-x"
+        assert "mapping rejected" in seen[0][1]
