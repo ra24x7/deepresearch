@@ -309,13 +309,203 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.24663::f-a-troubleshooting-oriented-knowledge-graph::0"
+    },
+    {
+      "question": "g034",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.3 Evaluation Metrics",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g034",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.2 Backbones and Baselines",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g035",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.2 Backbones and Baselines",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g036",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.1 Datasets",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g037",
+      "arxiv_id": "2607.27055",
+      "where": "sec 3.4 Optimization Objective",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-4-optimization-objective::0"
+    },
+    {
+      "question": "g038",
+      "arxiv_id": "2607.27055",
+      "where": "sec 3.4 Optimization Objective",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-4-optimization-objective::0"
+    },
+    {
+      "question": "g039",
+      "arxiv_id": "2607.27055",
+      "where": "sec 2.2 Future as Privileged Information",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::2-2-future-as-privileged-information::0"
+    },
+    {
+      "question": "g040",
+      "arxiv_id": "2607.27055",
+      "where": "sec 3.1 Dual-Mask Teacher and Student",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-1-dual-mask-teacher-and-student::0"
+    },
+    {
+      "question": "g041",
+      "arxiv_id": "2607.27055",
+      "where": "sec 3.1 Dual-Mask Teacher and Student",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-1-dual-mask-teacher-and-student::0"
+    },
+    {
+      "question": "g042",
+      "arxiv_id": "2607.27055",
+      "where": "sec 4.1.1 Datasets",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::4-1-experimental-setup::0"
+    },
+    {
+      "question": "g043",
+      "arxiv_id": "2607.27055",
+      "where": "sec 4.1.1 Datasets",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::4-1-experimental-setup::0"
+    },
+    {
+      "question": "g044",
+      "arxiv_id": "2607.27055",
+      "where": "sec 4.2 Overall Performance",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::4-2-overall-performance::0"
+    },
+    {
+      "question": "g045",
+      "arxiv_id": "2607.27055",
+      "where": "sec 4.2 Overall Performance",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::4-2-overall-performance::0"
+    },
+    {
+      "question": "g046",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.1 Datasets",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g046",
+      "arxiv_id": "2607.27055",
+      "where": "sec 4.1.1 Datasets",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::4-1-experimental-setup::0"
+    },
+    {
+      "question": "g047",
+      "arxiv_id": "2607.27055",
+      "where": "sec 3.2 Gated Privileged Distillation",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-2-gated-privileged-distillation::0"
+    },
+    {
+      "question": "g047",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.2 Backbones and Baselines",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
+    },
+    {
+      "question": "g048",
+      "arxiv_id": "2607.27055",
+      "where": "sec 2.2 Future as Privileged Information",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::2-2-future-as-privileged-information::0"
+    },
+    {
+      "question": "g048",
+      "arxiv_id": "2607.27002",
+      "where": "sec 4.1.3 Evaluation Metrics",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::4-experiments-4-1-experimental-settings::0"
     }
   ],
   "summary": {
-    "total_quotes": 31,
+    "total_quotes": 50,
     "papers_missing": 0,
-    "stage_a_passed": 31,
-    "stage_b_passed": 31,
+    "stage_a_passed": 50,
+    "stage_b_passed": 50,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
