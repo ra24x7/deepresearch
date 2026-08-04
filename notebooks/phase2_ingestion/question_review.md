@@ -3,9 +3,9 @@
 For each: does the question have a single defensible answer, is the quote genuinely
 the evidence for it, and is the reference answer correct?
 
-To accept one: delete its `"status": "draft_unverified"` field in
-`data/golden_dataset.jsonl`. To reject: delete the whole line. Tell me about
-anything that needs rewording rather than accepting/rejecting.
+Easiest way to respond: read through and tell me the IDs that are wrong —
+I will apply accepts and rejects in one pass. Flag anything that needs rewording
+rather than accepting it, so the same flaw does not repeat in later batches.
 
 ## 2606.21649
 
@@ -50,7 +50,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** By how many percentage points does EvoEmbedding's margin over Qwen3-Embedding-8B exceed its margin over KaLM-Embedding-Gemma3-12B?
 
-> by +6.4% and Qwen3-Embedding-8B
+> It surpasses generalist KaLM-Embedding-Gemma3-12B (Zhao et al., 2025) by +6.4% and Qwen3-Embedding-8B (Zhang et al., 2025) by +11.1%.
 >
 > — 2606.21649, sec 1 Introduction, p2
 
@@ -74,7 +74,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** Which two techniques address varying context lengths in training, and what failure do they avert?
 
-> we propose the memory queue and segment-batching techniques. These techniques successfully prevent representation collapse
+> These techniques successfully prevent representation collapse and improve training efficiency by 3.8 × without curriculum learning
 >
 > — 2606.21649, sec 1 Introduction, p2
 
@@ -86,7 +86,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** Relative to its longest training window, how much longer are the contexts EvoEmbedding can handle at inference?
 
-> effectively handling 128K contexts
+> effectively handling 128K contexts (10 × its maximum training window, and >100 × its average sample length of 1.2K)
 >
 > — 2606.21649, sec 1 Introduction, p2
 
@@ -252,7 +252,7 @@ anything that needs rewording rather than accepting/rejecting.
 >
 > — 2607.26429, sec 4 Experiment setting, p5
 
-> reflecting regional news outlet volume within a 48 h window
+> an article corpus ( N = 385) reflecting regional news outlet volume within a 48 h window
 >
 > — 2607.26832, sec 3.1 Evaluation, p6
 
@@ -298,7 +298,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** How much faster is candidate generation in the reduced subspace than at full dimensionality, and what latency does each incur?
 
-> whereas the MRL 128d subspace reduces latency to 0 . 069 ± 0 . 019 ms-a 79% compute reduction
+> Full 768d space incurs 0 . 337 ± 0 . 024 ms latency per 100 articles, whereas the MRL 128d subspace reduces latency to 0 . 069 ± 0 . 019 ms-a 79% compute reduction (4.85-fold speed
 >
 > — 2607.26832, sec 3.2 Computational efficiency, p6
 
@@ -334,7 +334,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** Across how many article pairs was approximation quality assessed, and what mean absolute error resulted?
 
-> Approximation quality was evaluated via cosine similarity deviations across all 73,920 article pairs.
+> Approximation quality was evaluated via cosine similarity deviations across all 73,920 article pairs. The mean absolute error (MAE) of 0 . 036 ± 0 . 022 confirms 96.4% structural retention
 >
 > — 2607.26832, sec 3.2, p6
 
@@ -358,7 +358,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** Does truncating the news embeddings to a 128-dimensional subspace discard most of the semantic variance?
 
-> over 95% of semantic variance is preserved
+> confirms that at 𝑚 = 128 dimensions, over 95% of semantic variance is preserved
 >
 > — 2607.26832, sec 3.1 Spectral analysis, p6
 
@@ -382,7 +382,7 @@ anything that needs rewording rather than accepting/rejecting.
 
 **Q.** Between the full and reduced representation spaces in Kairos, by what factor does the dimensionality shrink?
 
-> in the MRL subspace and
+> denote feature space dimension with 𝑑 = 128 in the MRL subspace and 𝑑 = 768 in full space
 >
 > — 2607.26832, sec 2.3 Computational effort, p4
 
