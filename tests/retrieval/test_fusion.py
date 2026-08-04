@@ -126,3 +126,27 @@ def test_rrf_contribution_uses_one_based_rank_offset_by_k():
 
     assert fused[0].score == 1.0 / 61
     assert fused[1].score == 1.0 / 62
+
+
+class TestClaimsChannelReachesOutput:
+    def test_a_claim_survives_the_default_gate(self):
+        # claim_hash and chunk_id are different id spaces, so a claim can never
+        # merge with a chunk hit — it must pass the gate on its own or be lost.
+        chunk = RetrievalHit(
+            doc_id="2602.03442::intro::0", arxiv_id="2602.03442", channel="dense_chunks", score=0.9, text="chunk"
+        )
+        claim = RetrievalHit(doc_id="deadbeef", arxiv_id="2602.03442", channel="dense_claims", score=0.95, text="claim")
+
+        out = fuse({"dense_chunks": [chunk], "dense_claims": [claim]})
+
+        assert {h.doc_id for h in out} == {"2602.03442::intro::0", "deadbeef"}
+
+    def test_lexical_only_docs_are_still_dropped(self):
+        lexical = RetrievalHit(doc_id="only-bm25", arxiv_id="2602.03442", channel="bm25", score=9.9, text="t")
+        semantic = RetrievalHit(
+            doc_id="both", arxiv_id="2602.03442", channel="dense_chunks", score=0.5, text="t"
+        )
+
+        out = fuse({"bm25": [lexical, semantic], "dense_chunks": [semantic]})
+
+        assert {h.doc_id for h in out} == {"both"}

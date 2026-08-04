@@ -5,13 +5,16 @@ def fuse(
     hits_by_channel: dict[str, list[RetrievalHit]],
     weights: dict[str, float] | None = None,
     k: int = 60,
-    gate_channels: tuple[str, ...] = ("dense_chunks",),
+    gate_channels: tuple[str, ...] = ("dense_chunks", "dense_claims"),
     top_k: int = 10,
 ) -> list[FusedHit]:
     """Reciprocal-rank fusion behind a semantic gate.
 
     Lexical and entity channels may reorder candidates but may never introduce one
-    that no gate channel found (doc/architecture.md, Stage 4).
+    that no gate channel found (doc/architecture.md, Stage 4). Both dense channels
+    gate: the rule targets lexical matches, and claims are embedding-retrieved.
+    Claims also key on claim_hash rather than chunk_id, so excluding them from the
+    gate would silently discard the whole channel rather than merely down-rank it.
     """
     channel_weights = weights or {}
     gate = set(gate_channels)
