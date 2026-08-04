@@ -50,12 +50,13 @@ def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session,
     chunks = chunk_paper(metadata, content, settings.chunking)
 
     # Re-ingest drops the paper's entity links (they reference chunk ids);
-    # they are rebuilt by the enrichment pass, not here.
+    # they are rebuilt by the enrichment pass, not here. The Paper row is
+    # updated rather than replaced: claims reference it, and deleting it would
+    # discard LLM output that cost money to produce.
     session.query(EntityLink).filter_by(arxiv_id=arxiv_id).delete()
     session.query(ChunkRow).filter_by(arxiv_id=arxiv_id).delete()
-    session.query(Paper).filter_by(arxiv_id=arxiv_id).delete()
     session.flush()
-    session.add(
+    session.merge(
         Paper(
             arxiv_id=metadata.arxiv_id,
             title=metadata.title,

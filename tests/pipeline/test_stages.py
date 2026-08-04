@@ -307,3 +307,23 @@ class TestIndexEntitiesForCorpus:
 
         assert result == {"entities_indexed": 0, "failed": 0}
         client.bulk.assert_not_called()
+
+
+class TestReingestPreservesEnrichment:
+    def test_reingesting_an_enriched_paper_keeps_its_claims(self, session, mocker, tmp_path):
+        # claims carry a foreign key to papers; replacing the row would either
+        # violate it or discard LLM output that cost money.
+        mocker.patch("pipeline.stages.fetch_by_ids", return_value=[_metadata()])
+        mocker.patch("pipeline.stages.parse_pdf", return_value=_pdf_content())
+        mocker.patch("pipeline.stages._find_or_download_pdf", return_value=tmp_path / "p.pdf")
+        settings = PipelineSettings(
+            arxiv=ArxivSettings(), parser=ParserSettings(), chunking=ChunkingSettings(), enrichment=EnrichmentSettings()
+        )
+
+        parse_and_chunk_paper("2501.00001", "evalv1", tmp_path, session, settings)
+        session.add(Claim(claim_hash="h1", arxiv_id="2501.00001", claim_text="a claim", section_title="Intro"))
+        session.commit()
+
+        parse_and_chunk_paper("2501.00001", "evalv1", tmp_path, session, settings)
+
+        assert session.query(Claim).filter_by(arxiv_id="2501.00001").count() == 1
