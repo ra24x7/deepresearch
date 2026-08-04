@@ -9,8 +9,9 @@ from ingestion.parser import _map_sections, _page_count, _validate_page_count, p
 SETTINGS = ParserSettings(max_pages=50)
 
 
-def _elem(label: str, text: str) -> SimpleNamespace:
-    return SimpleNamespace(label=label, text=text)
+def _elem(label: str, text: str, page: int | None = 1) -> SimpleNamespace:
+    prov = [SimpleNamespace(page_no=page)] if page is not None else []
+    return SimpleNamespace(label=label, text=text, prov=prov)
 
 
 def _stub_doc(elements: list[SimpleNamespace]) -> SimpleNamespace:
@@ -170,3 +171,38 @@ class TestNulByteSanitisation:
         sections = _map_sections(doc)
 
         assert sections[0].title == "Title"
+
+
+class TestPageProvenance:
+    def test_section_records_first_and_last_page_of_its_elements(self):
+        doc = _stub_doc(
+            [
+                _elem("section_header", "Method", page=3),
+                _elem("text", "body on page three", page=3),
+                _elem("text", "body continues on page four", page=4),
+            ]
+        )
+
+        sections = _map_sections(doc)
+
+        assert (sections[0].page_start, sections[0].page_end) == (3, 4)
+
+    def test_pages_are_none_when_docling_supplies_no_provenance(self):
+        doc = _stub_doc([_elem("section_header", "Method", page=None), _elem("text", "body", page=None)])
+
+        sections = _map_sections(doc)
+
+        assert sections[0].page_start is None and sections[0].page_end is None
+
+    def test_deferred_caption_still_contributes_its_page(self):
+        doc = _stub_doc(
+            [
+                _elem("section_header", "Results", page=5),
+                _elem("text", "body text here", page=5),
+                _elem("caption", "Figure 2: a caption on page seven", page=7),
+            ]
+        )
+
+        sections = _map_sections(doc)
+
+        assert (sections[0].page_start, sections[0].page_end) == (5, 7)

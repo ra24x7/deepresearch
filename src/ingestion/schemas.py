@@ -21,6 +21,8 @@ class PaperSection(BaseModel):
     title: str
     text: str
     level: int = 1
+    page_start: int | None = None
+    page_end: int | None = None
 
 
 class PdfContent(BaseModel):
@@ -40,3 +42,5 @@ class Chunk(BaseModel):
     section_title: str
     part_index: int
     word_count: int
+    page_start: int | None = None
+    page_end: int | None = None

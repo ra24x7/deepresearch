@@ -77,6 +77,8 @@ def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session,
             section_title=c.section_title,
             part_index=c.part_index,
             word_count=c.word_count,
+            page_start=c.page_start,
+            page_end=c.page_end,
             text=c.text,
         )
         for c in chunks

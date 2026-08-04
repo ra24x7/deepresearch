@@ -279,3 +279,31 @@ class TestDuplicateSectionTitles:
         assert len(ids) == len(set(ids))
         assert "2501.00001::answer-2::0" in ids
         assert "2501.00001::answer-2::1" in ids
+
+
+class TestPagePropagation:
+    def test_chunk_inherits_its_section_page_range(self):
+        section = PaperSection(title="Method", text=_words(200), level=1, page_start=4, page_end=5)
+        content = _pdf_content((section,))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        assert (chunks[0].page_start, chunks[0].page_end) == (4, 5)
+
+    def test_split_parts_all_carry_the_section_range(self):
+        section = PaperSection(title="Method", text=_words(900), level=1, page_start=2, page_end=4)
+        content = _pdf_content((section,))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        assert len(chunks) > 1
+        assert all((c.page_start, c.page_end) == (2, 4) for c in chunks)
+
+    def test_merged_sections_span_the_union_of_their_pages(self):
+        small = PaperSection(title="Intro", text=_words(50), level=1, page_start=1, page_end=1)
+        normal = PaperSection(title="Method", text=_words(200), level=1, page_start=2, page_end=3)
+        content = _pdf_content((small, normal))
+
+        chunks = chunk_paper(_metadata(), content, SETTINGS)
+
+        assert (chunks[0].page_start, chunks[0].page_end) == (1, 3)

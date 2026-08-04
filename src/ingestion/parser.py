@@ -66,32 +66,53 @@ def _sanitize(text: str) -> str:
     return text.replace("\x00", "")
 
 
+def _element_pages(element) -> tuple[int, ...]:
+    # Docling records which page each element came from; without it an evidence
+    # citation's page number can only be guessed.
+    prov = getattr(element, "prov", None) or ()
+    return tuple(p.page_no for p in prov if getattr(p, "page_no", None) is not None)
+
+
 def _map_sections(doc) -> tuple[PaperSection, ...]:
     sections: tuple[PaperSection, ...] = ()
     current_title = _FALLBACK_TITLE
     current_lines: tuple[str, ...] = ()
     current_captions: tuple[str, ...] = ()
+    current_pages: tuple[int, ...] = ()
 
     for element in doc.texts:
         text = _sanitize((getattr(element, "text", "") or "").strip())
         if not text:
             continue
         label = getattr(element, "label", None)
+        pages = _element_pages(element)
         if label in _SECTION_LABELS:
-            sections = _flush_section(sections, current_title, current_lines + current_captions)
+            sections = _flush_section(sections, current_title, current_lines + current_captions, current_pages)
             current_title, current_lines, current_captions = text, (), ()
+            current_pages = pages
             continue
         # Figure/table captions sit mid-paragraph in layout order and split
         # running sentences; defer them to the end of their section.
         if label == _CAPTION_LABEL:
             current_captions += (text,)
+            current_pages += pages
             continue
         current_lines += (text,)
+        current_pages += pages
 
-    return _flush_section(sections, current_title, current_lines + current_captions)
+    return _flush_section(sections, current_title, current_lines + current_captions, current_pages)
 
 
-def _flush_section(sections: tuple[PaperSection, ...], title: str, lines: tuple[str, ...]) -> tuple[PaperSection, ...]:
+def _flush_section(
+    sections: tuple[PaperSection, ...], title: str, lines: tuple[str, ...], pages: tuple[int, ...]
+) -> tuple[PaperSection, ...]:
     if not lines:
         return sections
-    return sections + (PaperSection(title=title, text="\n".join(lines), level=1),)
+    section = PaperSection(
+        title=title,
+        text="\n".join(lines),
+        level=1,
+        page_start=min(pages) if pages else None,
+        page_end=max(pages) if pages else None,
+    )
+    return sections + (section,)

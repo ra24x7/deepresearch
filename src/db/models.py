@@ -28,6 +28,8 @@ class Chunk(Base):
     section_title = Column(String, nullable=False)
     part_index = Column(Integer, nullable=False)
     word_count = Column(Integer, nullable=False)
+    page_start = Column(Integer, nullable=True)
+    page_end = Column(Integer, nullable=True)
     text = Column(Text, nullable=False)
 
 
