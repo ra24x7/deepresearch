@@ -97,8 +97,14 @@ this (2026-08-04):
   changes, which a pinned id list would not.
 
 - [ ] Golden set grown to ~150 questions, stratified (adds `negation` and
-      `definitional` to the existing types); 15 drafted 2026-08-04 awaiting
-      user verification
+      `definitional` to the existing types). **Author: the user.** 30
+      LLM-drafted questions were written and then deleted on 2026-08-04 —
+      questions drafted by a model from quotable spans systematically select
+      for extractable facts, which is the construct-validity risk, and
+      human-authored questions remove it at the source rather than
+      mitigating it. Budget 3–5 questions per paper (never more: 18 from one
+      paper are not 18 independent samples) across ~28 papers, drawn from
+      the ~48 corpus papers that carry no questions yet.
 - [ ] Router: computable → SQL | semantic | entity-anchored | out-of-domain
 - [ ] Fan-out: BM25 + dense (chunks), dense (claims), entity channel with
       IDF-style damping; over-fetch max(4×top_k, 60)
