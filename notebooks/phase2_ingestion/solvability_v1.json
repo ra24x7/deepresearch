@@ -459,13 +459,193 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2606.21649::1-introduction::1"
+    },
+    {
+      "question": "g049",
+      "arxiv_id": "2607.26832",
+      "where": "sec 3.2 Computational efficiency, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::3-2-computational-efficiency-and-approximation-quality::0"
+    },
+    {
+      "question": "g050",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2 Proposed approach, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g051",
+      "arxiv_id": "2607.26832",
+      "where": "sec 4.1 Numerical resilience, p7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::3-3-reproducibility-4-1-numerical-resilience-and-algorithmic-stability::0"
+    },
+    {
+      "question": "g052",
+      "arxiv_id": "2607.26832",
+      "where": "sec 3.2, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::3-2-computational-efficiency-and-approximation-quality::0"
+    },
+    {
+      "question": "g053",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2 Proposed approach, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g054",
+      "arxiv_id": "2607.26832",
+      "where": "sec 3.1 Spectral analysis, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::3-evaluation-3-1-spectral-analysis-and-information-preservation::0"
+    },
+    {
+      "question": "g055",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g056",
+      "arxiv_id": "2607.26429",
+      "where": "sec 4 Experiment setting, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::4-experiment-experiment-setting::0"
+    },
+    {
+      "question": "g057",
+      "arxiv_id": "2607.26429",
+      "where": "sec 4 Experiment setting, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::4-experiment-experiment-setting::0"
+    },
+    {
+      "question": "g058",
+      "arxiv_id": "2607.26429",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::full-text-nmkfr-a-robust-framework-for-time-aware-cold-start-recommendation-abstract::0"
+    },
+    {
+      "question": "g059",
+      "arxiv_id": "2607.26429",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::full-text-nmkfr-a-robust-framework-for-time-aware-cold-start-recommendation-abstract::0"
+    },
+    {
+      "question": "g060",
+      "arxiv_id": "2607.26429",
+      "where": "sec 4 Experiment setting, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::4-experiment-experiment-setting::0"
+    },
+    {
+      "question": "g060",
+      "arxiv_id": "2607.26832",
+      "where": "sec 3.1 Evaluation, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::3-evaluation-3-1-spectral-analysis-and-information-preservation::0"
+    },
+    {
+      "question": "g061",
+      "arxiv_id": "2607.26429",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::full-text-nmkfr-a-robust-framework-for-time-aware-cold-start-recommendation-abstract::0"
+    },
+    {
+      "question": "g061",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2 Proposed approach, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g062",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g062",
+      "arxiv_id": "2607.26429",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::full-text-nmkfr-a-robust-framework-for-time-aware-cold-start-recommendation-abstract::0"
+    },
+    {
+      "question": "g063",
+      "arxiv_id": "2607.26832",
+      "where": "sec 2.3 Computational effort, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::2-3-computational-effort-and-complexity-2-4-matryoshka-representation-learning::0"
     }
   ],
   "summary": {
-    "total_quotes": 46,
+    "total_quotes": 64,
     "papers_missing": 0,
-    "stage_a_passed": 46,
-    "stage_b_passed": 46,
+    "stage_a_passed": 64,
+    "stage_b_passed": 64,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
