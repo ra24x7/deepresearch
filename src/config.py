@@ -75,6 +75,17 @@ class EmbeddingSettings(FrozenSettings):
     max_retries: int = 6
 
 
+class RerankSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="RERANK__")
+
+    provider: str = "cohere_bedrock"
+    model_id: str = "cohere.rerank-v3-5:0"
+    # Rerank is not offered in ap-south-1, so it runs cross-region from the rest.
+    region: str = "eu-central-1"
+    max_documents: int = 100
+    max_retries: int = 6
+
+
 class EnrichmentSettings(FrozenSettings):
     model_config = SettingsConfigDict(env_prefix="ENRICHMENT__")
 
