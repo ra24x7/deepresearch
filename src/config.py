@@ -75,6 +75,17 @@ class EmbeddingSettings(FrozenSettings):
     max_retries: int = 6
 
 
+class RetrievalSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="RETRIEVAL__")
+
+    top_k: int = 10
+    # Coarse retrieval over-fetches because the reranker can only reorder what
+    # stage one found; a missed chunk is unrecoverable downstream.
+    over_fetch_multiplier: int = 4
+    min_candidates: int = 60
+    entity_damping: float = 1.0
+
+
 class RerankSettings(FrozenSettings):
     model_config = SettingsConfigDict(env_prefix="RERANK__")
 

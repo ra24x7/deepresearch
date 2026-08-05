@@ -97,3 +97,13 @@ class TestEntitiesMapping:
         assert props["link_count"] == {"type": "integer"}
         assert props["linked_arxiv_ids"] == {"type": "keyword"}
         assert props["linked_chunk_ids"] == {"type": "keyword"}
+
+
+class TestPageFieldsAreIndexable:
+    def test_chunks_mapping_carries_page_range_fields(self):
+        props = build_chunks_mapping(1024)["mappings"]["properties"]
+
+        # dynamic:strict means an unmapped field is rejected outright, so a
+        # citable page number has to be declared here or it can never be indexed.
+        assert props["page_start"] == {"type": "integer"}
+        assert props["page_end"] == {"type": "integer"}

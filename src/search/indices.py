@@ -30,6 +30,8 @@ def build_chunks_mapping(dimension: int) -> dict:
                 "text": {"type": "text"},
                 "part_index": {"type": "integer"},
                 "word_count": {"type": "integer"},
+                "page_start": {"type": "integer"},
+                "page_end": {"type": "integer"},
                 "embedding": _knn_vector_field(dimension),
             },
         },
