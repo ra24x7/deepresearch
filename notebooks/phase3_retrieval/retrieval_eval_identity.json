@@ -1,13 +1,13 @@
 {
   "summary": {
     "questions_scored": 29,
-    "reranker": "cohere.rerank-v3-5:0",
+    "reranker": "identity",
     "k": 10,
     "over_fetch": 60,
     "reachable_rate": 1.0,
     "fused": {
-      "recall": 0.9770114942528736,
-      "ndcg": 0.9014704759157207
+      "recall": 0.9655172413793104,
+      "ndcg": 0.750680670923656
     },
     "per_channel": {
       "bm25": {
@@ -16,7 +16,7 @@
       },
       "dense_chunks": {
         "recall": 0.8563218390804598,
-        "ndcg": 0.6796201359197928
+        "ndcg": 0.6841349550084638
       },
       "dense_claims": {
         "recall": 0.0,
@@ -38,7 +38,7 @@
       },
       "multi_paper": {
         "n": 2,
-        "recall": 0.6666666666666666
+        "recall": 0.5
       }
     },
     "unreachable_questions": [],
@@ -52,7 +52,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.5,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -187,7 +187,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -268,7 +268,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.3562071871080222,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -295,7 +295,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.38685280723454163,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -322,7 +322,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.5,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -349,7 +349,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.3333333333333333,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -376,7 +376,7 @@
       "relevant_chunks": 2,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.6934264036172708,
+      "fused_ndcg": 0.8065735963827293,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -403,7 +403,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.6309297535714575,
+      "fused_ndcg": 0.5,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -456,8 +456,8 @@
       "route": "entity_anchored",
       "relevant_chunks": 3,
       "reachable": true,
-      "fused_recall": 1.0,
-      "fused_ndcg": 0.9674679834891693,
+      "fused_recall": 0.6666666666666666,
+      "fused_ndcg": 0.37590633587120725,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -484,7 +484,7 @@
       "relevant_chunks": 3,
       "reachable": true,
       "fused_recall": 0.3333333333333333,
-      "fused_ndcg": 0.20210734650054757,
+      "fused_ndcg": 0.46927872602275644,
       "per_channel": {
         "bm25": {
           "recall": 0.3333333333333333,
@@ -511,7 +511,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.3333333333333333,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -619,7 +619,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.31546487678572877,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -789,7 +789,7 @@
         },
         "dense_chunks": {
           "recall": 1.0,
-          "ndcg": 0.5
+          "ndcg": 0.6309297535714575
         },
         "dense_claims": {
           "recall": 0.0,
@@ -808,7 +808,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.38685280723454163,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
