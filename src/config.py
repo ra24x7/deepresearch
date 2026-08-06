@@ -84,6 +84,10 @@ class RetrievalSettings(FrozenSettings):
     over_fetch_multiplier: int = 4
     min_candidates: int = 60
     entity_damping: float = 1.0
+    # Measured on the golden set: 0.1 beats disabling the channel (0.966 vs
+    # 0.931 recall@10) while 0.25+ destroys it. Entity matches break ties among
+    # candidates the semantic channels already found; they do not get a vote.
+    entity_weight: float = 0.1
 
 
 class RerankSettings(FrozenSettings):

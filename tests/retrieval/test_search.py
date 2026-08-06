@@ -107,3 +107,17 @@ class TestResults:
 
         assert result.hits == ()
         reranker.rerank.assert_not_called()
+
+
+class TestChannelWeights:
+    def test_configured_weights_reach_fusion(self, channels, mocker):
+        spy = mocker.patch("retrieval.search.fuse", return_value=[])
+        settings = RetrievalSettings(top_k=3, entity_weight=0.1)
+
+        search("how does it work?", "evalv1", MagicMock(), PROVIDER, IdentityReranker(), settings)
+
+        assert spy.call_args.kwargs["weights"]["entities"] == 0.1
+
+    def test_entity_channel_is_a_tiebreaker_not_a_vote_by_default(self):
+        # measured: at weight 1.0 fused recall@10 falls 0.966 -> 0.902
+        assert RetrievalSettings().entity_weight < 0.25

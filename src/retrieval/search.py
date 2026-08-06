@@ -53,7 +53,8 @@ def search(
         "entities": search_entities(search_client, corpus, query, size, settings.entity_damping),
     }
 
-    fused = fuse(hits_by_channel, top_k=size)
+    weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": settings.entity_weight}
+    fused = fuse(hits_by_channel, weights=weights, top_k=size)
     hits = reranker.rerank(query, fused, settings.top_k) if fused else []
 
     return SearchResult(
