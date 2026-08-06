@@ -11,6 +11,12 @@ from retrieval.schemas import FusedHit
 _API_VERSION = 2
 
 
+def _as_document(hit: FusedHit) -> str:
+    # The heading often carries terms the body omits — withholding it costs the
+    # reranker the strongest anchor a chunk has.
+    return f"{hit.section_title}\n{hit.text}" if hit.section_title else hit.text
+
+
 class CohereBedrockReranker:
     """Cohere Rerank on Bedrock. Runs in its own region — rerank is not offered
     everywhere the chat and embedding models are."""
@@ -30,7 +36,7 @@ class CohereBedrockReranker:
         candidates = hits[: self._settings.max_documents]
         payload = {
             "query": query,
-            "documents": [h.text for h in candidates],
+            "documents": [_as_document(h) for h in candidates],
             "top_n": min(top_n, len(candidates)),
             "api_version": _API_VERSION,
         }

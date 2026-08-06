@@ -112,3 +112,30 @@ class TestFactory:
     def test_unknown_provider_raises(self):
         with pytest.raises(UnknownRerankerError):
             build_reranker(RerankSettings(provider="nope"))
+
+
+class TestSectionTitleContext:
+    def test_section_title_is_sent_with_the_chunk_text(self):
+        # a chunk's own section heading often carries the terms the body omits:
+        # "F. A troubleshooting-oriented knowledge graph" anchors a chunk whose
+        # text says only "The graph contains 96,517 nodes...".
+        client = MagicMock()
+        client.invoke_model.return_value = _response([{"index": 0, "relevance_score": 0.9}])
+        hit = FusedHit(
+            doc_id="a", arxiv_id="x", score=1.0, text="The graph contains 96,517 nodes.",
+            channels=("dense_chunks",), section_title="F. A troubleshooting-oriented knowledge graph",
+        )
+
+        CohereBedrockReranker(client, SETTINGS).rerank("q", [hit], top_n=1)
+
+        document = json.loads(client.invoke_model.call_args[1]["body"])["documents"][0]
+        assert "troubleshooting-oriented knowledge graph" in document
+        assert "96,517" in document
+
+    def test_a_hit_without_a_section_title_sends_text_alone(self):
+        client = MagicMock()
+        client.invoke_model.return_value = _response([{"index": 0, "relevance_score": 0.9}])
+
+        CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0, "bare text")], top_n=1)
+
+        assert json.loads(client.invoke_model.call_args[1]["body"])["documents"] == ["bare text"]
