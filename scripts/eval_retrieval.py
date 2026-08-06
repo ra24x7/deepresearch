@@ -21,9 +21,9 @@ from opensearchpy import OpenSearch
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from config import BedrockSettings, EmbeddingSettings, PostgresSettings, RerankSettings, RetrievalSettings
-from db.models import Chunk
+from db.models import Chunk, Claim
 from db.session import get_engine, get_session_factory
-from evals.retrieval_eval import relevant_chunk_ids, score_question
+from evals.retrieval_eval import relevant_chunk_ids, relevant_claim_hashes, score_question
 from ingestion.embeddings.factory import build_provider
 from retrieval.channels.bm25 import search_bm25
 from retrieval.channels.dense import search_dense_chunks, search_dense_claims
@@ -70,15 +70,25 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
         chunks_by_paper: dict[str, list[tuple[str, str]]] = defaultdict(list)
         for chunk in session.query(Chunk).all():
             chunks_by_paper[chunk.arxiv_id].append((chunk.chunk_id, chunk.text))
+        claims_by_paper: dict[str, list[tuple[str, str]]] = defaultdict(list)
+        for claim in session.query(Claim).all():
+            claims_by_paper[claim.arxiv_id].append((claim.claim_hash, claim.claim_text))
 
     size = max(settings.over_fetch_multiplier * k, settings.min_candidates)
     records, unreachable, no_relevant = [], [], []
 
     for q in answerable:
         relevant: set[str] = set()
+        claim_relevant: set[str] = set()
         for ev in q["evidence"]:
             if ev.get("quote"):
                 relevant |= relevant_chunk_ids(ev["quote"], chunks_by_paper.get(ev["arxiv_id"], []))
+                claim_relevant |= relevant_claim_hashes(
+                    ev["quote"], q.get("reference_answer", ""), claims_by_paper.get(ev["arxiv_id"], [])
+                )
+        # Claims are scored separately, not merged into the chunk relevance set:
+        # retrieving the chunk already answers the question, so counting an
+        # unfound claim as a miss would punish 25 questions to measure 4.
         if not relevant:
             no_relevant.append(q["id"])
             continue
@@ -104,6 +114,8 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
                 "type": q["type"],
                 "route": route_query(query),
                 "relevant_chunks": len(relevant),
+                "relevant_claims": len(claim_relevant),
+                "claim_found": bool(claim_relevant & {h.doc_id for h in hits_by_channel["dense_claims"][:k]}),
                 "reachable": scored.reachable,
                 "fused_recall": scored.fused.recall,
                 "fused_ndcg": scored.fused.ndcg,
@@ -135,6 +147,8 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
             }
             for t in sorted({r["type"] for r in records})
         },
+        "questions_with_a_relevant_claim": len([r for r in records if r["relevant_claims"]]),
+        "claims_channel_found_it": len([r for r in records if r["claim_found"]]),
         "unreachable_questions": unreachable,
         "questions_without_relevant_chunk": no_relevant,
     }
@@ -146,8 +160,16 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
     print(f"{'channel':<14}{'recall@k':>10}{'ndcg@k':>10}")
     for c in channels:
         s = summary["per_channel"][c]
+        if c == "dense_claims":
+            # scores against chunk relevance by construction cannot apply: this
+            # channel returns claim_hash ids. See the claims line below.
+            print(f"{c:<14}{'n/a':>10}{'n/a':>10}")
+            continue
         print(f"{c:<14}{fmt(s['recall']):>10}{fmt(s['ndcg']):>10}")
     print(f"{'FUSED':<14}{fmt(summary['fused']['recall']):>10}{fmt(summary['fused']['ndcg']):>10}")
+    with_claim = summary["questions_with_a_relevant_claim"]
+    print(f"claims channel: surfaced the relevant claim on {summary['claims_channel_found_it']} "
+          f"of the {with_claim} questions that have one")
     print(f"\nreachable before rerank: {fmt(summary['reachable_rate'])}  (ceiling reranking cannot raise)")
     print("by type:", {t: f"{v['n']}q {fmt(v['recall'])}" for t, v in summary["by_type"].items()})
     if unreachable:

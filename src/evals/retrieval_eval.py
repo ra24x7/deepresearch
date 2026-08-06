@@ -9,8 +9,11 @@ moment chunking changes.
 import math
 from typing import NamedTuple
 
+from rapidfuzz import fuzz
+
 from evals.solvability import quote_in_text
 from retrieval.schemas import FusedHit, RetrievalHit
+from textnorm import normalize
 
 
 class ChannelScore(NamedTuple):
@@ -27,6 +30,23 @@ class QuestionScore(NamedTuple):
 
 def relevant_chunk_ids(quote: str, chunks: list[tuple[str, str]]) -> set[str]:
     return {chunk_id for chunk_id, text in chunks if quote_in_text(quote, text).found}
+
+
+# A claim is a distilled statement, not a passage: it earns relevance by
+# carrying the fact asked for, not by discussing the same subject.
+_CLAIM_MATCH_THRESHOLD = 80
+
+
+def relevant_claim_hashes(
+    quote: str, answer: str, claims: list[tuple[str, str]], threshold: int = _CLAIM_MATCH_THRESHOLD
+) -> set[str]:
+    targets = [normalize(t) for t in (quote, answer) if t]
+    relevant = set()
+    for claim_hash, claim_text in claims:
+        normalized = normalize(claim_text)
+        if any(fuzz.token_set_ratio(target, normalized) >= threshold for target in targets):
+            relevant.add(claim_hash)
+    return relevant
 
 
 def recall_at_k(ranked_ids: list[str], relevant: set[str], k: int) -> float | None:

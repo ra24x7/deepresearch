@@ -6,6 +6,7 @@ from evals.retrieval_eval import (
     ndcg_at_k,
     recall_at_k,
     relevant_chunk_ids,
+    relevant_claim_hashes,
     score_question,
 )
 from retrieval.schemas import FusedHit, RetrievalHit
@@ -99,3 +100,45 @@ class TestChannelScore:
         score = ChannelScore(recall=0.5, ndcg=0.25, retrieved=4)
 
         assert (score.recall, score.ndcg, score.retrieved) == (0.5, 0.25, 4)
+
+
+class TestRelevantClaims:
+    def test_a_claim_stating_the_answer_is_relevant(self):
+        claims = [
+            ("h1", "The graph contains 96,517 nodes and 84,222 edges across 14 types."),
+            ("h2", "The system uses a LangGraph state machine for orchestration."),
+        ]
+
+        ids = relevant_claim_hashes(
+            quote="The graph contains 96,517 nodes and 84,222 edges across 14 types",
+            answer="96,517 nodes and 84,222 edges",
+            claims=claims,
+        )
+
+        assert ids == {"h1"}
+
+    def test_a_paraphrased_claim_still_counts(self):
+        claims = [("h1", "Its knowledge graph holds 96,517 nodes and 84,222 edges.")]
+
+        ids = relevant_claim_hashes(
+            quote="The graph contains 96,517 nodes and 84,222 edges across 14 types",
+            answer="96,517 nodes and 84,222 edges",
+            claims=claims,
+        )
+
+        assert ids == {"h1"}
+
+    def test_a_topically_similar_claim_without_the_fact_is_not_relevant(self):
+        # the channel earns its place by carrying answers, not by being on-topic
+        claims = [("h1", "The knowledge graph supports entity lookups and path traversals.")]
+
+        ids = relevant_claim_hashes(
+            quote="The graph contains 96,517 nodes and 84,222 edges across 14 types",
+            answer="96,517 nodes and 84,222 edges",
+            claims=claims,
+        )
+
+        assert ids == set()
+
+    def test_no_claims_yields_an_empty_set(self):
+        assert relevant_claim_hashes(quote="q", answer="a", claims=[]) == set()
