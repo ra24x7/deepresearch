@@ -6,8 +6,8 @@
     "over_fetch": 60,
     "reachable_rate": 1.0,
     "fused": {
-      "recall": 0.9310344827586207,
-      "ndcg": 0.7450574348229272
+      "recall": 0.9022988505747126,
+      "ndcg": 0.7399844689940986
     },
     "per_channel": {
       "bm25": {
@@ -23,14 +23,14 @@
         "ndcg": 0.0
       },
       "entities": {
-        "recall": 0.0,
-        "ndcg": 0.0
+        "recall": 0.39080459770114945,
+        "ndcg": 0.17576331810194937
       }
     },
     "by_type": {
       "entity_anchored": {
         "n": 3,
-        "recall": 1.0
+        "recall": 0.8333333333333334
       },
       "factual_single": {
         "n": 24,
@@ -38,7 +38,7 @@
       },
       "multi_paper": {
         "n": 2,
-        "recall": 0.5
+        "recall": 0.3333333333333333
       }
     },
     "unreachable_questions": [],
@@ -52,7 +52,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 0.43067655807339306,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -94,8 +94,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
         }
       }
     },
@@ -121,8 +121,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
         }
       }
     },
@@ -148,8 +148,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.31546487678572877
         }
       }
     },
@@ -160,7 +160,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -175,8 +175,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
         }
       }
     },
@@ -229,8 +229,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
         }
       }
     },
@@ -268,7 +268,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3562071871080222,
+      "fused_ndcg": 0.3333333333333333,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -295,7 +295,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 0.3010299956639812,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -321,8 +321,8 @@
       "route": "semantic",
       "relevant_chunks": 1,
       "reachable": true,
-      "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -348,8 +348,8 @@
       "route": "entity_anchored",
       "relevant_chunks": 1,
       "reachable": true,
-      "fused_recall": 0.0,
-      "fused_ndcg": 0.0,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -375,8 +375,8 @@
       "route": "entity_anchored",
       "relevant_chunks": 2,
       "reachable": true,
-      "fused_recall": 1.0,
-      "fused_ndcg": 0.6240505200038379,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.6131471927654584,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -403,7 +403,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -430,7 +430,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.6309297535714575,
+      "fused_ndcg": 0.43067655807339306,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -456,8 +456,8 @@
       "route": "entity_anchored",
       "relevant_chunks": 3,
       "reachable": true,
-      "fused_recall": 0.6666666666666666,
-      "fused_ndcg": 0.40179981797758046,
+      "fused_recall": 0.3333333333333333,
+      "fused_ndcg": 0.2960819109658652,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -484,7 +484,7 @@
       "relevant_chunks": 3,
       "reachable": true,
       "fused_recall": 0.3333333333333333,
-      "fused_ndcg": 0.2960819109658652,
+      "fused_ndcg": 0.46927872602275644,
       "per_channel": {
         "bm25": {
           "recall": 0.3333333333333333,
@@ -499,8 +499,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 0.3333333333333333,
+          "ndcg": 0.18154179253735267
         }
       }
     },
@@ -511,7 +511,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3333333333333333,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -526,8 +526,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 1.0
         }
       }
     },
@@ -580,8 +580,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.3010299956639812
         }
       }
     },
@@ -619,7 +619,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3333333333333333,
+      "fused_ndcg": 0.43067655807339306,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -634,8 +634,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
         }
       }
     },
@@ -661,8 +661,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.5
         }
       }
     },
@@ -688,8 +688,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
         }
       }
     },
@@ -715,8 +715,8 @@
           "ndcg": 0.0
         },
         "entities": {
-          "recall": 0.0,
-          "ndcg": 0.0
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
         }
       }
     },

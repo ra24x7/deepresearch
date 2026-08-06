@@ -1,32 +1,44 @@
 import math
+import re
 from typing import Any
 
 from retrieval.schemas import RetrievalHit
 from search.indices import entities_index_name
 from textnorm import normalize
 
+# Entity keys are short phrases, so candidates are query n-grams up to this length.
+_MAX_NGRAM = 4
+_MAX_CANDIDATES = 400
+_TRIM_EDGES = re.compile(r"^[^a-z0-9]+|[^a-z0-9]+$")
+
 
 def search_entities(client: Any, corpus: str, query: str, size: int, damping: float = 1.0) -> list[RetrievalHit]:
-    body = _build_query(normalize(query), query.strip(), size)
+    body = _build_query(_candidate_mentions(query), size)
     response = client.search(index=entities_index_name(corpus), body=body)
     hits = [hit for entity in response["hits"]["hits"] for hit in _expand(entity, damping)]
     return sorted(hits, key=lambda hit: hit.score, reverse=True)[:size]
 
 
-def _build_query(normalized: str, raw: str, size: int) -> dict:
-    # entity_key is normalized at ingest, surface_forms keep their original casing — probe both.
-    surface_terms = [normalized] if raw == normalized else [normalized, raw]
+def _candidate_mentions(query: str, max_ngram: int = _MAX_NGRAM) -> list[str]:
+    """Every n-gram of the query, as a candidate entity key.
+
+    A whole question never equals an entity key, so probing the query string
+    itself matched nothing. Entity keys are normalized at ingest, so normalized
+    n-grams compare directly.
+    """
+    tokens = [t for t in (_TRIM_EDGES.sub("", w) for w in normalize(query).split()) if t]
+    grams = {
+        " ".join(tokens[start : start + n])
+        for n in range(1, max_ngram + 1)
+        for start in range(len(tokens) - n + 1)
+    }
+    return sorted(grams)[:_MAX_CANDIDATES]
+
+
+def _build_query(candidates: list[str], size: int) -> dict:
     return {
         "size": size,
-        "query": {
-            "bool": {
-                "should": [
-                    {"term": {"entity_key": normalized}},
-                    {"terms": {"surface_forms": surface_terms}},
-                ],
-                "minimum_should_match": 1,
-            }
-        },
+        "query": {"bool": {"should": [{"terms": {"entity_key": candidates}}], "minimum_should_match": 1}},
     }
 
 

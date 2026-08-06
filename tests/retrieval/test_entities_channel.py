@@ -186,3 +186,49 @@ class TestQuery:
         search_entities(_client(response_hits), "corpusA", "bert", size=10)
 
         assert json.dumps(response_hits) == snapshot
+
+
+class TestMentionExtraction:
+    def _terms_sent(self, client) -> set[str]:
+        body = client.search.call_args[1]["body"]
+        return set(body["query"]["bool"]["should"][0]["terms"]["entity_key"])
+
+    def test_an_entity_inside_a_natural_language_question_is_probed(self):
+        # the whole query is never an entity key, so matching the query string
+        # itself found nothing for any real question.
+        client = _client([_entity_hit("a-rag", 1.0, 1, ["2602.03442::intro::0"])])
+
+        search_entities(client, "evalv1", "What three retrieval tools does the A-RAG framework provide?", 10)
+
+        assert "a-rag" in self._terms_sent(client)
+
+    def test_multi_word_entities_are_probed_as_phrases(self):
+        client = _client([])
+
+        search_entities(client, "evalv1", "how does retrieval-augmented generation handle long context?", 10)
+
+        terms = self._terms_sent(client)
+        assert "retrieval-augmented generation" in terms
+        assert "long context" in terms
+
+    def test_trailing_punctuation_is_stripped_from_candidates(self):
+        client = _client([])
+
+        search_entities(client, "evalv1", "what is BM25?", 10)
+
+        assert "bm25" in self._terms_sent(client)
+
+    def test_metric_names_with_symbols_survive(self):
+        client = _client([])
+
+        search_entities(client, "evalv1", "what NDCG@10 does it report?", 10)
+
+        assert "ndcg@10" in self._terms_sent(client)
+
+    def test_candidate_count_is_bounded_for_a_long_query(self):
+        client = _client([])
+        long_query = " ".join(f"word{i}" for i in range(80))
+
+        search_entities(client, "evalv1", long_query, 10)
+
+        assert len(self._terms_sent(client)) <= 400
