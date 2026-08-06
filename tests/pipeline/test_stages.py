@@ -19,6 +19,7 @@ from pipeline.stages import (
     enrich_paper,
     index_entities_for_corpus,
     parse_and_chunk_paper,
+    relink_entities,
 )
 
 CLAIMS_5 = [{"text": f"Claim number {i}", "section_title": "Introduction"} for i in range(5)]
@@ -327,3 +328,92 @@ class TestReingestPreservesEnrichment:
         parse_and_chunk_paper("2501.00001", "evalv1", tmp_path, session, settings)
 
         assert session.query(Claim).filter_by(arxiv_id="2501.00001").count() == 1
+
+
+class TestRelinkEntities:
+    def test_rebuilds_links_from_existing_entities_without_an_llm(self, session):
+        # re-chunking deletes links (they reference chunk ids); recreating them
+        # is containment matching, so it must not cost an LLM call.
+        _insert_paper(session, "2501.00001")
+        _insert_chunk(session, "2501.00001", "c1", "BERT improves accuracy on tasks.")
+        _insert_chunk(session, "2501.00001", "c2", "Unrelated discussion of graphs.")
+        session.add(Entity(entity_key="bert", surface_forms=["BERT"], entity_type="method"))
+        session.commit()
+
+        stats = relink_entities(session)
+
+        assert stats["links_created"] == 1
+        assert {link.chunk_id for link in session.query(EntityLink).all()} == {"c1"}
+
+    def test_is_idempotent(self, session):
+        _insert_paper(session, "2501.00001")
+        _insert_chunk(session, "2501.00001", "c1", "BERT improves accuracy on tasks.")
+        session.add(Entity(entity_key="bert", surface_forms=["BERT"], entity_type="method"))
+        session.commit()
+
+        relink_entities(session)
+        second = relink_entities(session)
+
+        assert second["links_created"] == 0
+        assert session.query(EntityLink).count() == 1
+
+    def test_link_count_is_distinct_papers_not_chunks(self, session):
+        for paper in ("2501.00001", "2501.00002"):
+            _insert_paper(session, paper)
+        _insert_chunk(session, "2501.00001", "a1", "BERT is used here.")
+        _insert_chunk(session, "2501.00001", "a2", "BERT again in another chunk.")
+        _insert_chunk(session, "2501.00002", "b1", "BERT in a second paper.")
+        session.add(Entity(entity_key="bert", surface_forms=["BERT"], entity_type="method"))
+        session.commit()
+
+        relink_entities(session)
+
+        assert session.get(Entity, "bert").link_count == 2
+
+    def test_can_be_scoped_to_named_papers(self, session):
+        for paper in ("2501.00001", "2501.00002"):
+            _insert_paper(session, paper)
+        _insert_chunk(session, "2501.00001", "a1", "BERT is used here.")
+        _insert_chunk(session, "2501.00002", "b1", "BERT in a second paper.")
+        session.add(Entity(entity_key="bert", surface_forms=["BERT"], entity_type="method"))
+        session.commit()
+
+        relink_entities(session, arxiv_ids=["2501.00001"])
+
+        assert {link.arxiv_id for link in session.query(EntityLink).all()} == {"2501.00001"}
+
+
+class TestEntityMentionMatching:
+    def test_short_keys_do_not_match_inside_longer_words(self, session):
+        # 'spl' (Success weighted by Path Length) was matching split, display,
+        # Displacement — 46 papers of pure noise.
+        _insert_paper(session, "2501.00001")
+        _insert_chunk(session, "2501.00001", "c1", "The eval set is split across 10 worlds and we display results.")
+        _insert_chunk(session, "2501.00001", "c2", "We report SPL of 0.42 on the navigation task.")
+        session.add(Entity(entity_key="spl", surface_forms=["SPL"], entity_type="metric"))
+        session.commit()
+
+        relink_entities(session)
+
+        assert {link.chunk_id for link in session.query(EntityLink).all()} == {"c2"}
+
+    def test_keys_with_punctuation_still_match(self, session):
+        _insert_paper(session, "2501.00001")
+        _insert_chunk(session, "2501.00001", "c1", "The A-RAG framework reports NDCG@10 of 0.65.")
+        session.add(Entity(entity_key="a-rag", surface_forms=["A-RAG"], entity_type="method"))
+        session.add(Entity(entity_key="ndcg@10", surface_forms=["NDCG@10"], entity_type="metric"))
+        session.commit()
+
+        relink_entities(session)
+
+        assert session.query(EntityLink).count() == 2
+
+    def test_a_key_is_not_matched_inside_a_longer_model_name(self, session):
+        _insert_paper(session, "2501.00001")
+        _insert_chunk(session, "2501.00001", "c1", "We compare against BERT4Rec on all datasets.")
+        session.add(Entity(entity_key="bert", surface_forms=["BERT"], entity_type="method"))
+        session.commit()
+
+        relink_entities(session)
+
+        assert session.query(EntityLink).count() == 0

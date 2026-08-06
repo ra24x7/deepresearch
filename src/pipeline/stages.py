@@ -5,7 +5,9 @@ LLM callable / search client, so Airflow tasks can be thin wrappers over them.
 No live API calls happen here — callers inject already-configured clients.
 """
 
+import re
 from collections.abc import Callable
+from functools import lru_cache
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
@@ -168,10 +170,57 @@ def _persist_entities_and_links(session, entities: tuple[ExtractedEntity, ...], 
             session.flush()
         for chunk in chunks:
             link_key = (entity.entity_key, chunk.arxiv_id, chunk.chunk_id)
-            if entity.entity_key in normalized_chunks[chunk.chunk_id] and session.get(EntityLink, link_key) is None:
+            if _mentions(entity.entity_key, normalized_chunks[chunk.chunk_id]) and session.get(EntityLink, link_key) is None:
                 session.add(EntityLink(entity_key=entity.entity_key, arxiv_id=chunk.arxiv_id, chunk_id=chunk.chunk_id))
                 new_links += 1
     return new_links
+
+
+@lru_cache(maxsize=4096)
+def _mention_pattern(entity_key: str) -> re.Pattern:
+    # Plain containment linked "spl" to split, display and Displacement across
+    # 46 papers. Alphanumeric neighbours disqualify a match; punctuation in the
+    # key itself (a-rag, ndcg@10) still matches, which \b alone would not.
+    return re.compile(rf"(?<![a-z0-9]){re.escape(entity_key)}(?![a-z0-9])")
+
+
+def _mentions(entity_key: str, normalized_text: str) -> bool:
+    return _mention_pattern(entity_key).search(normalized_text) is not None
+
+
+def relink_entities(session, arxiv_ids: list[str] | None = None) -> dict:
+    """Rebuild entity->chunk links by containment matching.
+
+    Re-chunking must delete links (they reference chunk ids), but recreating
+    them needs no LLM — the entities already exist, only their positions moved.
+    Without this, a re-parse silently costs the entity channel its data.
+    """
+    entities = session.query(Entity).all()
+    chunk_query = session.query(ChunkRow)
+    if arxiv_ids is not None:
+        chunk_query = chunk_query.filter(ChunkRow.arxiv_id.in_(arxiv_ids))
+    chunks = chunk_query.all()
+
+    normalized = {chunk.chunk_id: normalize(chunk.text) for chunk in chunks}
+    existing = {(link.entity_key, link.chunk_id) for link in session.query(EntityLink).all()}
+
+    created = 0
+    touched: set[str] = set()
+    for entity in entities:
+        for chunk in chunks:
+            if not _mentions(entity.entity_key, normalized[chunk.chunk_id]):
+                continue
+            touched.add(entity.entity_key)
+            if (entity.entity_key, chunk.chunk_id) in existing:
+                continue
+            session.add(
+                EntityLink(entity_key=entity.entity_key, arxiv_id=chunk.arxiv_id, chunk_id=chunk.chunk_id)
+            )
+            created += 1
+    session.flush()
+    _refresh_link_counts(session, sorted(touched))
+    session.commit()
+    return {"entities": len(entities), "chunks_scanned": len(chunks), "links_created": created}
 
 
 def _refresh_link_counts(session, entity_keys: list[str]) -> None:
