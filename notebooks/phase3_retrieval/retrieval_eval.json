@@ -1,0 +1,832 @@
+{
+  "summary": {
+    "questions_scored": 29,
+    "reranker": "identity",
+    "k": 10,
+    "over_fetch": 60,
+    "reachable_rate": 1.0,
+    "fused": {
+      "recall": 0.9310344827586207,
+      "ndcg": 0.7450574348229272
+    },
+    "per_channel": {
+      "bm25": {
+        "recall": 0.9080459770114943,
+        "ndcg": 0.7661244655659118
+      },
+      "dense_chunks": {
+        "recall": 0.8563218390804598,
+        "ndcg": 0.6841349550084638
+      },
+      "dense_claims": {
+        "recall": 0.0,
+        "ndcg": 0.0
+      },
+      "entities": {
+        "recall": 0.0,
+        "ndcg": 0.0
+      }
+    },
+    "by_type": {
+      "entity_anchored": {
+        "n": 3,
+        "recall": 1.0
+      },
+      "factual_single": {
+        "n": 24,
+        "recall": 0.9583333333333334
+      },
+      "multi_paper": {
+        "n": 2,
+        "recall": 0.5
+      }
+    },
+    "unreachable_questions": [],
+    "questions_without_relevant_chunk": []
+  },
+  "questions": [
+    {
+      "id": "g001",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g002",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g003",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g004",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g005",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g006",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g007",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g008",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g009",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.3562071871080222,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g010",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g011",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g012",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g013",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 2,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6240505200038379,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6934264036172708
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.6131471927654584
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g014",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.2890648263178879
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g015",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g016",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "relevant_chunks": 3,
+      "reachable": true,
+      "fused_recall": 0.6666666666666666,
+      "fused_ndcg": 0.40179981797758046,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.6666666666666666,
+          "ndcg": 0.5307212739772434
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g017",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "relevant_chunks": 3,
+      "reachable": true,
+      "fused_recall": 0.3333333333333333,
+      "fused_ndcg": 0.2960819109658652,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.3333333333333333,
+          "ndcg": 0.2960819109658652
+        },
+        "dense_chunks": {
+          "recall": 0.6666666666666666,
+          "ndcg": 0.49818925746641285
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g022",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.3333333333333333,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g023",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g024",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g025",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g026",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.3333333333333333,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g027",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g028",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g029",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g030",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g031",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g032",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g033",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    }
+  ]
+}
