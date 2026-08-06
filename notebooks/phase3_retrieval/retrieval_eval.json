@@ -7,7 +7,7 @@
     "reachable_rate": 1.0,
     "fused": {
       "recall": 0.9770114942528736,
-      "ndcg": 0.9014704759157207
+      "ndcg": 0.9121305096867062
     },
     "per_channel": {
       "bm25": {
@@ -16,7 +16,7 @@
       },
       "dense_chunks": {
         "recall": 0.8563218390804598,
-        "ndcg": 0.6796201359197928
+        "ndcg": 0.6841349550084638
       },
       "dense_claims": {
         "recall": 0.0,
@@ -295,7 +295,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 1.0,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -457,7 +457,7 @@
       "relevant_chunks": 3,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.9674679834891693,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -484,7 +484,7 @@
       "relevant_chunks": 3,
       "reachable": true,
       "fused_recall": 0.3333333333333333,
-      "fused_ndcg": 0.20210734650054757,
+      "fused_ndcg": 0.23463936301137822,
       "per_channel": {
         "bm25": {
           "recall": 0.3333333333333333,
@@ -789,7 +789,7 @@
         },
         "dense_chunks": {
           "recall": 1.0,
-          "ndcg": 0.5
+          "ndcg": 0.6309297535714575
         },
         "dense_claims": {
           "recall": 0.0,
@@ -808,7 +808,7 @@
       "relevant_chunks": 1,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.38685280723454163,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
