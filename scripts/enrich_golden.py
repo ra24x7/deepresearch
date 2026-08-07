@@ -62,15 +62,22 @@ def main(arxiv_ids: list[str]) -> int:
 
     ledger = CostLedger()
     processed = 0
+    failures: list[str] = []
     with session_factory() as session:
-        for arxiv_id in arxiv_ids:
-            stats = enrich_paper(arxiv_id, session, lambda p: llm(p), settings)
+        for i, arxiv_id in enumerate(arxiv_ids, 1):
+            try:
+                stats = enrich_paper(arxiv_id, session, lambda p: llm(p), settings)
+            except Exception as exc:  # noqa: BLE001 — one paper must not abort a paid batch
+                session.rollback()
+                failures.append(f"{arxiv_id}: {exc}")
+                print(f"[{i}/{len(arxiv_ids)}] {arxiv_id}: FAILED — {exc}", flush=True)
+                continue
             ledger = ledger.add(Usage(stats["input_tokens"], stats["output_tokens"]))
             processed += 1
             warn = f"  WARNING: {stats['warning']}" if stats.get("warning") else ""
             print(
-                f"{arxiv_id}: {stats['claims']} new claims, {stats['entities']} entities, "
-                f"{stats['links']} chunk links{warn}",
+                f"[{i}/{len(arxiv_ids)}] {arxiv_id}: {stats['claims']} new claims, "
+                f"{stats['entities']} entities, {stats['links']} chunk links{warn}",
                 flush=True,
             )
         n_sampled = write_spotcheck(session)
@@ -78,7 +85,9 @@ def main(arxiv_ids: list[str]) -> int:
     print(f"\ntokens: {ledger.input_tokens} in / {ledger.output_tokens} out")
     print(f"total cost: ${ledger.total_usd:.4f}  per paper: ${ledger.per_paper_usd(processed):.4f}")
     print(f"spot-check sheet ({n_sampled} claims): {SPOTCHECK_PATH}")
-    return 0
+    for line in failures:
+        print(f"  failed: {line}")
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
