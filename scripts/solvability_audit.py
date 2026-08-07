@@ -26,6 +26,31 @@ def load_answerable_entries() -> list[dict]:
     return [e for e in entries if e.get("expected_behavior") == "answer"]
 
 
+def truncated_quotes(records: list[dict], chunks_by_paper: dict) -> list[str]:
+    """Quotes cut mid-word are verbatim and still wrong.
+
+    A fixed-width mining window can end a span inside a word; the checker passes
+    it (it is a real substring) while the reader loses the fact. In g051 the cut
+    fell before 'an implementation edit', and the reference answer was written
+    from the fragment.
+    """
+    offenders = []
+    for record in records:
+        quote = record.get("quote")
+        if not quote:
+            continue
+        for _, text in chunks_by_paper.get(record["arxiv_id"], []):
+            index = text.find(quote)
+            if index < 0:
+                continue
+            after = text[index + len(quote) : index + len(quote) + 1]
+            before = text[index - 1 : index] if index else " "
+            if after.isalnum() or before.isalnum():
+                offenders.append(record["question"])
+            break
+    return sorted(set(offenders))
+
+
 def audit_all() -> dict:
     session_factory = get_session_factory(get_engine(PostgresSettings()))
     records = []
@@ -58,6 +83,11 @@ def audit_all() -> dict:
                 }
             )
 
+    quote_records = [
+        {"question": entry["id"], "arxiv_id": ev["arxiv_id"], "quote": ev.get("quote")}
+        for entry in load_answerable_entries()
+        for ev in entry.get("evidence", [])
+    ]
     audited = [r for r in records if "stage_a_found" in r]
     fuzzy_only = sorted(
         {r["question"] for r in audited if r["stage_a_match"] == "fuzzy" or r["stage_b_match"] == "fuzzy"}
@@ -70,6 +100,7 @@ def audit_all() -> dict:
             "stage_a_passed": sum(1 for r in audited if r["stage_a_found"]),
             "stage_b_passed": sum(1 for r in audited if r["stage_b_found"]),
             "fuzzy_matches_need_review": fuzzy_only,
+            "quotes_cut_mid_word": truncated_quotes(quote_records, chunks_by_paper),
         },
     }
 
@@ -91,8 +122,11 @@ def main() -> int:
     print(f"\nquotes: {s['total_quotes']}  stage A: {s['stage_a_passed']}  stage B: {s['stage_b_passed']}")
     if s["fuzzy_matches_need_review"]:
         print(f"fuzzy (needs human review): {', '.join(s['fuzzy_matches_need_review'])}")
+    if s["quotes_cut_mid_word"]:
+        print(f"QUOTES CUT MID-WORD: {', '.join(s['quotes_cut_mid_word'])}")
     all_pass = (
-        s["papers_missing"] == 0
+        not s["quotes_cut_mid_word"]
+        and s["papers_missing"] == 0
         and s["stage_a_passed"] == s["total_quotes"]
         and s["stage_b_passed"] == s["total_quotes"]
     )
