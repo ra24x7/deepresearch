@@ -329,13 +329,53 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27084::1-introduction::0"
+    },
+    {
+      "question": "g035",
+      "arxiv_id": "2607.26470",
+      "where": "sec B.3 Trace Generator Training, p12-13",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26470::b-3-trace-generator-training::0"
+    },
+    {
+      "question": "g036",
+      "arxiv_id": "2607.27080",
+      "where": "appendix E, E2 decision rule, p20",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27080::prompt-continued-e2-decision-rule::0"
+    },
+    {
+      "question": "g036",
+      "arxiv_id": "2607.27080",
+      "where": "appendix E, E2 decision rule, p20",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27080::prompt-continued-e2-decision-rule::0"
+    },
+    {
+      "question": "g037",
+      "arxiv_id": "2607.27177",
+      "where": "Appendix C.3 Effect of the Diversity Parameter in CE-CM-Div, p35-36",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27177::appendix-c-3-effect-of-the-diversity-parameter-in-ce-cm-div::0"
     }
   ],
   "summary": {
-    "total_quotes": 33,
+    "total_quotes": 37,
     "papers_missing": 0,
-    "stage_a_passed": 33,
-    "stage_b_passed": 33,
+    "stage_a_passed": 37,
+    "stage_b_passed": 37,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",

@@ -104,8 +104,14 @@ this (2026-08-04):
   deflated for returning correct content. This also survives chunking
   changes, which a pinned id list would not.
 
-- [ ] Golden set grown to ~150 questions, stratified (adds `negation` and
-      `definitional` to the existing types). **Author: the user.** 30
+- [~] Golden set grown to ~150 questions, stratified. **At 39 (2026-08-07),
+      all eight types now represented.** Drafted one at a time and approved
+      individually by the user. Two biases were being reproduced until
+      measured: evidence stopped at page 9 in papers running to 45 pages
+      (now reaches p35), and only 4 papers carried questions (now 9).
+      Computable answers are corpus-dependent and rot silently — g020 sat
+      stale at "4 papers" while the corpus grew to 54; nothing detects this
+      yet. **Author: the user.** 30
       LLM-drafted questions were written and then deleted on 2026-08-04 —
       questions drafted by a model from quotable spans systematically select
       for extractable facts, which is the construct-validity risk, and
