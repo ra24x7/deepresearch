@@ -309,13 +309,33 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.24663::f-a-troubleshooting-oriented-knowledge-graph::0"
+    },
+    {
+      "question": "g034",
+      "arxiv_id": "2607.27066",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27066::full-text-scifigalign-scoring-scientific-figures-by-fine-tuned-alignment-of-visuals-with-manuscript-evidence-abstract::0"
+    },
+    {
+      "question": "g034",
+      "arxiv_id": "2607.27084",
+      "where": "sec 1 Introduction, p1-2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27084::1-introduction::0"
     }
   ],
   "summary": {
-    "total_quotes": 31,
+    "total_quotes": 33,
     "papers_missing": 0,
-    "stage_a_passed": 31,
-    "stage_b_passed": 31,
+    "stage_a_passed": 33,
+    "stage_b_passed": 33,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
