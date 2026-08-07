@@ -819,13 +819,153 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27191::4-4-the-agents-could-not-make-good-use-of-feedback-from-ai-reviews::0"
+    },
+    {
+      "question": "g081",
+      "arxiv_id": "2607.26766",
+      "where": "abstract, p1-2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26766::full-text-mediawiki-code2code-search-neural-retrieval-for-the-semantic-discovery-of-open-source-software-entities-abstract::0"
+    },
+    {
+      "question": "g082",
+      "arxiv_id": "2607.27179",
+      "where": "sec 4.3 RQ3, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27179::4-3-rq3-the-cost-is-immediate-not-emergent::0"
+    },
+    {
+      "question": "g083",
+      "arxiv_id": "2607.27178",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27178::full-text-denseon-with-the-lateon-fully-open-dense-and-late-interaction-models-for-multilingual-long-context-and-code-search-abstract::0"
+    },
+    {
+      "question": "g084",
+      "arxiv_id": "2607.27136",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27136::full-text-kamr-grounding-generation-via-knowledge-aligned-multi-hop-retrieval-abstract::0"
+    },
+    {
+      "question": "g084",
+      "arxiv_id": "2607.26470",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26470::full-text-cmt-rag-complementary-memory-traces-for-multi-turn-multi-hop-rag-abstract::0"
+    },
+    {
+      "question": "g085",
+      "arxiv_id": "2607.27073",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27073::full-text-parameter-free-dynamic-regret-for-online-convex-optimization-under-heavy-tailed-noise-abstract::0"
+    },
+    {
+      "question": "g086",
+      "arxiv_id": "2607.26631",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26631::full-text-rag-har-towards-cost-efficient-llm-based-human-activity-recognition-for-edge-deployment::0"
+    },
+    {
+      "question": "g087",
+      "arxiv_id": "2607.26429",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::full-text-nmkfr-a-robust-framework-for-time-aware-cold-start-recommendation-abstract::0"
+    },
+    {
+      "question": "g087",
+      "arxiv_id": "2607.26832",
+      "where": "sec 1.2 Proposed approach, p2",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::1-2-proposed-approach-and-contributions::0"
+    },
+    {
+      "question": "g088",
+      "arxiv_id": "2607.27002",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::full-text-imfuse-instance-aware-multi-layer-fusion-for-llm-enhanced-sequential-recommendation-abstract::0"
+    },
+    {
+      "question": "g088",
+      "arxiv_id": "2607.27055",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::full-text-learning-from-the-future-privileged-self-distillation-for-sequential-recommendation-abstract::0"
+    },
+    {
+      "question": "g089",
+      "arxiv_id": "2607.26929",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26929::full-text-same-evidence-different-target-decoding-how-diagnostic-evidence-bears-on-causal-questions-from-language-model-states-abstract::0"
+    },
+    {
+      "question": "g089",
+      "arxiv_id": "2607.26929",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26929::full-text-same-evidence-different-target-decoding-how-diagnostic-evidence-bears-on-causal-questions-from-language-model-states-abstract::0"
+    },
+    {
+      "question": "g090",
+      "arxiv_id": "2607.27109",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27109::full-text-mmac-a-massive-multi-dimensional-benchmark-for-audio-captioning-abstract::0"
     }
   ],
   "summary": {
-    "total_quotes": 82,
+    "total_quotes": 96,
     "papers_missing": 0,
-    "stage_a_passed": 82,
-    "stage_b_passed": 82,
+    "stage_a_passed": 96,
+    "stage_b_passed": 96,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
