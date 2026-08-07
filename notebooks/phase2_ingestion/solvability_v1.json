@@ -369,13 +369,333 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27177::appendix-c-3-effect-of-the-diversity-parameter-in-ce-cm-div::0"
+    },
+    {
+      "question": "g040",
+      "arxiv_id": "2607.27083",
+      "where": "Appendix B Experimental Details, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27083::b-experimental-details::0"
+    },
+    {
+      "question": "g041",
+      "arxiv_id": "2607.27189",
+      "where": "sec 6 Limitations, p11-12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27189::6-limitations::0"
+    },
+    {
+      "question": "g042",
+      "arxiv_id": "2607.27154",
+      "where": "sec 6 Discussion, Limitations, p13-15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27154::6-discussion::0"
+    },
+    {
+      "question": "g043",
+      "arxiv_id": "2607.26977",
+      "where": "Appendix A.1 Datasheet, Intended use / Out of scope, p12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::a-dataset-construction-a-1-datasheet-licensing-and-intended-use::0"
+    },
+    {
+      "question": "g044",
+      "arxiv_id": "2607.26977",
+      "where": "Appendix F Limitations, p27",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::f-limitations::0"
+    },
+    {
+      "question": "g045",
+      "arxiv_id": "2607.26977",
+      "where": "Appendix F Limitations, p27",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::f-limitations::0"
+    },
+    {
+      "question": "g046",
+      "arxiv_id": "2607.27183",
+      "where": "sec 5.2 Overall False Negative Rate, p14-15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27183::5-2-overall-false-negative-rate::0"
+    },
+    {
+      "question": "g047",
+      "arxiv_id": "2607.27183",
+      "where": "sec 5.2 Synthetic benchmark construction, p14-15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27183::5-2-overall-false-negative-rate::0"
+    },
+    {
+      "question": "g048",
+      "arxiv_id": "2607.26952",
+      "where": "sec 7 Discussion, p9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26952::7-discussion::0"
+    },
+    {
+      "question": "g049",
+      "arxiv_id": "2607.27130",
+      "where": "sec 6 Conclusion, p12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27130::6-conclusion::0"
+    },
+    {
+      "question": "g050",
+      "arxiv_id": "2607.27130",
+      "where": "sec 4.4 Experimental Results, p8-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27130::4-4-experimental-results::0"
+    },
+    {
+      "question": "g050",
+      "arxiv_id": "2607.27130",
+      "where": "sec 4.4 Experimental Results, p8-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27130::4-4-experimental-results::0"
+    },
+    {
+      "question": "g051",
+      "arxiv_id": "2607.27146",
+      "where": "sec 4.3 Behavior Analysis, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27146::4-3-behavior-analysis::0"
+    },
+    {
+      "question": "g052",
+      "arxiv_id": "2607.26998",
+      "where": "sec Conclusion, p7-8",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26998::conclusion-references::0"
+    },
+    {
+      "question": "g053",
+      "arxiv_id": "2607.26670",
+      "where": "sec 5 Discussion, p16-17",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26670::5-discussion::0"
+    },
+    {
+      "question": "g054",
+      "arxiv_id": "2607.27022",
+      "where": "sec 4.1 Bias Association Analysis, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27022::4-1-bias-association-analysis::0"
+    },
+    {
+      "question": "g055",
+      "arxiv_id": "2607.27155",
+      "where": "sec 2.3 Computer-Use and GUI-Agent, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27155::2-3-computer-use-and-gui-agent-benchmarks::0"
+    },
+    {
+      "question": "g056",
+      "arxiv_id": "2607.26593",
+      "where": "sec 4.2 Training Process, p4-5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26593::4-2-training-process::0"
+    },
+    {
+      "question": "g057",
+      "arxiv_id": "2607.26621",
+      "where": "sec General Capability Analysis, p7-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26621::general-capability-analysis-rq4-conclusion::0"
+    },
+    {
+      "question": "g058",
+      "arxiv_id": "2607.26500",
+      "where": "sec 5.2 Overall Performance, p7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26500::5-2-overall-performance::0"
+    },
+    {
+      "question": "g059",
+      "arxiv_id": "2607.27054",
+      "where": "sec Main Results, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27054::main-results::0"
+    },
+    {
+      "question": "g060",
+      "arxiv_id": "2607.27167",
+      "where": "sec C. Evaluation Metric, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27167::c-evaluation-metric::0"
+    },
+    {
+      "question": "g061",
+      "arxiv_id": "2607.27143",
+      "where": "sec 2.3 Selective Classification, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27143::2-3-selective-classification-decision-deferral::0"
+    },
+    {
+      "question": "g062",
+      "arxiv_id": "2607.27065",
+      "where": "sec 4 Comparison using edge-deployable, p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27065::4-comparison-using-edge-deployable-baseline-detectors-5-generated-datasets::0"
+    },
+    {
+      "question": "g063",
+      "arxiv_id": "2607.27191",
+      "where": "sec 4.4, p11-12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27191::4-4-the-agents-could-not-make-good-use-of-feedback-from-ai-reviews::0"
+    },
+    {
+      "question": "g064",
+      "arxiv_id": "2607.26967",
+      "where": "sec 5 Why Does JUD Work, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26967::5-why-does-jud-work-when-does-it-fail-5-1-explicit-pair-query-reduce-extraction-burden::0"
+    },
+    {
+      "question": "g065",
+      "arxiv_id": "2607.26893",
+      "where": "sec 5.2 Overall Results (RQ1), p6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26893::5-2-overall-results-rq1::0"
+    },
+    {
+      "question": "g066",
+      "arxiv_id": "2607.26928",
+      "where": "sec End-to-End Move Control, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26928::end-to-end-move-control::0"
+    },
+    {
+      "question": "g067",
+      "arxiv_id": "2607.26981",
+      "where": "sec 4.2 Alignment Gradient, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26981::4-2-alignment-gradient::0"
+    },
+    {
+      "question": "g068",
+      "arxiv_id": "2607.27134",
+      "where": "sec 3.2 A shared model with recursive feedback, p6-7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27134::3-2-a-shared-model-with-recursive-updates::0"
+    },
+    {
+      "question": "g069",
+      "arxiv_id": "2607.27172",
+      "where": "sec 5 Deployment Lessons and Limitations, p5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27172::5-deployment-lessons-and-limitations::0"
+    },
+    {
+      "question": "g070",
+      "arxiv_id": "2607.27201",
+      "where": "sec 2.3 POMDP-based World Modeling, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27201::2-3-pomdp-based-world-modeling-3-theoretical-framework::0"
     }
   ],
   "summary": {
-    "total_quotes": 37,
+    "total_quotes": 69,
     "papers_missing": 0,
-    "stage_a_passed": 37,
-    "stage_b_passed": 37,
+    "stage_a_passed": 69,
+    "stage_b_passed": 69,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
