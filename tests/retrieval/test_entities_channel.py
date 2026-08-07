@@ -232,3 +232,23 @@ class TestMentionExtraction:
         search_entities(client, "evalv1", long_query, 10)
 
         assert len(self._terms_sent(client)) <= 400
+
+
+class TestDocumentFrequencyFilter:
+    def test_entities_above_the_frequency_ceiling_are_excluded_in_the_query(self):
+        # damping scales the score, but RRF fuses by RANK — a damped generic
+        # entity still lands at rank 0 of its channel and contributes fully.
+        # Non-discriminative entities have to be kept out, not merely scored down.
+        client = _client([])
+
+        search_entities(client, "evalv1", "what accuracy does it report?", 10, max_link_count=20)
+
+        body = client.search.call_args[1]["body"]
+        assert body["query"]["bool"]["filter"] == [{"range": {"link_count": {"lte": 20}}}]
+
+    def test_no_filter_is_applied_when_the_ceiling_is_unset(self):
+        client = _client([])
+
+        search_entities(client, "evalv1", "what accuracy does it report?", 10)
+
+        assert "filter" not in client.search.call_args[1]["body"]["query"]["bool"]

@@ -12,8 +12,15 @@ _MAX_CANDIDATES = 400
 _TRIM_EDGES = re.compile(r"^[^a-z0-9]+|[^a-z0-9]+$")
 
 
-def search_entities(client: Any, corpus: str, query: str, size: int, damping: float = 1.0) -> list[RetrievalHit]:
-    body = _build_query(_candidate_mentions(query), size)
+def search_entities(
+    client: Any,
+    corpus: str,
+    query: str,
+    size: int,
+    damping: float = 1.0,
+    max_link_count: int | None = None,
+) -> list[RetrievalHit]:
+    body = _build_query(_candidate_mentions(query), size, max_link_count)
     response = client.search(index=entities_index_name(corpus), body=body)
     hits = [hit for entity in response["hits"]["hits"] for hit in _expand(entity, damping)]
     return sorted(hits, key=lambda hit: hit.score, reverse=True)[:size]
@@ -35,11 +42,14 @@ def _candidate_mentions(query: str, max_ngram: int = _MAX_NGRAM) -> list[str]:
     return sorted(grams)[:_MAX_CANDIDATES]
 
 
-def _build_query(candidates: list[str], size: int) -> dict:
-    return {
-        "size": size,
-        "query": {"bool": {"should": [{"terms": {"entity_key": candidates}}], "minimum_should_match": 1}},
-    }
+def _build_query(candidates: list[str], size: int, max_link_count: int | None) -> dict:
+    bool_query: dict = {"should": [{"terms": {"entity_key": candidates}}], "minimum_should_match": 1}
+    if max_link_count is not None:
+        # Damping scales the score, but RRF fuses by rank: a damped generic
+        # entity still reaches rank 0 of this channel and contributes fully.
+        # An entity in most of the corpus discriminates nothing — exclude it.
+        bool_query["filter"] = [{"range": {"link_count": {"lte": max_link_count}}}]
+    return {"size": size, "query": {"bool": bool_query}}
 
 
 def _expand(entity: dict, damping: float) -> list[RetrievalHit]:

@@ -32,7 +32,8 @@ from retrieval.channels.entities import search_entities
 from retrieval.fusion import fuse
 
 REPORT_PATH = Path("notebooks/phase3_retrieval/fusion_weight_sweep.json")
-ENTITY_WEIGHTS = [0.0, 0.1, 0.25, 0.5, 1.0]
+ENTITY_WEIGHTS = [0.0, 0.1, 0.25]
+LINK_CEILINGS = [None, 30, 20, 10, 5]
 _TIMEOUT = 120
 
 
@@ -79,36 +80,42 @@ def main(k: int) -> int:
                     "bm25": search_bm25(client, "evalv1", query, size),
                     "dense_chunks": search_dense_chunks(client, "evalv1", provider, query, size),
                     "dense_claims": search_dense_claims(client, "evalv1", provider, query, size),
-                    "entities": search_entities(client, "evalv1", query, size, settings.entity_damping),
+                    **{
+                        f"entities@{ceiling}": search_entities(
+                            client, "evalv1", query, size, settings.entity_damping, ceiling
+                        )
+                        for ceiling in LINK_CEILINGS
+                    },
                 },
             )
         )
         print(f"retrieved {q['id']}", flush=True)
 
     print(f"\n{len(cached)} questions cached; sweeping without further embedding\n")
-    print(f"{'entity weight':>14}{'recall@k':>10}{'ndcg@k':>10}{'entity_anchored':>18}{'multi_paper':>13}")
+    print(f"{'link ceiling':>13}{'weight':>8}{'recall@k':>10}{'ndcg@k':>10}")
     rows = []
-    for weight in ENTITY_WEIGHTS:
+    for ceiling in LINK_CEILINGS:
+      for weight in ENTITY_WEIGHTS:
         weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": weight}
         recalls, ndcgs, by_type = [], [], defaultdict(list)
         for q, relevant, hits in cached:
-            fused = fuse(hits, weights=weights, top_k=k)
+            selected = {n: h for n, h in hits.items() if not n.startswith("entities@")}
+            selected["entities"] = hits[f"entities@{ceiling}"]
+            fused = fuse(selected, weights=weights, top_k=k)
             ranked = [h.doc_id for h in fused]
             r = recall_at_k(ranked, relevant, k)
             recalls.append(r)
             ndcgs.append(ndcg_at_k(ranked, relevant, k))
             by_type[q["type"]].append(r)
         row = {
+            "link_ceiling": ceiling,
             "entity_weight": weight,
             "recall": mean(recalls),
             "ndcg": mean(ndcgs),
             "by_type": {t: mean(v) for t, v in by_type.items()},
         }
         rows.append(row)
-        print(
-            f"{weight:>14}{fmt(row['recall']):>10}{fmt(row['ndcg']):>10}"
-            f"{fmt(row['by_type'].get('entity_anchored')):>18}{fmt(row['by_type'].get('multi_paper')):>13}"
-        )
+        print(f"{ceiling!s:>13}{weight:>8}{fmt(row['recall']):>10}{fmt(row['ndcg']):>10}")
 
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(json.dumps({"k": k, "questions": len(cached), "results": rows}, indent=2) + "\n")
