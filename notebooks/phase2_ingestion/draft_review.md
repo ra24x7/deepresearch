@@ -172,7 +172,7 @@ then the 16 routine ones.
 
 **Expected answer.** No. It was geo-blocked at the provider level from the run location, an availability constraint rather than a design choice, so the leaderboard should be read with that in mind.
 
-- [✓ ] accept
+- [✓] accept
 
 ### g045  ·  negation  ·  2607.26977
 
@@ -186,7 +186,7 @@ then the 16 routine ones.
 
 **Expected answer.** No. It is synthetic and internally consistent by construction, which is what yields a deterministic ground truth and an achievable gold answer, but it does not model real listing distributions, live availability or pricing.
 
-- [ ] accept
+- [✓] accept
 
 ### g046  ·  computable  ·  2607.27183
 
@@ -200,7 +200,7 @@ then the 16 routine ones.
 
 **Expected answer.** From 1.9942% to 0.3396% at the production operating point — roughly a 5.9x reduction, or about 1.65 percentage points.
 
-- [ ] accept
+- [✓] accept
 
 ### g050  ·  factual_single  ·  2607.27130
 
@@ -218,7 +218,7 @@ then the 16 routine ones.
 
 **Expected answer.** Subsumption: AgentMap is consistently best across all four datasets. Its margin is narrowest on equivalence accuracy, where on HeLiS-FoodOn a baseline (LLM+Neighbourhood) even scores higher.
 
-- [ ] accept
+- [✓] accept
 
 ### g052  ·  entity_anchored  ·  2607.26998
 
@@ -232,7 +232,7 @@ then the 16 routine ones.
 
 **Expected answer.** Fifteen CVE-Bench tasks and three attacker models.
 
-- [ ] accept
+- [✓] accept
 
 ### g053  ·  negation  ·  2607.26670
 
@@ -246,7 +246,7 @@ then the 16 routine ones.
 
 **Expected answer.** No. In many of the surveyed systems retrieval is a supporting component rather than the paper's main contribution.
 
-- [ ] accept
+- [✓] accept
 
 ### g054  ·  computable  ·  2607.27022
 
@@ -260,7 +260,7 @@ then the 16 routine ones.
 
 **Expected answer.** They point in opposite directions and differ in magnitude: Competence correlates positively (0.81 GDP, 0.68 disposable income, 0.61 broadband users) while Warmth correlates negatively and more weakly (-0.33, -0.31, -0.21) — a gap of roughly 1.14 on GDP.
 
-- [ ] accept
+- [✓] accept
 
 ### g057  ·  entity_anchored  ·  2607.26621
 
@@ -274,7 +274,7 @@ then the 16 routine ones.
 
 **Expected answer.** OneReason, a foundation recommendation model baseline. WhisperRec targets the limitations of explicit chain-of-thought, using MV-ACoT for diverse CoT construction and a three-stage Latent Reasoning Alignment that internalises teacher CoT into latent tokens.
 
-- [ ] accept
+- [✓] accept
 
 ### g058  ·  computable  ·  2607.26500
 
@@ -288,7 +288,7 @@ then the 16 routine ones.
 
 **Expected answer.** From 1.69% to 5.62% — smallest on Exposure Recall, largest on Watch-time Recall, a spread of 3.93 percentage points (also 4.04% Long-View, 5.54% Like).
 
-- [ ] accept
+- [✓] accept
 
 ### g059  ·  negation  ·  2607.27054
 
@@ -302,7 +302,7 @@ then the 16 routine ones.
 
 **Expected answer.** No. Feature-based methods averaged 69.72%, below the 71.45% scratch baseline; response-based methods reached 72.79%. CoCaRS averaged 84.70%.
 
-- [ ] accept
+- [✓] accept
 
 ### g060  ·  factual_single  ·  2607.27167
 
@@ -316,7 +316,7 @@ then the 16 routine ones.
 
 **Expected answer.** One of 200 instances — a 0.5% resolved rate — which is why average test pass rate is used instead as the comparison signal.
 
-- [ ] accept
+- [✓] accept
 
 ### g061  ·  definitional  ·  2607.27143
 
@@ -330,7 +330,7 @@ then the 16 routine ones.
 
 **Expected answer.** It lets a classifier abstain on uncertain predictions and delegate ambiguous cases to human experts. It originates from Chow's optimal rejection rule.
 
-- [ ] accept
+- [✓] accept
 
 ### g065  ·  negation  ·  2607.26893
 
@@ -344,7 +344,7 @@ then the 16 routine ones.
 
 **Expected answer.** No. Despite gains in action quality, thinking quality stayed limited relative to baselines — simulation depends not only on model and data scale but also on domain adaptation and objective alignment via a thinking reward.
 
-- [ ] accept
+- [✓] accept
 
 ### g066  ·  factual_single  ·  2607.26928
 
@@ -358,7 +358,7 @@ then the 16 routine ones.
 
 **Expected answer.** It matches direct supervised fine-tuning while keeping a modular, label-free inference pipeline — the model often realises the appropriate move with lexically different wording.
 
-- [ ] accept
+- [✓] accept
 
 ### g067  ·  negation  ·  2607.26981
 
@@ -372,7 +372,7 @@ then the 16 routine ones.
 
 **Expected answer.** No on both counts. It holds within three of four multi-tier providers — Mistral runs in the opposite direction — and the authors state the observational gradient is consistent with their controlled finding but does not stand alone as causal evidence.
 
-- [ ] accept
+- [✓] accept
 
 ### g069  ·  factual_single  ·  2607.27172
 
@@ -386,4 +386,5 @@ then the 16 routine ones.
 
 **Expected answer.** Carousel Coherence. High temperatures diversified intents but caused titles to drift off-topic across the carousel; temperature 1.0 was selected by sweeping on that metric.
 
-- [ ] accept
+- [✓] accept
+don
