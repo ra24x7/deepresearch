@@ -689,13 +689,123 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27201::2-3-pomdp-based-world-modeling-3-theoretical-framework::0"
+    },
+    {
+      "question": "g071",
+      "arxiv_id": "2607.27056",
+      "where": "sec 2.2 Memory Benchmarks, p2-3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27056::2-2-memory-benchmarks::0"
+    },
+    {
+      "question": "g071",
+      "arxiv_id": "2607.26520",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26520::full-text-a-graph-native-bitemporal-memory-store-for-conversational-ai-agents::0"
+    },
+    {
+      "question": "g072",
+      "arxiv_id": "2607.27081",
+      "where": "sec 3.2 Dual-Teacher Output-Probability Distillation, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27081::3-2-dual-teacher-output-probability-distillation::0"
+    },
+    {
+      "question": "g072",
+      "arxiv_id": "2607.27081",
+      "where": "sec 3.2 Dual-Teacher Output-Probability Distillation, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27081::3-2-dual-teacher-output-probability-distillation::0"
+    },
+    {
+      "question": "g073",
+      "arxiv_id": "2607.27069",
+      "where": "sec Control Aggregation, p18",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27069::control-aggregation::0"
+    },
+    {
+      "question": "g075",
+      "arxiv_id": "2607.26967",
+      "where": "sec 4.3 When Is GEN More Likely to Miss Pairs?, p4-5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26967::4-3-when-is-gen-more-likely-to-miss-pairs::0"
+    },
+    {
+      "question": "g077",
+      "arxiv_id": "2607.27066",
+      "where": "sec 3.2 Designed Annotation Rubric, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27066::3-2-designed-annotation-rubric::0"
+    },
+    {
+      "question": "g077",
+      "arxiv_id": "2607.27084",
+      "where": "sec 4.1 Alignment metrics, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27084::4-1::0"
+    },
+    {
+      "question": "g079",
+      "arxiv_id": "2607.26981",
+      "where": "sec 4.1 Main Result: Directional Bias Exists, p4-5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26981::4-1-main-result-directional-bias-exists::0"
+    },
+    {
+      "question": "g080",
+      "arxiv_id": "2607.26952",
+      "where": "abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26952::full-text-credit-cards-confusion-computation-and-consequences-what-can-we-uncover-about-language-model-reasoning-abstract::0"
+    },
+    {
+      "question": "g080",
+      "arxiv_id": "2607.27191",
+      "where": "sec 4.4, p11-12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27191::4-4-the-agents-could-not-make-good-use-of-feedback-from-ai-reviews::0"
     }
   ],
   "summary": {
-    "total_quotes": 69,
+    "total_quotes": 80,
     "papers_missing": 0,
-    "stage_a_passed": 69,
-    "stage_b_passed": 69,
+    "stage_a_passed": 80,
+    "stage_b_passed": 80,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
