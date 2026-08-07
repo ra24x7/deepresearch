@@ -959,13 +959,33 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27109::full-text-mmac-a-massive-multi-dimensional-benchmark-for-audio-captioning-abstract::0"
+    },
+    {
+      "question": "g091",
+      "arxiv_id": "2607.26720",
+      "where": "Introduction, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26720::full-text-cairec-calibrated-modality-imputation-for-incomplete-multimodal-recommendation-1-introduction::0"
+    },
+    {
+      "question": "g092",
+      "arxiv_id": "2607.27138",
+      "where": "Abstract, p1",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27138::full-text-dlam-distributional-latent-actions-with-temporal-constraints-abstract::0"
     }
   ],
   "summary": {
-    "total_quotes": 96,
+    "total_quotes": 98,
     "papers_missing": 0,
-    "stage_a_passed": 96,
-    "stage_b_passed": 96,
+    "stage_a_passed": 98,
+    "stage_b_passed": 98,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
