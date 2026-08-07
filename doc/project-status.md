@@ -3,8 +3,9 @@
 > Living document. Update at the end of every working session:
 > current phase, what moved, what's blocked, what's next.
 
-**Current phase:** 2 — Enriched Ingestion (Phase 1 substantially complete)
-**Last updated:** 2026-07-29
+**Current phase:** 3 — Staged Retrieval Engine (read path built and measured;
+exit blocked on the golden set, deliberately)
+**Last updated:** 2026-08-07
 
 ## Roadmap
 
@@ -35,14 +36,19 @@ noted above.
 
 Write-path intelligence: each paper produces four artifacts.
 
-- [~] Airflow DAG: fetch → Docling parse → enrich → index (stack up +
-      healthcheck DAG green; full ingestion DAG lands in 2.6)
+- [x] Airflow DAG: fetch → parse/chunk → enrich → embed/index → entities →
+      report, one dynamically-mapped task per paper (docling accumulates
+      memory across papers; a failed embed must not re-pay for enrichment).
+      Manual-trigger only — `schedule=None`, since every run costs money.
 - [x] Section-aware chunks (100–800-word policy; captions deferred to
       section end; 4 golden papers → 150 chunks, 100% in band, deterministic)
 - [x] Claims: LLM extracts 5–15 atomic contributions per paper (once, at ingest)
       — 45 claims over the golden papers, $0.0079/paper measured (Gate A)
 - [x] Entities: authors, method acronyms, datasets, arXiv IDs — linked to
-      chunks/papers, link counts stored for damping (177 entities, 500 links)
+      chunks/papers, link counts stored for damping (234 entities, 1,057
+      links). Linking is corpus-wide and rebuildable without an LLM
+      (`relink_entities`), which matters: re-chunking deletes links, so a
+      free re-parse would otherwise cost a paid channel its data.
 - [x] Structured metadata in Postgres (papers/chunks live; claims/entities/
       ingestion_runs tables migrated, filled by 2.4/2.6)
 - [x] Hash-based claim dedup; batch-first with per-item fallback
@@ -52,8 +58,10 @@ Write-path intelligence: each paper produces four artifacts.
 - [x] Solvability audit v1: 31/31 evidence quotes pass Stage A (parsed text)
       and Stage B (single chunk); 6 fuzzy matches pending user review;
       Stage C (live index) re-runs in 2.6. Pattern from APS-RAG (2607.24663).
-- [~] Frozen eval snapshot: `data/eval_snapshot.json` pins evalv1 (4 golden
-      + 50 distractors, 2026-07-30); distractor ingest happens with 2.5
+- [x] Frozen eval snapshot: `data/eval_snapshot.json` pins evalv1 (4 golden
+      + 50 distractors, 2026-07-30), all 54 ingested — 1,624 chunks, 1,518
+      indexed after excluding bibliographies, every chunk carrying a page
+      range read from docling provenance rather than inferred.
 
 **Exit criteria:** ~~500+ papers ingested~~ (amended 2026-08-04, see below);
 claim-extraction quality spot-checked; cost-per-paper is a tracked number ✅
@@ -105,17 +113,43 @@ this (2026-08-04):
       mitigating it. Budget 3–5 questions per paper (never more: 18 from one
       paper are not 18 independent samples) across ~28 papers, drawn from
       the ~48 corpus papers that carry no questions yet.
-- [ ] Router: computable → SQL | semantic | entity-anchored | out-of-domain
-- [ ] Fan-out: BM25 + dense (chunks), dense (claims), entity channel with
+- [x] Router: rule-based, no LLM — an LLM router costs money per query and
+      cannot be justified before evals show rules failing. `computable` still
+      falls through to semantic retrieval; the SQL path is not built.
+- [x] Fan-out: BM25 + dense (chunks), dense (claims), entity channel with
       IDF-style damping; over-fetch max(4×top_k, 60)
-- [ ] Fusion with semantic gate (boosts reorder, never introduce)
-- [ ] Cross-encoder rerank stage
+- [x] Fusion with semantic gate (boosts reorder, never introduce)
+- [x] Cross-encoder rerank: Cohere `cohere.rerank-v3-5:0` on Bedrock, behind
+      a `Reranker` protocol with a free identity implementation. Runs in
+      `eu-central-1` — rerank is not offered in `ap-south-1`.
+- [x] Retrieval eval: recall@k, NDCG@k, and reachability per channel and
+      fused (`scripts/eval_retrieval.py`)
 
 **Exit criteria:** recall@10 and NDCG measured per-retriever and fused on the
-golden set; each retriever proves added recall or is deleted (ADR either way).
-The number is evidence for a decision, not a certification — Voorhees & Buckley
-found >10% gaps that still mis-ranked systems at 50 topics, so a hard recall
-figure for a Phase 6 SLO must come from production traffic, not this set.
+golden set ✅; each retriever proves added recall or is deleted (ADR either
+way) — **blocked on the golden set, deliberately**. The number is evidence for
+a decision, not a certification — Voorhees & Buckley found >10% gaps that still
+mis-ranked systems at 50 topics, so a hard recall figure for a Phase 6 SLO must
+come from production traffic, not this set.
+
+**Measured 2026-08-07** on 29 answerable questions, k=10, over-fetch 60
+(`notebooks/phase3_retrieval/`):
+
+| channel | recall@10 | NDCG@10 |
+|---|---|---|
+| bm25 | 0.908 | 0.766 |
+| dense_chunks | 0.856 | 0.684 |
+| entities | 0.391 | 0.176 |
+| dense_claims | n/a — see below | |
+| **fused + rerank** | **0.977** | **0.912** |
+
+Reachability 1.000: every gold chunk was surfaced by some channel inside the
+over-fetch, so the ceiling reranking cannot raise is not binding.
+
+**No ADR deletes a channel yet.** At n=29 only large effects are readable. The
+reranker's +0.15 NDCG qualifies; the entity channel's contribution (+0.035
+recall at weight 0.1) does not. Deleting a retrieval channel waits for the
+larger golden set — the numbers above are for diagnosis and tuning only.
 
 ### Phase 4 — Cost-Aware Agent Orchestration
 
@@ -170,6 +204,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-07 | Phase 3 read path built and measured. Router, four channels, RRF fusion with the semantic gate, Cohere rerank (eu-central-1 — not offered in ap-south-1), orchestrator, and a retrieval eval. Fused recall@10 0.977, NDCG 0.912, reachability 1.000. Every gain traced to a measured cause: entity channel term-matched whole queries (0.000 → 0.391 once it probed n-grams), its full weight then *cost* 0.035 recall so a sweep set it to 0.1 as a tiebreaker, and the reranker's one regression (g033) turned out to be us withholding section titles from it. Claims measured separately — 4/4 where a relevant claim exists, but only 6 of 54 papers are enriched. Page provenance captured and backfilled; entity links rebuilt after a re-parse silently wiped them. |
 | 2026-08-03 | Phase 2.4–2.5: enrichment live (Gate A, $0.0079/paper), evalv1 grown to 54 papers / 1,624 chunks, embedded with Cohere Embed v4 (~$0.08) into OpenSearch — 1,518 chunks indexed after excluding bibliographies (ADR 0003). Real-vector semantic search returns correct sections. Bugs found only at scale: container OOM at 50 papers, duplicate section-title id collision, NUL bytes in one PDF. Bedrock quota discovered to be token-bound (300k/min), so embed calls now retry on throttling. |
 | 2026-07-30 | Phase 2.1–2.3: Docker stack (OpenSearch/Postgres/Airflow, lifted from predecessor + local Postgres) all healthy; fetch/parse/chunk modules TDD'd (68 tests); 4 golden papers → 150 chunks in Postgres; solvability audit v1 31/31 both stages after fixing math-tokenization matching and caption interleaving; evalv1 snapshot pinned (4+50 papers). Embeddings decided: Cohere Embed v4 on Bedrock (`global.cohere.embed-v4:0`, 1024-dim). 6 fuzzy audit matches await user review. |
 
