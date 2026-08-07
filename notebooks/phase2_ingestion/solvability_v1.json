@@ -453,12 +453,22 @@
     {
       "question": "g048",
       "arxiv_id": "2607.26952",
-      "where": "sec 7 Discussion, p9",
+      "where": "sec 6.2 Regression Results, p8-9",
       "stage_a_found": true,
       "stage_a_match": "exact",
       "stage_b_found": true,
       "stage_b_match": "exact",
-      "stage_b_chunk_id": "2607.26952::7-discussion::0"
+      "stage_b_chunk_id": "2607.26952::6-2-regression-results::0"
+    },
+    {
+      "question": "g048",
+      "arxiv_id": "2607.26952",
+      "where": "sec 6.2 Regression Results, p8-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26952::6-2-regression-results::0"
     },
     {
       "question": "g049",
@@ -609,6 +619,16 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27065::4-comparison-using-edge-deployable-baseline-detectors-5-generated-datasets::0"
+    },
+    {
+      "question": "g063",
+      "arxiv_id": "2607.27191",
+      "where": "sec 4.4, p11-12",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27191::4-4-the-agents-could-not-make-good-use-of-feedback-from-ai-reviews::0"
     },
     {
       "question": "g063",
@@ -802,10 +822,10 @@
     }
   ],
   "summary": {
-    "total_quotes": 80,
+    "total_quotes": 82,
     "papers_missing": 0,
-    "stage_a_passed": 80,
-    "stage_b_passed": 80,
+    "stage_a_passed": 82,
+    "stage_b_passed": 82,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
