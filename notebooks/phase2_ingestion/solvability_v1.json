@@ -979,13 +979,623 @@
       "stage_b_found": true,
       "stage_b_match": "exact",
       "stage_b_chunk_id": "2607.27138::full-text-dlam-distributional-latent-actions-with-temporal-constraints-abstract::0"
+    },
+    {
+      "question": "g093",
+      "arxiv_id": "2607.27177",
+      "where": "5.3.1 Experimental Setup and Evaluation, p24",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27177::5-3-1-experimental-setup-and-evaluation::0"
+    },
+    {
+      "question": "g093",
+      "arxiv_id": "2607.27177",
+      "where": "5.3.1 Experimental Setup and Evaluation, p24",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27177::5-3-1-experimental-setup-and-evaluation::0"
+    },
+    {
+      "question": "g094",
+      "arxiv_id": "2607.27177",
+      "where": "Appendix B.1 CE-CM with PDDL, p30-31",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27177::appendix-b-methods-and-baselines-implementation-details-appendix-b-1-ce-cm-with-pddl::0"
+    },
+    {
+      "question": "g095",
+      "arxiv_id": "2607.27201",
+      "where": "5.4 Target Pseudo-Agent, p16",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27201::5-4-target-pseudo-agent-2::0"
+    },
+    {
+      "question": "g096",
+      "arxiv_id": "2607.27201",
+      "where": "7.3 Scenario Study, p21",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27201::7-3-scenario-study::0"
+    },
+    {
+      "question": "g096",
+      "arxiv_id": "2607.27201",
+      "where": "7.2 Bottleneck Localization, p18-20",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27201::7-experiments-and-analysis-7-1-necessity-ladder::0"
+    },
+    {
+      "question": "g097",
+      "arxiv_id": "2607.27134",
+      "where": "Appendix A Remarks and Further Clarifications, p16-17",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27134::a-remarks-and-further-clarifications::0"
+    },
+    {
+      "question": "g098",
+      "arxiv_id": "2607.27134",
+      "where": "Appendix F Additional Experimental Results, p31-35",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27134::f-additional-experimental-results::0"
+    },
+    {
+      "question": "g099",
+      "arxiv_id": "2607.27073",
+      "where": "5 Parameter-Free Algorithm, p13-14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27073::5-parameter-free-algorithm-algorithm-2-ht-pader-parameter-free-heavy-tailed-dynamic-regret::0"
+    },
+    {
+      "question": "g100",
+      "arxiv_id": "2607.27154",
+      "where": "4.1 Datasets and Training Setup, p7-8",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27154::4-1-datasets-and-training-setup::0"
+    },
+    {
+      "question": "g101",
+      "arxiv_id": "2607.27080",
+      "where": "A.6 Canonical Label Reference, p12-13",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27080::a-6-canonical-label-reference::0"
+    },
+    {
+      "question": "g102",
+      "arxiv_id": "2607.27022",
+      "where": "A.1 34 Provincial-Level Administrative Regions of China, p10",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27022::a-1-34-provincial-level-administrative-regions-of-china-a-2-more-indicator-information::0"
+    },
+    {
+      "question": "g102",
+      "arxiv_id": "2607.27022",
+      "where": "4.1 Bias Association Analysis, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27022::4-1-bias-association-analysis::0"
+    },
+    {
+      "question": "g103",
+      "arxiv_id": "2607.27189",
+      "where": "5.1 Failure Modes of the Best-Performing Models, p9-11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27189::5-1-failure-modes-of-the-best-performing-models::0"
+    },
+    {
+      "question": "g104",
+      "arxiv_id": "2607.27189",
+      "where": "K.1 Subagent Delegation, p21-22",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27189::k-1-subagent-delegation::0"
+    },
+    {
+      "question": "g107",
+      "arxiv_id": "2607.27143",
+      "where": "4.5. Reproducibility, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27143::4-5-reproducibility::0"
+    },
+    {
+      "question": "g107",
+      "arxiv_id": "2607.27143",
+      "where": "4.4. Evaluation Metrics & Statistical Testing, p10-11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27143::4-4-evaluation-metrics-statistical-testing::0"
+    },
+    {
+      "question": "g108",
+      "arxiv_id": "2607.27189",
+      "where": "4.4 Cost Ablation Experiments, p7-8",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27189::4-4-cost-ablation-experiments::0"
+    },
+    {
+      "question": "g108",
+      "arxiv_id": "2607.27155",
+      "where": "6 Conclusion, p13",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27155::6-conclusion::0"
+    },
+    {
+      "question": "g109",
+      "arxiv_id": "2607.27083",
+      "where": "Appendix A.7 Proof of Proposition 3, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27083::a-7-proof-of-proposition-3::0"
+    },
+    {
+      "question": "g110",
+      "arxiv_id": "2607.26893",
+      "where": "Appendix D More Implementation Details, p14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26893::d-more-implementation-details::0"
+    },
+    {
+      "question": "g111",
+      "arxiv_id": "2607.26766",
+      "where": "5. Conclusions, p15-16",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26766::5-conclusions::0"
+    },
+    {
+      "question": "g112",
+      "arxiv_id": "2607.27178",
+      "where": "Appendix C.2 MeanMaxSim, p13-14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27178::c-2-meanmaxsim::0"
+    },
+    {
+      "question": "g113",
+      "arxiv_id": "2607.26670",
+      "where": "3.2 RAG-Style Literature Retrieval for Downstream Tasks, p8-11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26670::3-2-rag-style-literature-retrieval-for-downstream-tasks::1"
+    },
+    {
+      "question": "g114",
+      "arxiv_id": "2607.27069",
+      "where": "Evaluation Protocol, p10",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27069::evaluation-protocol::0"
+    },
+    {
+      "question": "g115",
+      "arxiv_id": "2607.27136",
+      "where": "C.2 Implementation, p15-16",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27136::c-2-implementation::0"
+    },
+    {
+      "question": "g116",
+      "arxiv_id": "2607.26928",
+      "where": "Automatic Move Classifier, p10",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26928::automatic-move-classifier-system::0"
+    },
+    {
+      "question": "g117",
+      "arxiv_id": "2607.27065",
+      "where": "7.2 Experiments on the industrial grip datasets, p8-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27065::7-2-experiments-on-the-industrial-grip-datasets::0"
+    },
+    {
+      "question": "g118",
+      "arxiv_id": "2607.26621",
+      "where": "Appendix D: CoT Quality Evaluation Prompt, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26621::appendix-d-cot-quality-evaluation-prompt::0"
+    },
+    {
+      "question": "g119",
+      "arxiv_id": "2607.27167",
+      "where": "B. RQ2 - Effectiveness across different difficulty levels, p7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27167::b-rq2-effectiveness-across-different-difficulty-levels::0"
+    },
+    {
+      "question": "g120",
+      "arxiv_id": "2607.26631",
+      "where": "F. Discussion, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26631::f-discussion::0"
+    },
+    {
+      "question": "g121",
+      "arxiv_id": "2607.26500",
+      "where": "Appendix B Kwai26 Dataset Construction, p10-11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26500::a-notation-b-kwai26-dataset-construction::0"
+    },
+    {
+      "question": "g122",
+      "arxiv_id": "2607.27002",
+      "where": "6 Conclusion, p9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27002::6-conclusion::0"
+    },
+    {
+      "question": "g123",
+      "arxiv_id": "2607.27179",
+      "where": "5.1. An AI teammate as a relational displacer, p6-7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27179::5-1-an-ai-teammate-as-a-relational-displacer::0"
+    },
+    {
+      "question": "g124",
+      "arxiv_id": "2607.27081",
+      "where": "4.3 Template Dependence, p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27081::4-3-template-dependence::0"
+    },
+    {
+      "question": "g125",
+      "arxiv_id": "2607.26593",
+      "where": "6 Conclusion, p8-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26593::6-conclusion::0"
+    },
+    {
+      "question": "g126",
+      "arxiv_id": "2607.27054",
+      "where": "Conclusion, p7-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27054::conclusion-references::0"
+    },
+    {
+      "question": "g127",
+      "arxiv_id": "2607.27055",
+      "where": "3.3 Momentum-Averaged Teacher, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27055::3-3-momentum-averaged-teacher::0"
+    },
+    {
+      "question": "g128",
+      "arxiv_id": "2607.26429",
+      "where": "Ablation Study (RQ2), p5-6",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26429::ablation-study-rq2::0"
+    },
+    {
+      "question": "g129",
+      "arxiv_id": "2607.26832",
+      "where": "2.2 Numerical Stability via Direct Cholesky Updates, p4",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26832::2-2-numerical-stability-via-direct-cholesky-updates::0"
+    },
+    {
+      "question": "g130",
+      "arxiv_id": "2607.26998",
+      "where": "RQ2: Does Trajectory Steering Reduce Real-Target Exploitation?, p6-7",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26998::rq2-does-trajectory-steering-reduce-real-target-exploitation::0"
+    },
+    {
+      "question": "g131",
+      "arxiv_id": "2607.27056",
+      "where": "3 Hierarchical User Understanding, p4-5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27056::abstract-2::0"
+    },
+    {
+      "question": "g132",
+      "arxiv_id": "2607.27172",
+      "where": "3.2 Closed-Weight LLMs for Head Queries, p3",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27172::3-2-closed-weight-llms-for-head-queries::0"
+    },
+    {
+      "question": "g133",
+      "arxiv_id": "2607.26977",
+      "where": "Appendix B.1 Impossible Queries, p14-15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::b-1-impossible-queries::0"
+    },
+    {
+      "question": "g134",
+      "arxiv_id": "2607.26977",
+      "where": "Appendix B.2 Conflict of Implicit Need Keywords, p15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::b-2-conflict-of-implicit-need-keywords::0"
+    },
+    {
+      "question": "g134",
+      "arxiv_id": "2607.26977",
+      "where": "3.2 Task Formulation, p4-5",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26977::3-2-task-formulation::0"
+    },
+    {
+      "question": "g135",
+      "arxiv_id": "2607.27183",
+      "where": "Appendix C.1 Binary, p33-37",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27183::c-1-binary::0"
+    },
+    {
+      "question": "g136",
+      "arxiv_id": "2607.27191",
+      "where": "Appendix B Reviews from paper authors, 8. Limitations, p26-27",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27191::8-limitations-9-overall-score::0"
+    },
+    {
+      "question": "g137",
+      "arxiv_id": "2607.26952",
+      "where": "Appendix J.3 Index Construction, p26",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26952::j-3-index-construction-j-4-retrieval-procedure::0"
+    },
+    {
+      "question": "g138",
+      "arxiv_id": "2607.26952",
+      "where": "Appendix J.3 Index Construction, p26",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26952::j-3-index-construction-j-4-retrieval-procedure::0"
+    },
+    {
+      "question": "g138",
+      "arxiv_id": "2607.26766",
+      "where": "Results, p10-14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26766::results::0"
+    },
+    {
+      "question": "g141",
+      "arxiv_id": "2607.27066",
+      "where": "Appendix B.7 Splits, Figure Types, and Context Coverage, p13",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27066::b-7-splits-figure-types-and-context-coverage::0"
+    },
+    {
+      "question": "g142",
+      "arxiv_id": "2607.27066",
+      "where": "Appendix B.8 Corpus Summary, p13-14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27066::b-8-corpus-summary-c-architecture-formalization-training-details-and-judge-protocol::0"
+    },
+    {
+      "question": "g143",
+      "arxiv_id": "2607.26981",
+      "where": "Appendix A.5 Track A: Calibration Control Items, p15-16",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26981::a-5-track-a-calibration-control-items-a-6-extended-model-results-a-7-example-model-response::0"
+    },
+    {
+      "question": "g144",
+      "arxiv_id": "2607.26981",
+      "where": "Appendix B.1 Anthropic Three-Point Gradient, p16-17",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26981::b-1-anthropic-three-point-gradient::0"
+    },
+    {
+      "question": "g145",
+      "arxiv_id": "2607.26470",
+      "where": "Appendix C.3 Stateful SSM Inference, p14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26470::c-3-stateful-ssm-inference-c-4-case-study::0"
+    },
+    {
+      "question": "g146",
+      "arxiv_id": "2607.26470",
+      "where": "Appendix C.5 Evaluation Protocol, p14-15",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26470::c-5-evaluation-protocol::0"
+    },
+    {
+      "question": "g147",
+      "arxiv_id": "2607.27084",
+      "where": "Appendix A.2 L1 Evidence Gating, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27084::a-2-l1-evidence-gating-a-3-curation-stages-s1-s5::0"
+    },
+    {
+      "question": "g148",
+      "arxiv_id": "2607.27084",
+      "where": "Appendix A.1 Five-Dimensional Rubric, p11",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27084::a-1-five-dimensional-rubric::0"
+    },
+    {
+      "question": "g148",
+      "arxiv_id": "2607.27066",
+      "where": "Appendix B.8 Corpus Summary, p13-14",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.27066::b-8-corpus-summary-c-architecture-formalization-training-details-and-judge-protocol::0"
+    },
+    {
+      "question": "g149",
+      "arxiv_id": "2607.26967",
+      "where": "8 Conclusion, p7-9",
+      "stage_a_found": true,
+      "stage_a_match": "exact",
+      "stage_b_found": true,
+      "stage_b_match": "exact",
+      "stage_b_chunk_id": "2607.26967::8-conclusion::0"
     }
   ],
   "summary": {
-    "total_quotes": 98,
+    "total_quotes": 159,
     "papers_missing": 0,
-    "stage_a_passed": 98,
-    "stage_b_passed": 98,
+    "stage_a_passed": 159,
+    "stage_b_passed": 159,
     "fuzzy_matches_need_review": [
       "g003",
       "g007",
