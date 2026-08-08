@@ -1,50 +1,66 @@
 {
   "summary": {
-    "questions_scored": 29,
-    "reranker": "identity",
+    "questions_scored": 136,
+    "reranker": "cohere.rerank-v3-5:0",
     "k": 10,
     "over_fetch": 60,
-    "reachable_rate": 1.0,
+    "reachable_rate": 0.9926470588235294,
     "fused": {
-      "recall": 0.9655172413793104,
-      "ndcg": 0.7371653571235446
+      "recall": 0.9399509803921569,
+      "ndcg": 0.817278729446033
     },
     "per_channel": {
       "bm25": {
-        "recall": 0.9080459770114943,
-        "ndcg": 0.7661244655659118
+        "recall": 0.8382352941176471,
+        "ndcg": 0.6504830440201916
       },
       "dense_chunks": {
-        "recall": 0.8563218390804598,
-        "ndcg": 0.6841349550084638
+        "recall": 0.8578431372549019,
+        "ndcg": 0.6752000643696839
       },
       "dense_claims": {
         "recall": 0.0,
         "ndcg": 0.0
       },
       "entities": {
-        "recall": 0.39080459770114945,
-        "ndcg": 0.17576331810194937
+        "recall": 0.25980392156862747,
+        "ndcg": 0.11093873973993394
       }
     },
     "by_type": {
+      "computable": {
+        "n": 22,
+        "recall": 0.9318181818181818
+      },
+      "definitional": {
+        "n": 30,
+        "recall": 0.9666666666666667
+      },
       "entity_anchored": {
-        "n": 3,
+        "n": 18,
         "recall": 1.0
       },
       "factual_single": {
-        "n": 24,
+        "n": 33,
         "recall": 1.0
       },
       "multi_paper": {
-        "n": 2,
-        "recall": 0.5
+        "n": 12,
+        "recall": 0.5694444444444444
+      },
+      "negation": {
+        "n": 21,
+        "recall": 0.9761904761904762
       }
     },
-    "questions_with_a_relevant_claim": 4,
-    "claims_channel_found_it": 4,
-    "unreachable_questions": [],
-    "questions_without_relevant_chunk": []
+    "questions_with_a_relevant_claim": 21,
+    "claims_channel_found_it": 19,
+    "unreachable_questions": [
+      "g080"
+    ],
+    "questions_without_relevant_chunk": [
+      "g038"
+    ]
   },
   "questions": [
     {
@@ -56,7 +72,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -201,7 +217,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.6309297535714575,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -288,7 +304,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3333333333333333,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -317,7 +333,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.38685280723454163,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -346,7 +362,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -375,7 +391,7 @@
       "claim_found": true,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3333333333333333,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -404,7 +420,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.8065735963827293,
+      "fused_ndcg": 0.6934264036172708,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -433,7 +449,7 @@
       "claim_found": true,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.5,
+      "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -490,8 +506,8 @@
       "relevant_claims": 0,
       "claim_found": false,
       "reachable": true,
-      "fused_recall": 0.6666666666666666,
-      "fused_ndcg": 0.37590633587120725,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 0.0,
@@ -520,7 +536,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 0.3333333333333333,
-      "fused_ndcg": 0.46927872602275644,
+      "fused_ndcg": 0.23463936301137822,
       "per_channel": {
         "bm25": {
           "recall": 0.3333333333333333,
@@ -549,7 +565,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.3333333333333333,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -665,7 +681,7 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
-      "fused_ndcg": 0.31546487678572877,
+      "fused_ndcg": 1.0,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
@@ -868,11 +884,3114 @@
       "claim_found": false,
       "reachable": true,
       "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g034",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 3,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.6666666666666666,
+      "fused_ndcg": 0.5307212739772434,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6394562303262419
+        },
+        "dense_chunks": {
+          "recall": 0.6666666666666666,
+          "ndcg": 0.34337431936037655
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g035",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g036",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g037",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g040",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g041",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g042",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g043",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g044",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g045",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g046",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        }
+      }
+    },
+    {
+      "id": "g047",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g048",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 2,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g049",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g050",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.43067655807339306,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3010299956639812
+        }
+      }
+    },
+    {
+      "id": "g051",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "id": "g052",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        }
+      }
+    },
+    {
+      "id": "g053",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g054",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g055",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        }
+      }
+    },
+    {
+      "id": "g056",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g057",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        }
+      }
+    },
+    {
+      "id": "g058",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g059",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g060",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g061",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g062",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g063",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g064",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g065",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g066",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g067",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g068",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g069",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g070",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g071",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.8315546295836225,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5912352048230277
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g072",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.38685280723454163,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g073",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g075",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g077",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6240505200038379,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.18457569677956817
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.5,
+          "ndcg": 0.2640681225725909
+        }
+      }
+    },
+    {
+      "id": "g079",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.3562071871080222,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        }
+      }
+    },
+    {
+      "id": "g080",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": false,
+      "reachable": false,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g081",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
       "fused_ndcg": 0.6309297535714575,
       "per_channel": {
         "bm25": {
           "recall": 1.0,
           "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g082",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g083",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.3010299956639812
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "id": "g084",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 2,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.23719771276929622
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.19342640361727081
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g085",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.38685280723454163,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.3010299956639812
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g086",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.38685280723454163,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g087",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.38685280723454163,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.6131471927654584
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.2640681225725909
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.5,
+          "ndcg": 0.19342640361727081
+        }
+      }
+    },
+    {
+      "id": "g088",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.6131471927654584,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.19342640361727081
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g089",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.31546487678572877
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g090",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.43067655807339306,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.31546487678572877
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.2890648263178879
+        }
+      }
+    },
+    {
+      "id": "g091",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g092",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g093",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        }
+      }
+    },
+    {
+      "id": "g094",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g095",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        }
+      }
+    },
+    {
+      "id": "g096",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 3,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5642221110316635,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.6666666666666666,
+          "ndcg": 0.3295827480202853
+        },
+        "dense_chunks": {
+          "recall": 0.6666666666666666,
+          "ndcg": 0.3228087653971817
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g097",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g098",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.8065735963827293
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g099",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        }
+      }
+    },
+    {
+      "id": "g100",
+      "type": "computable",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        }
+      }
+    },
+    {
+      "id": "g101",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g102",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.38685280723454163,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.6131471927654584
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6052602440527057
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g103",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g104",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g107",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.8175295903539445,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.3065735963827292
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.8503449055347546
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g108",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 3,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 0.3333333333333333,
+      "fused_ndcg": 0.23463936301137822,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g109",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g110",
+      "type": "computable",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g111",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        }
+      }
+    },
+    {
+      "id": "g112",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g113",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g114",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.0,
+      "fused_ndcg": 0.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g115",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.31546487678572877,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g116",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g117",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g118",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g119",
+      "type": "computable",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        }
+      }
+    },
+    {
+      "id": "g120",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.38685280723454163
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g121",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        }
+      }
+    },
+    {
+      "id": "g122",
+      "type": "negation",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.31546487678572877
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g123",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g124",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "id": "g125",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        }
+      }
+    },
+    {
+      "id": "g126",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.2890648263178879
+        }
+      }
+    },
+    {
+      "id": "g127",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g128",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3562071871080222
+        }
+      }
+    },
+    {
+      "id": "g129",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.9642630869047908
+        }
+      }
+    },
+    {
+      "id": "g130",
+      "type": "computable",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g131",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.8772153153380493
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g132",
+      "type": "factual_single",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g133",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.43067655807339306,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.2890648263178879
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g134",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.6131471927654584,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.6131471927654584
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g135",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g136",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g137",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g138",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "relevant_chunks": 2,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.8315546295836225,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6934264036172708
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.8772153153380493
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g141",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g142",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.43067655807339306
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g143",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.3333333333333333
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.3010299956639812
+        }
+      }
+    },
+    {
+      "id": "g144",
+      "type": "negation",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 1.0,
+          "ndcg": 0.31546487678572877
+        }
+      }
+    },
+    {
+      "id": "g145",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 1.0
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g146",
+      "type": "computable",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 1.0,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.5
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g147",
+      "type": "definitional",
+      "route": "semantic",
+      "relevant_chunks": 1,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.6309297535714575,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_chunks": {
+          "recall": 1.0,
+          "ndcg": 0.6309297535714575
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g148",
+      "type": "multi_paper",
+      "route": "semantic",
+      "relevant_chunks": 2,
+      "relevant_claims": 0,
+      "claim_found": false,
+      "reachable": true,
+      "fused_recall": 0.5,
+      "fused_ndcg": 0.3065735963827292,
+      "per_channel": {
+        "bm25": {
+          "recall": 0.5,
+          "ndcg": 0.23719771276929622
+        },
+        "dense_chunks": {
+          "recall": 0.5,
+          "ndcg": 0.2640681225725909
+        },
+        "dense_claims": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        },
+        "entities": {
+          "recall": 0.0,
+          "ndcg": 0.0
+        }
+      }
+    },
+    {
+      "id": "g149",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "relevant_chunks": 1,
+      "relevant_claims": 1,
+      "claim_found": true,
+      "reachable": true,
+      "fused_recall": 1.0,
+      "fused_ndcg": 0.5,
+      "per_channel": {
+        "bm25": {
+          "recall": 1.0,
+          "ndcg": 0.5
         },
         "dense_chunks": {
           "recall": 1.0,

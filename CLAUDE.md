@@ -10,6 +10,9 @@ checklists, session log, pending decisions.
 - `doc/architecture.md` — staged pipeline design + governing principles
 - `doc/project-status.md` — living roadmap (update at end of session)
 - `doc/judge-rubric.md` — versioned grading rules; bump version on any change
+- `doc/eval-log.md` — append-only ledger of every eval run: dataset, code
+  state, config, numbers, cost. Add an entry after any eval; never edit past
+  numbers
 - `doc/adr/` — one file per decision, cite the evidence
 
 ## Working conventions (established with the user; do not drop)

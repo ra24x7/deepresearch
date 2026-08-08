@@ -171,7 +171,15 @@ reranker's +0.15 NDCG qualifies; the entity channel's contribution (+0.035
 recall at weight 0.1) does not. Deleting a retrieval channel waits for the
 larger golden set — the numbers above are for diagnosis and tuning only.
 
-**These numbers are stale as of 2026-08-08.** They were measured on 29
+**Superseded 2026-08-08 by the n=136 re-run — see `doc/eval-log.md` (R3).**
+Fused recall@10 0.940, NDCG 0.817 with Cohere rerank; 0.907 / 0.681 without.
+Every figure is lower than the table above and none of it is a regression:
+no retriever code changed, the question set grew from 29 to 136 and got
+harder by design. `multi_paper` recall of 0.569 across 12 questions is the
+newly-visible weakness. The old numbers are kept for their diagnostic
+history.
+
+**The table above is stale as of 2026-08-08.** They were measured on 29
 answerable questions; the golden set now holds ~138. Nothing about the
 retriever changed — the measuring instrument did — so the table above and
 `notebooks/phase3_retrieval/README.md` describe a different, smaller
@@ -234,6 +242,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-08 | Retrieval eval re-run at n=136 (`doc/eval-log.md` R2/R3, ~$0.15). Fused recall@10 0.940 / NDCG 0.817 with Cohere rerank, 0.907 / 0.681 without — the reranker's +0.136 NDCG is now decisive (better on 56 questions, worse on 14), where at n=29 it was only suggestive. Every headline number fell against the n=29 run and none of it is a regression: the retriever is unchanged, the exam got harder. Two things only the larger set could show — `multi_paper` recall 0.569 across 12 questions while every other type sits at 0.93–1.00, and the entity channel weakening to 0.260, which is the evidence the deferred keep/delete decision was waiting on. Two anomalies logged unexplained: g080 is unreachable by every channel, and g038 is silently excluded for having no matching chunk despite passing the solvability audit. |
 | 2026-08-08 | Golden set 92 → 150, then verified end-to-end by the user — all 61 outstanding `draft_unverified` flags cleared, so the full set of 150 is human-verified and the Phase 3 exit criterion is unblocked. Growth details: Coverage closed to 54/54 papers (g091–g092), then 58 questions added in pairs. Growth deliberately skewed to the thin types — `definitional` and `computable` roughly tripled — since half the set was `factual_single`/`negation` and the eval could say least about abstention and multi-fact composition. Evidence pushed deeper: 60% of new page references beyond p9 vs 18% before, deepest p31. The mid-word quote check fired seven times, all on model-drafted quotes copied from a truncated print window (`framin`, `amon`, `config`, `Exponentia`, `leg`, `exp`, `f`) — the same failure that caused g051's factual error; one (g134) had also propagated a wrong word into its reference answer. All repaired to sentence boundaries and re-verified, audit 159/159. 61 entries remain `draft_unverified`. Also confirmed the 55th paper in Postgres (`2607.29600`) is tagged `corpus: sandbox` and correctly outside evalv1, and that the 106 Postgres chunks absent from the index are all `references` sections, excluded by design (ADR 0003) with zero stale docs. |
 | 2026-08-07 | Phase 3 read path built and measured. Router, four channels, RRF fusion with the semantic gate, Cohere rerank (eu-central-1 — not offered in ap-south-1), orchestrator, and a retrieval eval. Fused recall@10 0.977, NDCG 0.912, reachability 1.000. Every gain traced to a measured cause: entity channel term-matched whole queries (0.000 → 0.391 once it probed n-grams), its full weight then *cost* 0.035 recall so a sweep set it to 0.1 as a tiebreaker, and the reranker's one regression (g033) turned out to be us withholding section titles from it. Claims measured separately — 4/4 where a relevant claim exists, but only 6 of 54 papers are enriched. Page provenance captured and backfilled; entity links rebuilt after a re-parse silently wiped them. |
 | 2026-08-03 | Phase 2.4–2.5: enrichment live (Gate A, $0.0079/paper), evalv1 grown to 54 papers / 1,624 chunks, embedded with Cohere Embed v4 (~$0.08) into OpenSearch — 1,518 chunks indexed after excluding bibliographies (ADR 0003). Real-vector semantic search returns correct sections. Bugs found only at scale: container OOM at 50 papers, duplicate section-title id collision, NUL bytes in one PDF. Bedrock quota discovered to be token-bound (300k/min), so embed calls now retry on throttling. |
