@@ -9,17 +9,16 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+import _bootstrap  # noqa: F401
 
-from config import PostgresSettings
+from clients import postgres_session_factory
 from db.models import Paper
-from db.session import get_engine, get_session_factory
 from pipeline.stages import default_pipeline_settings, parse_and_chunk_paper
 
 
 def main(arxiv_ids: list[str], corpus: str, papers_dir: Path, skip_existing: bool) -> int:
     settings = default_pipeline_settings()
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    session_factory = postgres_session_factory()
     totals = {"papers": 0, "chunks": 0, "words": 0}
     failures: list[str] = []
 

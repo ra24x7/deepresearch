@@ -8,81 +8,62 @@ The sweep therefore costs one set of query embeddings, not one per config.
 """
 
 import argparse
-import json
-import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-import boto3
-from botocore.config import Config
+import _bootstrap  # noqa: F401
 from dotenv import load_dotenv
-from opensearchpy import OpenSearch
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from config import BedrockSettings, EmbeddingSettings, PostgresSettings, RetrievalSettings
-from db.models import Chunk
-from db.session import get_engine, get_session_factory
-from evals.retrieval_eval import ndcg_at_k, recall_at_k, relevant_chunk_ids
-from ingestion.embeddings.factory import build_provider
-from retrieval.channels.bm25 import search_bm25
-from retrieval.channels.dense import search_dense_chunks, search_dense_claims
+from clients import embedding_provider, opensearch_client, postgres_session_factory
+from config import RetrievalSettings
+from db.queries import chunks_by_paper as load_chunks_by_paper
+from evals.report import fmt, mean, write_json_report
+from evals.retrieval_eval import ndcg_at_k, recall_at_k, relevant_chunks_for_entry
+from goldenset import load_answerable_entries
 from retrieval.channels.entities import search_entities
 from retrieval.fusion import fuse
+from retrieval.schemas import CHANNEL_NAMES
+from retrieval.search import candidate_pool_size, run_channels
 
 REPORT_PATH = Path("notebooks/phase3_retrieval/fusion_weight_sweep.json")
+CORPUS = "evalv1"
 ENTITY_WEIGHTS = [0.0, 0.1, 0.25]
 LINK_CEILINGS = [None, 30, 20, 10, 5]
-_TIMEOUT = 120
-
-
-def mean(values: list) -> float | None:
-    present = [v for v in values if v is not None]
-    return statistics.mean(present) if present else None
-
-
-def fmt(v: float | None) -> str:
-    return f"{v:.3f}" if v is not None else "  -  "
+SWEPT_CHANNEL = "entities"
+FIXED_CHANNELS = [name for name in CHANNEL_NAMES if name != SWEPT_CHANNEL]
 
 
 def main(k: int) -> int:
     load_dotenv()
     settings = RetrievalSettings(top_k=k)
-    bedrock = boto3.client("bedrock-runtime", region_name=BedrockSettings().region, config=Config(read_timeout=_TIMEOUT))
-    provider = build_provider(EmbeddingSettings(), bedrock)
-    client = OpenSearch(hosts=[{"host": "localhost", "port": 9200}], timeout=_TIMEOUT)
+    provider = embedding_provider()
+    client = opensearch_client()
 
-    questions = [json.loads(x) for x in Path("data/golden_dataset.jsonl").read_text().splitlines() if x.strip()]
-    answerable = [q for q in questions if q.get("expected_behavior") == "answer"]
+    answerable = load_answerable_entries()
 
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    session_factory = postgres_session_factory()
     with session_factory() as session:
-        chunks_by_paper = defaultdict(list)
-        for chunk in session.query(Chunk).all():
-            chunks_by_paper[chunk.arxiv_id].append((chunk.chunk_id, chunk.text))
+        chunks_by_paper = load_chunks_by_paper(session)
 
-    size = max(settings.over_fetch_multiplier * k, settings.min_candidates)
+    size = candidate_pool_size(settings, k)
     cached = []
     for q in answerable:
-        relevant: set[str] = set()
-        for ev in q["evidence"]:
-            if ev.get("quote"):
-                relevant |= relevant_chunk_ids(ev["quote"], chunks_by_paper.get(ev["arxiv_id"], []))
+        relevant = relevant_chunks_for_entry(q, chunks_by_paper)
         if not relevant:
             continue
         query = q["question"]
+        # The orchestrator's fan-out gives the fixed channels; the entity channel
+        # is run once per link ceiling, which is what the sweep varies.
         cached.append(
             (
                 q,
                 relevant,
                 {
-                    "bm25": search_bm25(client, "evalv1", query, size),
-                    "dense_chunks": search_dense_chunks(client, "evalv1", provider, query, size),
-                    "dense_claims": search_dense_claims(client, "evalv1", provider, query, size),
+                    **run_channels(query, CORPUS, client, provider, size, settings, FIXED_CHANNELS),
                     **{
-                        f"entities@{ceiling}": search_entities(
-                            client, "evalv1", query, size, settings.entity_damping, ceiling
+                        f"{SWEPT_CHANNEL}@{ceiling}": search_entities(
+                            client, CORPUS, query, size, settings.entity_damping, ceiling
                         )
                         for ceiling in LINK_CEILINGS
                     },
@@ -99,8 +80,8 @@ def main(k: int) -> int:
         weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": weight}
         recalls, ndcgs, by_type = [], [], defaultdict(list)
         for q, relevant, hits in cached:
-            selected = {n: h for n, h in hits.items() if not n.startswith("entities@")}
-            selected["entities"] = hits[f"entities@{ceiling}"]
+            selected = {n: h for n, h in hits.items() if n in FIXED_CHANNELS}
+            selected[SWEPT_CHANNEL] = hits[f"{SWEPT_CHANNEL}@{ceiling}"]
             fused = fuse(selected, weights=weights, top_k=k)
             ranked = [h.doc_id for h in fused]
             r = recall_at_k(ranked, relevant, k)
@@ -117,8 +98,7 @@ def main(k: int) -> int:
         rows.append(row)
         print(f"{ceiling!s:>13}{weight:>8}{fmt(row['recall']):>10}{fmt(row['ndcg']):>10}")
 
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps({"k": k, "questions": len(cached), "results": rows}, indent=2) + "\n")
+    write_json_report(REPORT_PATH, {"k": k, "questions": len(cached), "results": rows})
     print(f"\nreport: {REPORT_PATH}")
     return 0
 

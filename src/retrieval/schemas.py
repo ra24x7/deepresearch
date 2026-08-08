@@ -1,9 +1,13 @@
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict
 
 Channel = Literal["bm25", "dense_chunks", "dense_claims", "entities"]
 Route = Literal["computable", "semantic", "entity_anchored", "out_of_domain"]
+
+# Every channel, in fan-out order. Derived from the type so a new channel cannot
+# be added to one list and forgotten in another.
+CHANNEL_NAMES: tuple[Channel, ...] = get_args(Channel)
 
 
 class RetrievalHit(BaseModel):

@@ -13,22 +13,17 @@ import sys
 from functools import partial
 from pathlib import Path
 
-import boto3
-from botocore.config import Config
+import _bootstrap  # noqa: F401
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from config import BedrockSettings, PostgresSettings
+from clients import bedrock_runtime_client, postgres_session_factory
 from db.models import Claim
-from db.session import get_engine, get_session_factory
 from llm.bedrock import Usage, invoke_json
 from llm.cost import CostLedger
 from pipeline.stages import default_pipeline_settings, enrich_paper
 
 SPOTCHECK_PATH = Path("notebooks/phase2_ingestion/claim_spotcheck.md")
 SPOTCHECK_SAMPLE = 20
-_REQUEST_TIMEOUT_SECONDS = 120
 
 
 def write_spotcheck(session) -> int:
@@ -52,13 +47,8 @@ def write_spotcheck(session) -> int:
 def main(arxiv_ids: list[str]) -> int:
     load_dotenv()
     settings = default_pipeline_settings()
-    client = boto3.client(
-        "bedrock-runtime",
-        region_name=BedrockSettings().region,
-        config=Config(read_timeout=_REQUEST_TIMEOUT_SECONDS, connect_timeout=_REQUEST_TIMEOUT_SECONDS),
-    )
-    llm = partial(invoke_json, client=client, settings=settings.enrichment)
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    llm = partial(invoke_json, client=bedrock_runtime_client(), settings=settings.enrichment)
+    session_factory = postgres_session_factory()
 
     ledger = CostLedger()
     processed = 0
