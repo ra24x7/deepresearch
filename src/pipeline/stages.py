@@ -20,6 +20,7 @@ from ingestion.arxiv_client import download_pdf, fetch_by_ids
 from ingestion.chunker import chunk_paper
 from ingestion.enrich.claims import ExtractedEntity, extract_claims_and_entities
 from ingestion.enrich.entities import merge_entities
+from ingestion.ids import pdf_filename, validate_arxiv_id, validate_corpus
 from ingestion.parser import parse_pdf
 from ingestion.schemas import ArxivMetadata
 from search.filters import is_indexable_section
@@ -46,6 +47,8 @@ def default_pipeline_settings() -> PipelineSettings:
 
 
 def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session, settings: PipelineSettings) -> dict:
+    arxiv_id = validate_arxiv_id(arxiv_id)
+    corpus = validate_corpus(corpus)
     metadata = fetch_by_ids([arxiv_id], settings.arxiv)[0]
     pdf_path = _find_or_download_pdf(metadata, papers_dir, settings.arxiv)
     content = parse_pdf(pdf_path, settings.parser)
@@ -97,13 +100,15 @@ def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session,
 
 
 def _find_or_download_pdf(metadata: ArxivMetadata, papers_dir: Path, settings: ArxivSettings) -> Path:
-    matches = sorted(papers_dir.glob(f"{metadata.arxiv_id}.pdf")) + sorted(papers_dir.glob(f"{metadata.arxiv_id}v*.pdf"))
+    stem = pdf_filename(metadata.arxiv_id).removesuffix(".pdf")
+    matches = sorted(papers_dir.glob(f"{stem}.pdf")) + sorted(papers_dir.glob(f"{stem}v*.pdf"))
     if matches:
         return matches[-1]
     return download_pdf(metadata, papers_dir, settings)
 
 
 def enrich_paper(arxiv_id: str, session, llm_invoke_json: Callable, settings: PipelineSettings) -> dict:
+    arxiv_id = validate_arxiv_id(arxiv_id)
     paper = session.get(Paper, arxiv_id)
     if paper is None:
         raise ValueError(f"paper not found in database: {arxiv_id}")
@@ -239,6 +244,8 @@ def _refresh_link_counts(session, entity_keys: list[str]) -> None:
 def embed_and_index_paper(
     arxiv_id: str, corpus: str, session, search_client, provider, settings: PipelineSettings
 ) -> dict:
+    arxiv_id = validate_arxiv_id(arxiv_id)
+    corpus = validate_corpus(corpus)
     chunks = [
         {
             "chunk_id": c.chunk_id,

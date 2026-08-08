@@ -5,7 +5,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # ── env ───────────────────────────────────────────────────────────────────────
 ENV AIRFLOW_HOME=/opt/airflow \
-    AIRFLOW_VERSION=2.10.3 \
+    AIRFLOW_VERSION=2.11.2 \
     PYTHON_VERSION=3.12
 
 ENV CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"

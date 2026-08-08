@@ -13,6 +13,7 @@ from dag_tasks.common import (
     session_factory,
 )
 from ingestion.arxiv_client import fetch_by_query
+from ingestion.ids import validate_arxiv_id
 from pipeline.stages import (
     embed_and_index_paper,
     enrich_paper,
@@ -26,7 +27,9 @@ def resolve_arxiv_ids(**context) -> list[str]:
     """Explicit ids win; otherwise query arXiv by category and date window."""
     params = context["params"]
     if params.get("arxiv_ids"):
-        return list(params["arxiv_ids"])
+        # DAG params are operator input: reject a malformed id here rather than
+        # let it fan out into per-paper tasks that each build a path from it.
+        return [validate_arxiv_id(arxiv_id) for arxiv_id in params["arxiv_ids"]]
 
     metadata = fetch_by_query(
         params["category"],
