@@ -2,6 +2,7 @@ import math
 import re
 from typing import Any
 
+from retrieval.channels.response import hits_of
 from retrieval.schemas import RetrievalHit
 from search.indices import entities_index_name
 from textnorm import normalize
@@ -20,9 +21,10 @@ def search_entities(
     damping: float = 1.0,
     max_link_count: int | None = None,
 ) -> list[RetrievalHit]:
+    index_name = entities_index_name(corpus)
     body = _build_query(_candidate_mentions(query), size, max_link_count)
-    response = client.search(index=entities_index_name(corpus), body=body)
-    hits = [hit for entity in response["hits"]["hits"] for hit in _expand(entity, damping)]
+    response = client.search(index=index_name, body=body)
+    hits = [hit for entity in hits_of(response, index_name) for hit in _expand(entity, damping)]
     return sorted(hits, key=lambda hit: hit.score, reverse=True)[:size]
 
 

@@ -1,7 +1,10 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from ingestion.embeddings.fake import FakeEmbeddingProvider
 from retrieval.channels.dense import search_dense_chunks, search_dense_claims
+from retrieval.channels.exceptions import SearchResponseError
 from search.indices import chunks_index_name, claims_index_name
 
 DIMENSION = 1024
@@ -155,6 +158,15 @@ class TestEmptyResults:
 
     def test_claims_returns_empty_list(self):
         client = MagicMock()
-        client.search.return_value = {}
+        client.search.return_value = _response([])
 
         assert search_dense_claims(client, "corpusA", FakeEmbeddingProvider(DIMENSION), "q", size=5) == []
+
+
+class TestMalformedSearchResponses:
+    def test_response_without_a_hits_envelope_raises_instead_of_returning_nothing(self):
+        client = MagicMock()
+        client.search.return_value = {"error": {"type": "index_not_found_exception"}}
+
+        with pytest.raises(SearchResponseError, match="hits envelope"):
+            search_dense_chunks(client, "corpusA", FakeEmbeddingProvider(DIMENSION), "q", size=5)

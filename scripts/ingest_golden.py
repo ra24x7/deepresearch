@@ -35,6 +35,9 @@ def main(arxiv_ids: list[str], corpus: str, papers_dir: Path, skip_existing: boo
             try:
                 stats = parse_and_chunk_paper(arxiv_id, corpus, papers_dir, session, settings)
             except Exception as exc:  # noqa: BLE001 — one bad paper must not end a 500-paper run
+                # A failed statement leaves the session unusable, so without a
+                # rollback every later paper fails too and only the first is real.
+                session.rollback()
                 failures.append(f"{arxiv_id}: {exc}")
                 print(f"[{i}/{len(arxiv_ids)}] {arxiv_id}: FAILED — {exc}", flush=True)
                 continue

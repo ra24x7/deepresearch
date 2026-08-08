@@ -2,7 +2,7 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, EndpointConnectionError
 
 from config import RerankSettings
 from retrieval.rerank.cohere_bedrock import CohereBedrockReranker
@@ -139,3 +139,44 @@ class TestSectionTitleContext:
         CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0, "bare text")], top_n=1)
 
         assert json.loads(client.invoke_model.call_args[1]["body"])["documents"] == ["bare text"]
+
+
+class TestMalformedRerankResponses:
+    def test_body_that_is_not_json_raises_typed_error(self):
+        client = MagicMock()
+        body = MagicMock()
+        body.read.return_value = b"<html>gateway timeout</html>"
+        client.invoke_model.return_value = {"body": body}
+
+        with pytest.raises(RerankInvocationError, match="malformed"):
+            CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0)], top_n=1)
+
+    def test_out_of_range_index_raises_instead_of_silently_shortening_results(self):
+        client = MagicMock()
+        client.invoke_model.return_value = _response(
+            [{"index": 0, "relevance_score": 0.9}, {"index": 7, "relevance_score": 0.8}]
+        )
+
+        with pytest.raises(RerankInvocationError, match="unusable result"):
+            CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0)], top_n=2)
+
+    def test_negative_index_raises_rather_than_scoring_the_wrong_hit(self):
+        client = MagicMock()
+        client.invoke_model.return_value = _response([{"index": -1, "relevance_score": 0.9}])
+
+        with pytest.raises(RerankInvocationError, match="unusable result"):
+            CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0), _hit("b", 1.0)], top_n=1)
+
+    def test_result_without_a_relevance_score_raises(self):
+        client = MagicMock()
+        client.invoke_model.return_value = _response([{"index": 0}])
+
+        with pytest.raises(RerankInvocationError, match="unusable result"):
+            CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0)], top_n=1)
+
+    def test_connection_failure_is_wrapped_in_a_typed_error(self):
+        client = MagicMock()
+        client.invoke_model.side_effect = EndpointConnectionError(endpoint_url="https://bedrock")
+
+        with pytest.raises(RerankInvocationError):
+            CohereBedrockReranker(client, SETTINGS).rerank("q", [_hit("a", 1.0)], top_n=1)

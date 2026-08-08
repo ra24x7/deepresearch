@@ -76,7 +76,7 @@ def _get_text_with_retry(url: str, params: dict, settings: ArxivSettings) -> str
                 return response.text
         except (httpx.HTTPStatusError, httpx.TransportError) as exc:
             last_error = exc
-    raise ArxivAPIError(f"arXiv API request failed after {settings.max_retries} attempts: {last_error}")
+    raise ArxivAPIError(f"arXiv API request failed after {settings.max_retries} attempts: {last_error}") from last_error
 
 
 def _get_bytes_with_retry(url: str, settings: ArxivSettings) -> bytes:
@@ -90,7 +90,7 @@ def _get_bytes_with_retry(url: str, settings: ArxivSettings) -> bytes:
                 return response.content
         except (httpx.HTTPStatusError, httpx.TransportError) as exc:
             last_error = exc
-    raise PDFDownloadError(f"PDF download failed after {settings.max_retries} attempts: {last_error}")
+    raise PDFDownloadError(f"PDF download failed after {settings.max_retries} attempts: {last_error}") from last_error
 
 
 def _parse_atom_xml(xml_text: str) -> list[ArxivMetadata]:
@@ -104,13 +104,11 @@ def _parse_atom_xml(xml_text: str) -> list[ArxivMetadata]:
 
 def _parse_entry(entry: ET.Element) -> ArxivMetadata:
     # Canonical versionless id — the golden dataset and all evidence joins use bare ids.
-    arxiv_id = re.sub(r"v\d+$", "", entry.find("atom:id", _ATOM_NAMESPACE).text.split("/")[-1])
-    title = " ".join(entry.find("atom:title", _ATOM_NAMESPACE).text.split())
-    abstract = " ".join(entry.find("atom:summary", _ATOM_NAMESPACE).text.split())
-    published = date_parser.isoparse(entry.find("atom:published", _ATOM_NAMESPACE).text).date()
-    authors = tuple(
-        author.find("atom:name", _ATOM_NAMESPACE).text for author in entry.findall("atom:author", _ATOM_NAMESPACE)
-    )
+    arxiv_id = re.sub(r"v\d+$", "", _required_text(entry, "atom:id").split("/")[-1])
+    title = " ".join(_required_text(entry, "atom:title").split())
+    abstract = " ".join(_required_text(entry, "atom:summary").split())
+    published = date_parser.isoparse(_required_text(entry, "atom:published")).date()
+    authors = tuple(_required_text(author, "atom:name") for author in entry.findall("atom:author", _ATOM_NAMESPACE))
     categories = tuple(category.get("term") for category in entry.findall("atom:category", _ATOM_NAMESPACE))
     pdf_url = _extract_pdf_url(entry)
 
@@ -123,6 +121,15 @@ def _parse_entry(entry: ET.Element) -> ArxivMetadata:
         published=published,
         pdf_url=pdf_url,
     )
+
+
+def _required_text(element: ET.Element, path: str) -> str:
+    # A missing or empty field would otherwise surface as an AttributeError on
+    # None from somewhere inside the parse, naming neither the field nor arXiv.
+    found = element.find(path, _ATOM_NAMESPACE)
+    if found is None or not (found.text or "").strip():
+        raise ArxivParseError(f"arXiv entry is missing required field {path}")
+    return found.text
 
 
 def _extract_pdf_url(entry: ET.Element) -> str:

@@ -10,6 +10,7 @@ from config import ArxivSettings, ChunkingSettings, EnrichmentSettings, ParserSe
 from db.models import Base, Claim, Entity, EntityLink, Paper
 from db.models import Chunk as ChunkRow
 from ingestion.embeddings.fake import FakeEmbeddingProvider
+from ingestion.exceptions import ArxivNotFoundError
 from ingestion.schemas import ArxivMetadata, PaperSection, PdfContent
 from llm.bedrock import Usage
 from pipeline.stages import (
@@ -170,6 +171,12 @@ class TestParseAndChunkPaper:
         assert result_2 == {"arxiv_id": "2501.00001", "pages": 7, "chunks": 2, "words": 300}
         assert session.query(Paper).count() == 1
         assert session.query(ChunkRow).filter_by(arxiv_id="2501.00001").count() == 2
+
+    def test_unknown_arxiv_id_raises_a_typed_error(self, mocker, session, settings, tmp_path):
+        mocker.patch("pipeline.stages.fetch_by_ids", return_value=[])
+
+        with pytest.raises(ArxivNotFoundError, match="2501.99999"):
+            parse_and_chunk_paper("2501.99999", "evalv1", tmp_path, session, settings)
 
 
 class TestEnrichPaper:

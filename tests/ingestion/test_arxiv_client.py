@@ -8,7 +8,7 @@ import pytest
 from config import ArxivSettings
 from ingestion import arxiv_client
 from ingestion.arxiv_client import download_pdf, fetch_by_ids, fetch_by_query
-from ingestion.exceptions import ArxivAPIError, PDFDownloadError
+from ingestion.exceptions import ArxivAPIError, ArxivParseError, PDFDownloadError
 from ingestion.schemas import ArxivMetadata
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -187,3 +187,33 @@ class TestStatefulRateLimiting:
         fetch_by_ids(["2501.00002"], SETTINGS)
 
         sleep_mock.assert_not_called()
+
+
+_ENTRY_MISSING_TITLE = """<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>http://arxiv.org/abs/2501.00001v1</id>
+    <published>2025-01-15T18:30:00Z</published>
+    <summary>An abstract.</summary>
+    <author><name>Jane Doe</name></author>
+  </entry>
+</feed>
+"""
+
+
+class TestMalformedAtomEntries:
+    def test_entry_missing_a_required_field_raises_a_typed_parse_error(self, mocker):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        _patch_client(mocker, [_ok_response(_ENTRY_MISSING_TITLE)])
+
+        with pytest.raises(ArxivParseError, match="atom:title"):
+            fetch_by_ids(["2501.00001"], SETTINGS)
+
+    def test_retry_exhaustion_keeps_the_transport_error_as_cause(self, mocker):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        _patch_client(mocker, [httpx.ConnectError("no route")] * SETTINGS.max_retries)
+
+        with pytest.raises(ArxivAPIError) as excinfo:
+            fetch_by_ids(["2501.00001"], SETTINGS)
+
+        assert isinstance(excinfo.value.__cause__, httpx.ConnectError)
