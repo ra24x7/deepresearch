@@ -5,6 +5,12 @@ fusion behind the semantic gate → cross-encoder rerank → top_k`.
 
 ## What was measured
 
+> **Stale as of 2026-08-08.** Every number on this page was measured on 29
+> answerable questions. The golden set has since grown to 150 (~138
+> answerable), so these results describe a smaller, different experiment.
+> The retriever did not change; the instrument did. Do not compare a re-run
+> against this page — replace it.
+
 29 answerable golden questions, `k=10`, over-fetch 60, corpus `evalv1`
 (54 papers / 1,518 indexed chunks). Artifacts: `retrieval_eval.json`
 (current), `retrieval_eval_identity.json` (no-rerank baseline),
@@ -85,7 +91,9 @@ the remaining 48 costs roughly $0.38 and is the experiment that would settle it.
 - **n=29 answerable questions.** Only large effects are readable. The
   reranker's +0.15 NDCG qualifies; the entity channel's +0.035 recall does
   not. **No ADR deletes a channel on this evidence** — these numbers are for
-  diagnosis and tuning.
+  diagnosis and tuning. The golden set reached 150 on 2026-08-08, which is
+  what a re-run needs; 61 of its entries are still `draft_unverified`, so a
+  re-run before that verification pass produces provisional numbers.
 - **Per-type breakdowns rest on 3 and 2 questions** (`entity_anchored`,
   `multi_paper`). Both remaining reranker regressions fall in those types,
   which is exactly where the sample is thinnest.
