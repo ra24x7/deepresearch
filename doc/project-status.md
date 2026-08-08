@@ -4,7 +4,7 @@
 > current phase, what moved, what's blocked, what's next.
 
 **Current phase:** 3 — Staged Retrieval Engine (read path built and measured;
-golden set at 150, now blocked on user verification of 61 draft entries)
+golden set at 150 and fully verified — next is the eval re-run)
 **Last updated:** 2026-08-08
 
 ## Roadmap
@@ -121,9 +121,11 @@ this (2026-08-04):
       extractable facts, which is the construct-validity risk. That risk
       applies to g093–g150 and is *not* retired by the solvability audit,
       which proves quotes verbatim but says nothing about whether a question
-      is fair or unambiguous. **61 entries (g049, g091–g150) carry
-      `status: draft_unverified` and await user verification. Eval numbers
-      computed before that pass are provisional.**
+      is fair or unambiguous. **The user verified all 61 outstanding entries
+      (g049, g091–g150) on 2026-08-08 and the flags were cleared; the whole
+      set of 150 is now human-verified.** The provenance split is recorded
+      above because it stays relevant to interpreting eval results, not
+      because verification is outstanding.
       Computable answers are corpus-dependent and rot silently — g020 sat
       stale at "4 papers" while the corpus grew to 54; nothing detects this
       yet, and the set now holds 24 `computable` questions. Budget 3–5
@@ -144,7 +146,8 @@ this (2026-08-04):
 
 **Exit criteria:** recall@10 and NDCG measured per-retriever and fused on the
 golden set ✅; each retriever proves added recall or is deleted (ADR either
-way) — **golden set now at 150; blocked on verifying its 61 draft entries**. The number is evidence for
+way) — **unblocked 2026-08-08: golden set at 150, fully verified; awaiting
+the eval re-run**. The number is evidence for
 a decision, not a certification — Voorhees & Buckley found >10% gaps that still
 mis-ranked systems at 50 topics, so a hard recall figure for a Phase 6 SLO must
 come from production traffic, not this set.
@@ -174,8 +177,9 @@ retriever changed — the measuring instrument did — so the table above and
 `notebooks/phase3_retrieval/README.md` describe a different, smaller
 experiment and must not be compared against the re-run. Re-running costs one
 query embedding plus one Cohere rerank call per question, roughly $0.20–0.30
-(live API — ask first). Sequence it *after* the 61 draft entries are
-verified, or the channel keep/delete ADRs rest on unverified questions.
+(live API — ask first). The 61 draft entries were verified on 2026-08-08,
+so the re-run is now the only thing standing between here and the channel
+keep/delete ADRs.
 
 ### Phase 4 — Cost-Aware Agent Orchestration
 
@@ -230,7 +234,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
-| 2026-08-08 | Golden set 92 → 150. Coverage closed to 54/54 papers (g091–g092), then 58 questions added in pairs. Growth deliberately skewed to the thin types — `definitional` and `computable` roughly tripled — since half the set was `factual_single`/`negation` and the eval could say least about abstention and multi-fact composition. Evidence pushed deeper: 60% of new page references beyond p9 vs 18% before, deepest p31. The mid-word quote check fired seven times, all on model-drafted quotes copied from a truncated print window (`framin`, `amon`, `config`, `Exponentia`, `leg`, `exp`, `f`) — the same failure that caused g051's factual error; one (g134) had also propagated a wrong word into its reference answer. All repaired to sentence boundaries and re-verified, audit 159/159. 61 entries remain `draft_unverified`. Also confirmed the 55th paper in Postgres (`2607.29600`) is tagged `corpus: sandbox` and correctly outside evalv1, and that the 106 Postgres chunks absent from the index are all `references` sections, excluded by design (ADR 0003) with zero stale docs. |
+| 2026-08-08 | Golden set 92 → 150, then verified end-to-end by the user — all 61 outstanding `draft_unverified` flags cleared, so the full set of 150 is human-verified and the Phase 3 exit criterion is unblocked. Growth details: Coverage closed to 54/54 papers (g091–g092), then 58 questions added in pairs. Growth deliberately skewed to the thin types — `definitional` and `computable` roughly tripled — since half the set was `factual_single`/`negation` and the eval could say least about abstention and multi-fact composition. Evidence pushed deeper: 60% of new page references beyond p9 vs 18% before, deepest p31. The mid-word quote check fired seven times, all on model-drafted quotes copied from a truncated print window (`framin`, `amon`, `config`, `Exponentia`, `leg`, `exp`, `f`) — the same failure that caused g051's factual error; one (g134) had also propagated a wrong word into its reference answer. All repaired to sentence boundaries and re-verified, audit 159/159. 61 entries remain `draft_unverified`. Also confirmed the 55th paper in Postgres (`2607.29600`) is tagged `corpus: sandbox` and correctly outside evalv1, and that the 106 Postgres chunks absent from the index are all `references` sections, excluded by design (ADR 0003) with zero stale docs. |
 | 2026-08-07 | Phase 3 read path built and measured. Router, four channels, RRF fusion with the semantic gate, Cohere rerank (eu-central-1 — not offered in ap-south-1), orchestrator, and a retrieval eval. Fused recall@10 0.977, NDCG 0.912, reachability 1.000. Every gain traced to a measured cause: entity channel term-matched whole queries (0.000 → 0.391 once it probed n-grams), its full weight then *cost* 0.035 recall so a sweep set it to 0.1 as a tiebreaker, and the reranker's one regression (g033) turned out to be us withholding section titles from it. Claims measured separately — 4/4 where a relevant claim exists, but only 6 of 54 papers are enriched. Page provenance captured and backfilled; entity links rebuilt after a re-parse silently wiped them. |
 | 2026-08-03 | Phase 2.4–2.5: enrichment live (Gate A, $0.0079/paper), evalv1 grown to 54 papers / 1,624 chunks, embedded with Cohere Embed v4 (~$0.08) into OpenSearch — 1,518 chunks indexed after excluding bibliographies (ADR 0003). Real-vector semantic search returns correct sections. Bugs found only at scale: container OOM at 50 papers, duplicate section-title id collision, NUL bytes in one PDF. Bedrock quota discovered to be token-bound (300k/min), so embed calls now retry on throttling. |
 | 2026-07-30 | Phase 2.1–2.3: Docker stack (OpenSearch/Postgres/Airflow, lifted from predecessor + local Postgres) all healthy; fetch/parse/chunk modules TDD'd (68 tests); 4 golden papers → 150 chunks in Postgres; solvability audit v1 31/31 both stages after fixing math-tokenization matching and caption interleaving; evalv1 snapshot pinned (4+50 papers). Embeddings decided: Cohere Embed v4 on Bedrock (`global.cohere.embed-v4:0`, 1024-dim). 6 fuzzy audit matches await user review. |
