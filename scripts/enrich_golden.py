@@ -45,6 +45,7 @@ def write_spotcheck(session) -> int:
         lines.append(f"{i}. [ ] ({claim.arxiv_id}, {claim.section_title})")
         lines.append(f"   {claim.claim_text}")
         lines.append("")
+    SPOTCHECK_PATH.parent.mkdir(parents=True, exist_ok=True)
     SPOTCHECK_PATH.write_text("\n".join(lines))
     return len(sample)
 
@@ -83,7 +84,10 @@ def main(arxiv_ids: list[str]) -> int:
         n_sampled = write_spotcheck(session)
 
     print(f"\ntokens: {ledger.input_tokens} in / {ledger.output_tokens} out")
-    print(f"total cost: ${ledger.total_usd:.4f}  per paper: ${ledger.per_paper_usd(processed):.4f}")
+    # per_paper_usd rejects a zero divisor: when every paper failed, the crash
+    # would replace the failure list that explains why.
+    per_paper = f"${ledger.per_paper_usd(processed):.4f}" if processed else "n/a (no paper succeeded)"
+    print(f"total cost: ${ledger.total_usd:.4f}  per paper: {per_paper}")
     print(f"spot-check sheet ({n_sampled} claims): {SPOTCHECK_PATH}")
     for line in failures:
         print(f"  failed: {line}")

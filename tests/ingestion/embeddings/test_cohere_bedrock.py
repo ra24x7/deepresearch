@@ -2,7 +2,7 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, EndpointConnectionError
 
 from config import EmbeddingSettings
 from ingestion.embeddings.cohere_bedrock import CohereBedrockProvider
@@ -154,6 +154,43 @@ class TestThrottleRetry:
         mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
         client = MagicMock()
         client.invoke_model.side_effect = _client_error()
+
+        with pytest.raises(EmbeddingInvocationError):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+        assert client.invoke_model.call_count == 1
+
+
+class TestMalformedResponses:
+    def test_body_that_is_not_json_raises_typed_error(self):
+        client = MagicMock()
+        body = MagicMock()
+        body.read.return_value = b"<html>gateway timeout</html>"
+        client.invoke_model.return_value = {"body": body}
+
+        with pytest.raises(EmbeddingInvocationError, match="malformed"):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+    def test_body_without_float_embeddings_raises_typed_error(self):
+        client = MagicMock()
+        body = MagicMock()
+        body.read.return_value = json.dumps({"embeddings": {"int8": [[1, 2, 3, 4]]}}).encode()
+        client.invoke_model.return_value = {"body": body}
+
+        with pytest.raises(EmbeddingInvocationError, match="malformed"):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])
+
+    def test_short_vector_list_raises_instead_of_misaligning_texts(self):
+        client = MagicMock()
+        client.invoke_model.return_value = _response([[0.1, 0.2, 0.3, 0.4]])
+
+        with pytest.raises(EmbeddingInvocationError, match="1 embeddings for 2 texts"):
+            CohereBedrockProvider(client, SETTINGS).embed_passages(["a", "b"])
+
+    def test_connection_failure_is_wrapped_in_a_typed_error(self, mocker):
+        mocker.patch("ingestion.embeddings.cohere_bedrock.time.sleep")
+        client = MagicMock()
+        client.invoke_model.side_effect = EndpointConnectionError(endpoint_url="https://bedrock")
 
         with pytest.raises(EmbeddingInvocationError):
             CohereBedrockProvider(client, SETTINGS).embed_passages(["one text"])

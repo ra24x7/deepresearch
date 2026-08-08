@@ -28,6 +28,7 @@ from search.indexer import create_indices
 from search.indices import chunks_index_name
 
 _REQUEST_TIMEOUT_SECONDS = 120
+_MAX_PRINTED_ERRORS = 5
 
 
 def build_clients(embedding: EmbeddingSettings):
@@ -80,7 +81,14 @@ def main(corpus: str, skip_existing: bool, dry_run: bool, force: bool) -> int:
             if skip_existing and already_indexed(client, corpus, arxiv_id):
                 print(f"[{i}/{len(arxiv_ids)}] {arxiv_id}: already indexed, skipped", flush=True)
                 continue
-            stats = embed_and_index_paper(arxiv_id, corpus, session, client, provider, settings)
+            try:
+                stats = embed_and_index_paper(arxiv_id, corpus, session, client, provider, settings)
+            except Exception as exc:  # noqa: BLE001 — one paper must not abort a paid batch
+                session.rollback()
+                totals["failed"] += 1
+                errors.append(f"{arxiv_id}: {exc}")
+                print(f"[{i}/{len(arxiv_ids)}] {arxiv_id}: FAILED — {exc}", flush=True)
+                continue
             totals["chunks"] += stats["chunks_indexed"]
             totals["claims"] += stats["claims_indexed"]
             totals["failed"] += stats["failed"]
@@ -97,8 +105,10 @@ def main(corpus: str, skip_existing: bool, dry_run: bool, force: bool) -> int:
         f"\nchunks: {totals['chunks']}  claims: {totals['claims']}  "
         f"entities: {entity_stats['entities_indexed']}  failed: {totals['failed'] + entity_stats['failed']}"
     )
-    for line in errors[:5]:
+    for line in errors[:_MAX_PRINTED_ERRORS]:
         print(f"  error: {line}")
+    if len(errors) > _MAX_PRINTED_ERRORS:
+        print(f"  ... and {len(errors) - _MAX_PRINTED_ERRORS} more errors")
     return 1 if totals["failed"] or entity_stats["failed"] else 0
 
 

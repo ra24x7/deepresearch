@@ -20,6 +20,7 @@ from ingestion.arxiv_client import download_pdf, fetch_by_ids
 from ingestion.chunker import chunk_paper
 from ingestion.enrich.claims import ExtractedEntity, extract_claims_and_entities
 from ingestion.enrich.entities import merge_entities
+from ingestion.exceptions import ArxivNotFoundError
 from ingestion.parser import parse_pdf
 from ingestion.schemas import ArxivMetadata
 from search.filters import is_indexable_section
@@ -46,7 +47,7 @@ def default_pipeline_settings() -> PipelineSettings:
 
 
 def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session, settings: PipelineSettings) -> dict:
-    metadata = fetch_by_ids([arxiv_id], settings.arxiv)[0]
+    metadata = _fetch_metadata(arxiv_id, settings)
     pdf_path = _find_or_download_pdf(metadata, papers_dir, settings.arxiv)
     content = parse_pdf(pdf_path, settings.parser)
     chunks = chunk_paper(metadata, content, settings.chunking)
@@ -94,6 +95,15 @@ def parse_and_chunk_paper(arxiv_id: str, corpus: str, papers_dir: Path, session,
         "chunks": len(chunks),
         "words": sum(c.word_count for c in chunks),
     }
+
+
+def _fetch_metadata(arxiv_id: str, settings: PipelineSettings) -> ArxivMetadata:
+    # arXiv answers an unknown id with a well-formed, empty feed; indexing it
+    # blind reports an IndexError that names neither the id nor arXiv.
+    entries = fetch_by_ids([arxiv_id], settings.arxiv)
+    if not entries:
+        raise ArxivNotFoundError(f"arXiv returned no metadata for {arxiv_id}")
+    return entries[0]
 
 
 def _find_or_download_pdf(metadata: ArxivMetadata, papers_dir: Path, settings: ArxivSettings) -> Path:

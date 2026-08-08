@@ -2,6 +2,10 @@ class ArxivAPIError(Exception):
     """Raised when the arXiv API request fails after retries are exhausted."""
 
 
+class ArxivNotFoundError(ArxivAPIError):
+    """Raised when arXiv returns no metadata entry for a requested id."""
+
+
 class ArxivParseError(Exception):
     """Raised when the arXiv Atom XML response cannot be parsed."""
 

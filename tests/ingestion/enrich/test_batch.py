@@ -54,10 +54,23 @@ class TestRunBatched:
             raise ValueError(f"fail {item}")
 
         errors = []
-        successes, failures = run_batched(
-            [1, 2], batch_fn, item_fn, lambda item, exc: errors.append((item, exc))
-        )
+        successes, failures = run_batched([1, 2], batch_fn, item_fn, lambda item, exc: errors.append((item, exc)))
 
         assert successes == []
         assert failures == [1, 2]
         assert len(errors) == 2
+
+    def test_batch_failure_is_reported_before_the_per_item_fallback(self):
+        def batch_fn(items):
+            raise RuntimeError("batch endpoint down")
+
+        seen = []
+        run_batched([1, 2], batch_fn, lambda item: item, lambda item, exc: None, on_batch_error=seen.append)
+
+        assert [str(exc) for exc in seen] == ["batch endpoint down"]
+
+    def test_no_batch_error_is_reported_when_the_batch_succeeds(self):
+        seen = []
+        run_batched([1], lambda items: items, lambda item: item, lambda item, exc: None, on_batch_error=seen.append)
+
+        assert seen == []

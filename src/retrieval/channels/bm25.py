@@ -1,15 +1,14 @@
 from typing import Any
 
+from retrieval.channels.response import hits_of
 from retrieval.schemas import RetrievalHit
 from search.indices import chunks_index_name
 
 
 def search_bm25(client: Any, corpus: str, query: str, size: int) -> list[RetrievalHit]:
-    response = client.search(
-        index=chunks_index_name(corpus),
-        body={"size": size, "query": {"match": {"text": query}}},
-    )
-    return [_to_hit(hit) for hit in response["hits"]["hits"]]
+    index_name = chunks_index_name(corpus)
+    response = client.search(index=index_name, body={"size": size, "query": {"match": {"text": query}}})
+    return [_to_hit(hit) for hit in hits_of(response, index_name)]
 
 
 def _to_hit(hit: dict) -> RetrievalHit:

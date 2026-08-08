@@ -211,3 +211,28 @@ class TestFailureReporting:
         assert (indexed, failed) == (0, 1)
         assert seen[0][0] == "model-x"
         assert "mapping rejected" in seen[0][1]
+
+    def test_reported_error_carries_the_reason_opensearch_gave(self):
+        client = MagicMock()
+        client.bulk.return_value = {
+            "errors": True,
+            "items": [{"index": {"_id": "model-x", "error": {"type": "mapper_parsing_exception"}}}],
+        }
+        seen = []
+
+        indexed, failed = index_entities(
+            client, "corpusA", [_entity("model-x")], on_error=lambda i, e: seen.append(str(e))
+        )
+
+        assert (indexed, failed) == (0, 1)
+        assert "mapper_parsing_exception" in seen[0]
+
+    def test_batch_failure_is_logged_even_when_every_doc_then_succeeds(self, caplog):
+        client = MagicMock()
+        client.bulk.side_effect = [RuntimeError("connection reset"), {"errors": False, "items": []}]
+
+        with caplog.at_level("WARNING", logger="search.indexer"):
+            indexed, failed = index_entities(client, "corpusA", [_entity("model-x")])
+
+        assert (indexed, failed) == (1, 0)
+        assert "connection reset" in caplog.text

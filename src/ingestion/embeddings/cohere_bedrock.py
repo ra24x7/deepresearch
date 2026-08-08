@@ -2,7 +2,7 @@ import json
 import time
 from typing import Any
 
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 
 from config import EmbeddingSettings
 from ingestion.embeddings.exceptions import EmbeddingInvocationError
@@ -14,6 +14,18 @@ _THROTTLING_ERROR_CODE = "ThrottlingException"
 # Bedrock enforces a tokens-per-minute ceiling; backoff must be able to outwait
 # a full window, so the doubling sequence sums past 60s within max_retries.
 _BACKOFF_BASE_SECONDS = 4.0
+
+
+def _parse_embeddings(response: Any, expected: int) -> list[list[float]]:
+    try:
+        embeddings = json.loads(response["body"].read())["embeddings"]["float"]
+    except (json.JSONDecodeError, KeyError, TypeError) as exc:
+        raise EmbeddingInvocationError(f"Cohere Bedrock embed response was malformed: {exc}") from exc
+    # A short vector list silently misaligns embeddings with their texts, so
+    # every document after the gap would be indexed under the wrong vector.
+    if len(embeddings) != expected:
+        raise EmbeddingInvocationError(f"Cohere Bedrock returned {len(embeddings)} embeddings for {expected} texts")
+    return embeddings
 
 
 class CohereBedrockProvider:
@@ -59,8 +71,11 @@ class CohereBedrockProvider:
                     raise EmbeddingInvocationError(f"Cohere Bedrock embed call failed: {exc}") from exc
                 last_error = exc
                 continue
-            body = json.loads(response["body"].read())
-            return body["embeddings"]["float"]
+            except BotoCoreError as exc:
+                # Timeouts and connection failures are not ClientError; unwrapped
+                # they reach the caller as a raw botocore error.
+                raise EmbeddingInvocationError(f"Cohere Bedrock embed call failed: {exc}") from exc
+            return _parse_embeddings(response, len(texts))
         raise EmbeddingInvocationError(
             f"Cohere Bedrock embed call throttled after {self._settings.max_retries} attempts: {last_error}"
-        )
+        ) from last_error

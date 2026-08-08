@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, EndpointConnectionError
 
 from config import EnrichmentSettings
 from llm.bedrock import Usage, invoke, invoke_json
@@ -120,3 +120,39 @@ class TestInvokeJson:
             invoke_json("prompt", client, SETTINGS)
 
         assert client.converse.call_count == 2
+
+
+class TestErrorPropagation:
+    def test_response_without_text_content_raises_typed_error(self):
+        client = MagicMock()
+        client.converse.return_value = {"output": {}, "usage": {}}
+
+        with pytest.raises(LLMInvocationError, match="no text content"):
+            invoke("prompt", client, SETTINGS)
+
+    def test_connection_failure_is_wrapped_in_a_typed_error(self, mocker):
+        mocker.patch("llm.bedrock.time.sleep")
+        client = MagicMock()
+        client.converse.side_effect = EndpointConnectionError(endpoint_url="https://bedrock")
+
+        with pytest.raises(LLMInvocationError) as excinfo:
+            invoke("prompt", client, SETTINGS)
+
+        assert isinstance(excinfo.value.__cause__, EndpointConnectionError)
+
+    def test_throttling_exhaustion_keeps_the_underlying_error_as_cause(self, mocker):
+        mocker.patch("llm.bedrock.time.sleep")
+        client = MagicMock()
+        client.converse.side_effect = [_client_error("ThrottlingException")] * SETTINGS.max_retries
+
+        with pytest.raises(LLMInvocationError) as excinfo:
+            invoke("prompt", client, SETTINGS)
+
+        assert isinstance(excinfo.value.__cause__, ClientError)
+
+    def test_json_parse_failure_names_both_responses(self):
+        client = MagicMock()
+        client.converse.side_effect = [_converse_response("first junk"), _converse_response("second junk")]
+
+        with pytest.raises(LLMJSONParseError, match="first junk"):
+            invoke_json("prompt", client, SETTINGS)
