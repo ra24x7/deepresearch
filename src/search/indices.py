@@ -1,17 +1,21 @@
+from ingestion.ids import validate_corpus
+
 _INDEX_PREFIX = "dr"
 _KNN_METHOD = {"name": "hnsw", "engine": "faiss", "space_type": "cosinesimil"}
 
 
+# The corpus name reaches OpenSearch as part of a URL path, where `*` and `..`
+# would widen a read — or a delete — beyond the intended index.
 def chunks_index_name(corpus: str) -> str:
-    return f"{_INDEX_PREFIX}-chunks-{corpus}"
+    return f"{_INDEX_PREFIX}-chunks-{validate_corpus(corpus)}"
 
 
 def claims_index_name(corpus: str) -> str:
-    return f"{_INDEX_PREFIX}-claims-{corpus}"
+    return f"{_INDEX_PREFIX}-claims-{validate_corpus(corpus)}"
 
 
 def entities_index_name(corpus: str) -> str:
-    return f"{_INDEX_PREFIX}-entities-{corpus}"
+    return f"{_INDEX_PREFIX}-entities-{validate_corpus(corpus)}"
 
 
 def _knn_vector_field(dimension: int) -> dict:

@@ -14,6 +14,8 @@ class ArxivSettings(FrozenSettings):
     max_retries: int = 3
     timeout_seconds: float = 30.0
     pdf_cache_dir: str = "data/papers"
+    # A download is written to disk before the parser's own size check runs.
+    max_download_mb: float = 25.0
 
 
 class ParserSettings(FrozenSettings):
@@ -50,7 +52,9 @@ class OpenSearchSettings(FrozenSettings):
 class PostgresSettings(FrozenSettings):
     model_config = SettingsConfigDict(env_prefix="POSTGRES__")
 
-    dsn: str = "postgresql://deepresearch:deepresearch@localhost:5433/deepresearch"
+    # Passwordless default: a credential committed to source is a credential
+    # every deployment shares. Set POSTGRES__DSN (see .env.example).
+    dsn: str = "postgresql://deepresearch@localhost:5433/deepresearch"
 
     @field_validator("dsn")
     @classmethod

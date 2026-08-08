@@ -7,15 +7,24 @@ See `doc/` for spec, architecture, and the living roadmap (`doc/project-status.m
 
 ```bash
 uv sync                                      # local env (Python 3.13)
-cp .env.example .env                         # fill in AWS_BEARER_TOKEN_BEDROCK
+cp .env.example .env                         # fill in every blank value
 
 docker compose up -d --build                 # OpenSearch + Postgres + Airflow
 docker compose ps                            # wait for 4/4 healthy
 ```
 
-- Airflow UI: http://localhost:8080 (admin / admin)
+`.env` needs `AWS_BEARER_TOKEN_BEDROCK` plus three secrets compose refuses to
+start without — `POSTGRES_PASSWORD`, `AIRFLOW_ADMIN_PASSWORD` (≥12 chars) and
+`AIRFLOW_SECRET_KEY`.
+
+- Airflow UI: http://localhost:8080 (`admin` / `AIRFLOW_ADMIN_PASSWORD`)
 - OpenSearch: http://localhost:9200 — Dashboards: http://localhost:5601
 - Postgres: localhost:5433 (`deepresearch` app DB + `airflow` metadata DB)
+
+Every published port binds to `127.0.0.1`: OpenSearch runs with its security
+plugin disabled and Airflow admin can execute code in a task that holds the
+Bedrock key, so neither is safe to expose beyond the host. Serving this stack
+on a network needs real authentication first, not a port change.
 
 Smoke test: trigger the `stack_healthcheck` DAG in the Airflow UI (or
 `docker compose exec airflow airflow dags test stack_healthcheck`) — three

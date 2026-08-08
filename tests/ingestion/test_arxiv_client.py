@@ -8,7 +8,7 @@ import pytest
 from config import ArxivSettings
 from ingestion import arxiv_client
 from ingestion.arxiv_client import download_pdf, fetch_by_ids, fetch_by_query
-from ingestion.exceptions import ArxivAPIError, PDFDownloadError
+from ingestion.exceptions import ArxivAPIError, ArxivParseError, PDFDownloadError
 from ingestion.schemas import ArxivMetadata
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -142,6 +142,60 @@ class TestDownloadPdf:
 
         with pytest.raises(PDFDownloadError):
             download_pdf(self._metadata(), tmp_path, SETTINGS)
+
+
+class TestUntrustedResponses:
+    def test_oversized_download_is_rejected_instead_of_written(self, mocker, tmp_path):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        response = MagicMock()
+        response.content = b"x" * (2 * 1024 * 1024)
+        response.raise_for_status.return_value = None
+        _patch_client(mocker, [response] * 3)
+        settings = ArxivSettings(rate_limit_seconds=0.0, max_retries=1, max_download_mb=1.0)
+
+        with pytest.raises(PDFDownloadError):
+            download_pdf(TestDownloadPdf()._metadata(), tmp_path, settings)
+
+        assert list(tmp_path.iterdir()) == []
+
+    def test_entity_expansion_payload_is_refused_by_the_parser(self, mocker):
+        mocker.patch("ingestion.arxiv_client.time.sleep")
+        billion_laughs = (
+            '<?xml version="1.0"?><!DOCTYPE feed ['
+            '<!ENTITY a "aaaaaaaaaa"><!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">'
+            ']><feed xmlns="http://www.w3.org/2005/Atom"><title>&b;</title></feed>'
+        )
+        _patch_client(mocker, [_ok_response(billion_laughs)])
+
+        with pytest.raises(ArxivParseError):
+            fetch_by_ids(["2501.00001"], SETTINGS)
+
+
+class TestParamValidation:
+    def test_id_that_is_not_an_arxiv_id_never_reaches_the_network(self, mocker):
+        _, client = _patch_client(mocker, [_ok_response()])
+
+        with pytest.raises(ValueError):
+            fetch_by_ids(["../../etc/passwd"], SETTINGS)
+
+        client.get.assert_not_called()
+
+    def test_category_carrying_a_query_clause_never_reaches_the_network(self, mocker):
+        _, client = _patch_client(mocker, [_ok_response()])
+
+        with pytest.raises(ValueError):
+            fetch_by_query("cs.AI OR all:*", "20250101", "20250201", 10, SETTINGS)
+
+        client.get.assert_not_called()
+
+    @pytest.mark.parametrize("max_results", [0, -1, 100_000])
+    def test_max_results_is_bounded(self, mocker, max_results):
+        _, client = _patch_client(mocker, [_ok_response()])
+
+        with pytest.raises(ValueError):
+            fetch_by_query("cs.AI", "20250101", "20250201", max_results, SETTINGS)
+
+        client.get.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from ingestion.ids import validate_arxiv_id, validate_pdf_url
 
 
 class ArxivMetadata(BaseModel):
@@ -13,6 +15,18 @@ class ArxivMetadata(BaseModel):
     categories: tuple[str, ...]
     published: date
     pdf_url: str
+
+    # Both fields arrive from an arXiv response body and then reach the
+    # filesystem and the network, so they are validated on construction.
+    @field_validator("arxiv_id")
+    @classmethod
+    def _check_arxiv_id(cls, value: str) -> str:
+        return validate_arxiv_id(value)
+
+    @field_validator("pdf_url")
+    @classmethod
+    def _check_pdf_url(cls, value: str) -> str:
+        return validate_pdf_url(value)
 
 
 class PaperSection(BaseModel):
