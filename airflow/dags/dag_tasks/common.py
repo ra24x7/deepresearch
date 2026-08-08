@@ -1,32 +1,25 @@
-"""Shared, cached service handles for ingestion tasks.
+"""Per-process caching of the service handles ingestion tasks need.
 
 Package name deliberately not `ingestion` — the dags folder is on sys.path and
 would shadow src/ingestion.
 
-Every knob comes from the settings classes or DAG params; nothing about what
-gets fetched or how it is processed is hardcoded here.
+How a client is built lives in src/clients.py; this module only memoizes it, so
+a task process opens one connection each and the DAG cannot drift onto
+different hosts or timeouts than the scripts use.
 """
 
 from functools import lru_cache
 from pathlib import Path
 
-import boto3
-from botocore.config import Config
-from opensearchpy import OpenSearch
-
-from config import BedrockSettings, EmbeddingSettings, OpenSearchSettings, PostgresSettings
-from db.session import get_engine, get_session_factory
-from ingestion.embeddings.factory import build_provider
+import clients
 from llm.bedrock import invoke_json
 from pipeline.stages import default_pipeline_settings
 
 PAPERS_DIR = Path("/opt/airflow/data/papers")
-_REQUEST_TIMEOUT_SECONDS = 120
 
-
-@lru_cache(maxsize=1)
-def session_factory():
-    return get_session_factory(get_engine(PostgresSettings()))
+session_factory = lru_cache(maxsize=1)(clients.postgres_session_factory)
+bedrock_client = lru_cache(maxsize=1)(clients.bedrock_runtime_client)
+search_client = lru_cache(maxsize=1)(clients.opensearch_client)
 
 
 @lru_cache(maxsize=1)
@@ -35,27 +28,8 @@ def pipeline_settings():
 
 
 @lru_cache(maxsize=1)
-def bedrock_client():
-    settings = BedrockSettings()
-    return boto3.client(
-        "bedrock-runtime",
-        region_name=settings.region,
-        config=Config(read_timeout=_REQUEST_TIMEOUT_SECONDS, connect_timeout=_REQUEST_TIMEOUT_SECONDS),
-    )
-
-
-@lru_cache(maxsize=1)
-def search_client():
-    host = OpenSearchSettings().host.replace("http://", "").replace("https://", "")
-    hostname, _, port = host.partition(":")
-    return OpenSearch(hosts=[{"host": hostname, "port": int(port or 9200)}], timeout=_REQUEST_TIMEOUT_SECONDS)
-
-
-@lru_cache(maxsize=1)
 def embedding_provider():
-    settings = EmbeddingSettings()
-    client = None if settings.provider == "fake" else bedrock_client()
-    return build_provider(settings, client)
+    return clients.embedding_provider(bedrock_client=bedrock_client())
 
 
 def llm_invoke_json(prompt: str):

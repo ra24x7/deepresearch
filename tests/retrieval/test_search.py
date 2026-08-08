@@ -5,8 +5,8 @@ import pytest
 from config import RetrievalSettings
 from ingestion.embeddings.fake import FakeEmbeddingProvider
 from retrieval.rerank.identity import IdentityReranker
-from retrieval.schemas import RetrievalHit
-from retrieval.search import search
+from retrieval.schemas import CHANNEL_NAMES, RetrievalHit
+from retrieval.search import candidate_pool_size, run_channels, search
 
 PROVIDER = FakeEmbeddingProvider(1024)
 SETTINGS = RetrievalSettings(top_k=3, over_fetch_multiplier=4, min_candidates=12)
@@ -107,6 +107,37 @@ class TestResults:
 
         assert result.hits == ()
         reranker.rerank.assert_not_called()
+
+
+class TestCandidatePoolSize:
+    def test_over_fetches_relative_to_top_k(self):
+        settings = RetrievalSettings(top_k=30, over_fetch_multiplier=4, min_candidates=60)
+
+        assert candidate_pool_size(settings) == 120
+
+    def test_never_drops_below_the_floor(self):
+        settings = RetrievalSettings(top_k=3, over_fetch_multiplier=4, min_candidates=60)
+
+        assert candidate_pool_size(settings) == 60
+
+    def test_an_explicit_k_overrides_the_configured_top_k(self):
+        settings = RetrievalSettings(top_k=3, over_fetch_multiplier=4, min_candidates=12)
+
+        assert candidate_pool_size(settings, 30) == 120
+
+
+class TestRunChannels:
+    def test_every_channel_is_queried_by_default(self, channels):
+        hits_by_channel = run_channels("a query", "evalv1", MagicMock(), PROVIDER, 12, SETTINGS)
+
+        assert set(hits_by_channel) == set(CHANNEL_NAMES)
+
+    def test_only_the_requested_channels_are_queried(self, channels):
+        # the fusion sweep re-runs one channel itself and must not pay twice
+        hits_by_channel = run_channels("a query", "evalv1", MagicMock(), PROVIDER, 12, SETTINGS, ["bm25"])
+
+        assert set(hits_by_channel) == {"bm25"}
+        channels["entities"].assert_not_called()
 
 
 class TestChannelWeights:

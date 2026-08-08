@@ -6,7 +6,9 @@ from evals.retrieval_eval import (
     ndcg_at_k,
     recall_at_k,
     relevant_chunk_ids,
+    relevant_chunks_for_entry,
     relevant_claim_hashes,
+    relevant_claims_for_entry,
     score_question,
 )
 from retrieval.schemas import FusedHit, RetrievalHit
@@ -142,3 +144,43 @@ class TestRelevantClaims:
 
     def test_no_claims_yields_an_empty_set(self):
         assert relevant_claim_hashes(quote="q", answer="a", claims=[]) == set()
+
+
+ENTRY = {
+    "id": "g001",
+    "question": "how many nodes does the graph contain?",
+    "reference_answer": "96,517 nodes",
+    "evidence": [
+        {"arxiv_id": "p1", "quote": "the graph contains 96,517 nodes"},
+        {"arxiv_id": "p2", "quote": "the second paper reports the same count"},
+        {"arxiv_id": "p3", "formula": "n = 96517"},
+    ],
+}
+
+
+class TestRelevanceForAnEntry:
+
+    def test_unions_the_chunks_of_every_quoted_evidence_item(self):
+        chunks = {
+            "p1": [("c1", "prefix the graph contains 96,517 nodes suffix")],
+            "p2": [("c2", "the second paper reports the same count")],
+            "p3": [("c3", "n = 96517")],
+        }
+
+        assert relevant_chunks_for_entry(ENTRY, chunks) == {"c1", "c2"}
+
+    def test_evidence_without_a_quote_contributes_nothing(self):
+        # a formula is a linearized transcription: there is no verbatim span
+        assert relevant_chunks_for_entry(ENTRY, {"p3": [("c3", "n = 96517")]}) == set()
+
+    def test_a_paper_with_no_chunks_loaded_is_skipped(self):
+        assert relevant_chunks_for_entry(ENTRY, {}) == set()
+
+    def test_claims_are_matched_against_quote_and_reference_answer(self):
+        claims = {"p1": [("h1", "The graph contains 96,517 nodes."), ("h2", "The system uses LangGraph.")]}
+
+        assert relevant_claims_for_entry(ENTRY, claims) == {"h1"}
+
+    def test_an_entry_without_evidence_has_no_relevant_documents(self):
+        assert relevant_chunks_for_entry({"id": "g002"}, {}) == set()
+        assert relevant_claims_for_entry({"id": "g002"}, {}) == set()

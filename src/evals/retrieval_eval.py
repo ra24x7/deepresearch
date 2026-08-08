@@ -49,6 +49,29 @@ def relevant_claim_hashes(
     return relevant
 
 
+def relevant_chunks_for_entry(entry: dict, chunks_by_paper: dict[str, list[tuple[str, str]]]) -> set[str]:
+    """Union the relevance sets of every quoted piece of evidence in one entry.
+
+    Evidence without a quote (a `formula`, which is a transcription) contributes
+    nothing: there is no verbatim span to locate.
+    """
+    relevant: set[str] = set()
+    for evidence in entry.get("evidence", []):
+        if evidence.get("quote"):
+            relevant |= relevant_chunk_ids(evidence["quote"], chunks_by_paper.get(evidence["arxiv_id"], []))
+    return relevant
+
+
+def relevant_claims_for_entry(entry: dict, claims_by_paper: dict[str, list[tuple[str, str]]]) -> set[str]:
+    relevant: set[str] = set()
+    for evidence in entry.get("evidence", []):
+        if evidence.get("quote"):
+            relevant |= relevant_claim_hashes(
+                evidence["quote"], entry.get("reference_answer", ""), claims_by_paper.get(evidence["arxiv_id"], [])
+            )
+    return relevant
+
+
 def recall_at_k(ranked_ids: list[str], relevant: set[str], k: int) -> float | None:
     if not relevant:
         return None

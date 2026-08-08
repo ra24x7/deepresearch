@@ -6,24 +6,19 @@ transcriptions, never verbatim — they are not audited.
     uv run python scripts/solvability_audit.py
 """
 
-import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+import _bootstrap  # noqa: F401
 
-from config import PostgresSettings
-from db.models import Chunk, Paper
-from db.session import get_engine, get_session_factory
+from clients import postgres_session_factory
+from db.queries import chunks_by_paper as load_chunks_by_paper
+from db.queries import raw_text_by_paper
+from evals.report import write_json_report
 from evals.solvability import audit_quote
+from goldenset import load_answerable_entries
 
-GOLDEN_PATH = Path("data/golden_dataset.jsonl")
 REPORT_PATH = Path("notebooks/phase2_ingestion/solvability_v1.json")
-
-
-def load_answerable_entries() -> list[dict]:
-    entries = [json.loads(line) for line in GOLDEN_PATH.read_text().splitlines() if line.strip()]
-    return [e for e in entries if e.get("expected_behavior") == "answer"]
 
 
 def truncated_quotes(records: list[dict], chunks_by_paper: dict) -> list[str]:
@@ -52,15 +47,14 @@ def truncated_quotes(records: list[dict], chunks_by_paper: dict) -> list[str]:
 
 
 def audit_all() -> dict:
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    session_factory = postgres_session_factory()
     records = []
     with session_factory() as session:
-        papers = {p.arxiv_id: p.raw_text for p in session.query(Paper).all()}
-        chunks_by_paper: dict[str, list[tuple[str, str]]] = {}
-        for chunk in session.query(Chunk).all():
-            chunks_by_paper.setdefault(chunk.arxiv_id, []).append((chunk.chunk_id, chunk.text))
+        papers = raw_text_by_paper(session)
+        chunks_by_paper = load_chunks_by_paper(session)
 
-    for entry in load_answerable_entries():
+    entries = load_answerable_entries()
+    for entry in entries:
         for evidence in entry.get("evidence", []):
             quote = evidence.get("quote")
             if not quote:
@@ -85,7 +79,7 @@ def audit_all() -> dict:
 
     quote_records = [
         {"question": entry["id"], "arxiv_id": ev["arxiv_id"], "quote": ev.get("quote")}
-        for entry in load_answerable_entries()
+        for entry in entries
         for ev in entry.get("evidence", [])
     ]
     audited = [r for r in records if "stage_a_found" in r]
@@ -107,8 +101,7 @@ def audit_all() -> dict:
 
 def main() -> int:
     report = audit_all()
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(report, indent=2) + "\n")
+    write_json_report(REPORT_PATH, report)
 
     for r in report["quotes"]:
         if r.get("status") == "paper_missing":

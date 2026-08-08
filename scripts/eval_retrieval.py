@@ -7,85 +7,51 @@ Free with the identity reranker; only --reranker cohere_bedrock costs anything
 """
 
 import argparse
-import json
-import statistics
 import sys
-from collections import defaultdict
 from pathlib import Path
 
-import boto3
-from botocore.config import Config
+import _bootstrap  # noqa: F401
 from dotenv import load_dotenv
-from opensearchpy import OpenSearch
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from config import BedrockSettings, EmbeddingSettings, PostgresSettings, RerankSettings, RetrievalSettings
-from db.models import Chunk, Claim
-from db.session import get_engine, get_session_factory
-from evals.retrieval_eval import relevant_chunk_ids, relevant_claim_hashes, score_question
-from ingestion.embeddings.factory import build_provider
-from retrieval.channels.bm25 import search_bm25
-from retrieval.channels.dense import search_dense_chunks, search_dense_claims
-from retrieval.channels.entities import search_entities
+from clients import bedrock_runtime_client, embedding_provider, opensearch_client, postgres_session_factory
+from config import RerankSettings, RetrievalSettings
+from db.queries import chunks_by_paper as load_chunks_by_paper
+from db.queries import claims_by_paper as load_claims_by_paper
+from evals.report import fmt, mean, write_json_report
+from evals.retrieval_eval import relevant_chunks_for_entry, relevant_claims_for_entry, score_question
+from goldenset import load_answerable_entries
 from retrieval.fusion import fuse
 from retrieval.rerank.factory import build_reranker
 from retrieval.router import route as route_query
+from retrieval.schemas import CHANNEL_NAMES
+from retrieval.search import candidate_pool_size, fusion_weights, run_channels
 
 REPORT_PATH = Path("notebooks/phase3_retrieval/retrieval_eval.json")
-_TIMEOUT = 120
-
-
-def mean(values: list[float | None]) -> float | None:
-    present = [v for v in values if v is not None]
-    return statistics.mean(present) if present else None
-
-
-def fmt(value: float | None) -> str:
-    return f"{value:.3f}" if value is not None else "  -  "
 
 
 def main(corpus: str, k: int, reranker_name: str) -> int:
     load_dotenv()
     settings = RetrievalSettings(top_k=k)
-    bedrock = boto3.client(
-        "bedrock-runtime", region_name=BedrockSettings().region, config=Config(read_timeout=_TIMEOUT)
-    )
-    provider = build_provider(EmbeddingSettings(), bedrock)
-    search_client = OpenSearch(hosts=[{"host": "localhost", "port": 9200}], timeout=_TIMEOUT)
+    provider = embedding_provider()
+    search_client = opensearch_client()
 
     rerank_settings = RerankSettings(provider=reranker_name)
-    rerank_client = (
-        boto3.client("bedrock-runtime", region_name=rerank_settings.region, config=Config(read_timeout=_TIMEOUT))
-        if reranker_name != "identity"
-        else None
-    )
+    rerank_client = None if reranker_name == "identity" else bedrock_runtime_client(rerank_settings.region)
     reranker = build_reranker(rerank_settings, rerank_client)
 
-    questions = [json.loads(line) for line in Path("data/golden_dataset.jsonl").read_text().splitlines() if line.strip()]
-    answerable = [q for q in questions if q.get("expected_behavior") == "answer"]
+    answerable = load_answerable_entries()
 
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    session_factory = postgres_session_factory()
     with session_factory() as session:
-        chunks_by_paper: dict[str, list[tuple[str, str]]] = defaultdict(list)
-        for chunk in session.query(Chunk).all():
-            chunks_by_paper[chunk.arxiv_id].append((chunk.chunk_id, chunk.text))
-        claims_by_paper: dict[str, list[tuple[str, str]]] = defaultdict(list)
-        for claim in session.query(Claim).all():
-            claims_by_paper[claim.arxiv_id].append((claim.claim_hash, claim.claim_text))
+        chunks_by_paper = load_chunks_by_paper(session)
+        claims_by_paper = load_claims_by_paper(session)
 
-    size = max(settings.over_fetch_multiplier * k, settings.min_candidates)
+    size = candidate_pool_size(settings, k)
     records, unreachable, no_relevant = [], [], []
 
     for q in answerable:
-        relevant: set[str] = set()
-        claim_relevant: set[str] = set()
-        for ev in q["evidence"]:
-            if ev.get("quote"):
-                relevant |= relevant_chunk_ids(ev["quote"], chunks_by_paper.get(ev["arxiv_id"], []))
-                claim_relevant |= relevant_claim_hashes(
-                    ev["quote"], q.get("reference_answer", ""), claims_by_paper.get(ev["arxiv_id"], [])
-                )
+        relevant = relevant_chunks_for_entry(q, chunks_by_paper)
+        claim_relevant = relevant_claims_for_entry(q, claims_by_paper)
         # Claims are scored separately, not merged into the chunk relevance set:
         # retrieving the chunk already answers the question, so counting an
         # unfound claim as a miss would punish 25 questions to measure 4.
@@ -94,15 +60,10 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
             continue
 
         query = q["question"]
-        hits_by_channel = {
-            "bm25": search_bm25(search_client, corpus, query, size),
-            "dense_chunks": search_dense_chunks(search_client, corpus, provider, query, size),
-            "dense_claims": search_dense_claims(search_client, corpus, provider, query, size),
-            "entities": search_entities(search_client, corpus, query, size, settings.entity_damping),
-        }
-        # must mirror the orchestrator, or the eval measures a system we do not ship
-        weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": settings.entity_weight}
-        fused = fuse(hits_by_channel, weights=weights, top_k=size)
+        # channels, weights and pool size come from the orchestrator: a local
+        # copy would measure a system we do not ship
+        hits_by_channel = run_channels(query, corpus, search_client, provider, size, settings)
+        fused = fuse(hits_by_channel, weights=fusion_weights(settings), top_k=size)
         reranked = reranker.rerank(query, fused, k) if fused else []
 
         scored = score_question(hits_by_channel, reranked, relevant, k)
@@ -125,7 +86,7 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
         print(f"{q['id']:5} {q['type']:16} recall@{k}={fmt(scored.fused.recall)} "
               f"ndcg={fmt(scored.fused.ndcg)} reachable={scored.reachable}", flush=True)
 
-    channels = ["bm25", "dense_chunks", "dense_claims", "entities"]
+    channels = CHANNEL_NAMES
     summary = {
         "questions_scored": len(records),
         "reranker": reranker.model_id,
@@ -153,8 +114,7 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
         "questions_without_relevant_chunk": no_relevant,
     }
 
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps({"summary": summary, "questions": records}, indent=2) + "\n")
+    write_json_report(REPORT_PATH, {"summary": summary, "questions": records})
 
     print(f"\n=== {len(records)} questions, k={k}, over-fetch={size}, reranker={reranker.model_id}")
     print(f"{'channel':<14}{'recall@k':>10}{'ndcg@k':>10}")

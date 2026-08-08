@@ -9,40 +9,17 @@ one paper. EMBEDDING__PROVIDER=fake runs the whole path without spending.
 
 import argparse
 import sys
-from pathlib import Path
 
-import boto3
-from botocore.config import Config
+import _bootstrap  # noqa: F401
 from dotenv import load_dotenv
-from opensearchpy import OpenSearch
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from config import BedrockSettings, EmbeddingSettings, OpenSearchSettings, PostgresSettings
-from db.models import Chunk, Paper
-from db.session import get_engine, get_session_factory
-from ingestion.embeddings.factory import build_provider
+from clients import embedding_provider, opensearch_client, postgres_session_factory
+from db.models import Chunk
+from db.queries import arxiv_ids_in_corpus
 from pipeline.stages import default_pipeline_settings, embed_and_index_paper, index_entities_for_corpus
 from search.filters import is_indexable_section
 from search.indexer import create_indices
 from search.indices import chunks_index_name
-
-_REQUEST_TIMEOUT_SECONDS = 120
-
-
-def build_clients(embedding: EmbeddingSettings):
-    bedrock_client = None
-    if embedding.provider != "fake":
-        bedrock_client = boto3.client(
-            "bedrock-runtime",
-            region_name=BedrockSettings().region,
-            config=Config(read_timeout=_REQUEST_TIMEOUT_SECONDS, connect_timeout=_REQUEST_TIMEOUT_SECONDS),
-        )
-    provider = build_provider(embedding, bedrock_client)
-    host = OpenSearchSettings().host.replace("http://", "").replace("https://", "")
-    hostname, _, port = host.partition(":")
-    search = OpenSearch(hosts=[{"host": hostname, "port": int(port or 9200)}], timeout=_REQUEST_TIMEOUT_SECONDS)
-    return provider, search
 
 
 def already_indexed(client, corpus: str, arxiv_id: str) -> bool:
@@ -50,7 +27,7 @@ def already_indexed(client, corpus: str, arxiv_id: str) -> bool:
 
 
 def report_dry_run(session, corpus: str) -> int:
-    arxiv_ids = [row[0] for row in session.query(Paper.arxiv_id).filter_by(corpus=corpus).order_by(Paper.arxiv_id)]
+    arxiv_ids = arxiv_ids_in_corpus(session, corpus)
     indexable = 0
     for chunk in session.query(Chunk).all():
         if is_indexable_section(chunk.section_title):
@@ -61,10 +38,10 @@ def report_dry_run(session, corpus: str) -> int:
 
 def main(corpus: str, skip_existing: bool, dry_run: bool, force: bool) -> int:
     load_dotenv()
-    embedding = EmbeddingSettings()
-    provider, client = build_clients(embedding)
+    provider = embedding_provider()
+    client = opensearch_client()
     settings = default_pipeline_settings()
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    session_factory = postgres_session_factory()
 
     print(f"provider={provider.model_id} dim={provider.dimension} corpus={corpus}")
     with session_factory() as session:
@@ -72,7 +49,7 @@ def main(corpus: str, skip_existing: bool, dry_run: bool, force: bool) -> int:
             return report_dry_run(session, corpus)
 
         create_indices(client, corpus, provider.dimension, force=force)
-        arxiv_ids = [row[0] for row in session.query(Paper.arxiv_id).filter_by(corpus=corpus).order_by(Paper.arxiv_id)]
+        arxiv_ids = arxiv_ids_in_corpus(session, corpus)
         totals = {"chunks": 0, "claims": 0, "failed": 0}
         errors: list[str] = []
 
