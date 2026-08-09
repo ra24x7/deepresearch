@@ -14,10 +14,88 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-09 | R4 retrieval, per-paper cap 3, identity rerank | golden 150 (136 scored) | fused recall@10 **0.719** — cap rejected |
 | 2026-08-08 | R3 retrieval, Cohere rerank | golden 150 (136 scored) | fused recall@10 **0.940**, NDCG **0.817** |
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## R4 — 2026-08-09 — Per-paper cap 3, identity reranker — REJECTED
+
+**Command:** `uv run python scripts/eval_retrieval.py --corpus evalv1 --k 10 --reranker identity`
+**Report:** `notebooks/phase3_retrieval/retrieval_eval_identity_cap3.json`
+**Cost:** query embeddings only (136 embed calls, negligible). Live Bedrock, user-authorized.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150 questions, human-verified — identical to R2/R3 |
+| Scored | 136 — same exclusions as R2/R3 |
+| Corpus | `evalv1` — identical to R2/R3 |
+| Code | **uncommitted working tree on `658cb5e`**: `cap_per_paper` filter between fusion and rerank, `per_paper_cap=3` (chunks and claims share a paper's slots) |
+| Config | k=10, over-fetch 60 — identical to R2, plus the cap |
+
+### Hypothesis under test
+
+R3 finding 2: `multi_paper` recall 0.569 because RRF lets one strong paper
+flood the shortlist. The cap skips any fused hit whose paper already has 3
+accepted, so the reranker sees more papers. Decision rule fixed **before**
+the run (see "dev-set discipline" below): accept iff `multi_paper` improves
+without denting `factual_single`; no sweeping the cap value.
+
+### Results — paired against R2 (identity, no cap; only the cap differs)
+
+| | R2 recall@10 | R4 recall@10 |
+|---|---|---|
+| **fused** | **0.907** | **0.719** |
+| fused NDCG | 0.681 | 0.613 |
+
+| type | n | R2 | R4 |
+|---|---|---|---|
+| factual_single | 33 | 1.000 | 0.848 |
+| negation | 21 | 0.976 | 0.643 |
+| entity_anchored | 18 | 0.944 | 0.750 |
+| definitional | 30 | 0.917 | 0.683 |
+| computable | 22 | 0.871 | 0.773 |
+| multi_paper | 12 | 0.514 | 0.444 |
+
+Per-question: **30 worse, 1 better** (g084, 0.0 → 0.5), 105 unchanged.
+Channels and reachability identical to R2, as they must be — the cap sits
+after fusion.
+
+### Verdict
+
+**Rejected on the pre-registered rule — every type regressed, including the
+one the cap was built for.** The mechanism is the one flagged in review
+before the run: a gold chunk ranked 4th-or-lower among its own paper's hits
+in RRF order is deleted from the candidate pool before anything
+relevance-aware sees it. Within-paper RRF rank is a poor proxy for
+relevance, so the cap trades gold for diversity. Any future diversity
+intervention must constrain *selection after relevance scoring*
+(rerank-then-diversify), never filter candidates before it.
+
+### Dev-set discipline — applies to this and all golden-set numbers
+
+The golden set has been used to tune `entity_weight` (R1 sweep), the gate
+config, and now to accept/reject this cap. It is functioning as a **dev
+set**: its numbers measure fit to these 150 questions, not held-out
+generalization. This entry's decision rule (single pre-registered binary
+comparison, no value sweep) is the standing mitigation. A frozen held-out
+split is pending — see `doc/project-status.md`, Decisions pending.
+
+### Correction to R3's g038 anomaly
+
+R3 recorded that g038 "passes the solvability audit, so the two checks
+disagree". Wrong on inspection: g038 has an **empty evidence list by
+design** (its answer is computed from corpus metadata; the SQL-over-metadata
+route is unbuilt, and its notes say it is expected to fail until built). The
+audit passes it vacuously (zero quotes to check) and the eval correctly
+excludes it (recall over zero gold chunks is undefined). No disagreement,
+no bug; both checks share one matcher (`quote_in_text`). The exclusion
+stands until the metadata route exists.
 
 ---
 
