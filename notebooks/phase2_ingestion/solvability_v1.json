@@ -1593,6 +1593,9 @@
   ],
   "summary": {
     "total_quotes": 159,
+    "unauditable_no_quotes": [
+      "g038"
+    ],
     "papers_missing": 0,
     "stage_a_passed": 159,
     "stage_b_passed": 159,

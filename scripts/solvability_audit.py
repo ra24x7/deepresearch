@@ -92,10 +92,16 @@ def audit_all() -> dict:
     fuzzy_only = sorted(
         {r["question"] for r in audited if r["stage_a_match"] == "fuzzy" or r["stage_b_match"] == "fuzzy"}
     )
+    # An answer-expected entry with zero quotes passes vacuously; name it so
+    # the pass is visibly hollow (g038 is metadata-computed by design).
+    unauditable = sorted(
+        e["id"] for e in load_answerable_entries() if not any(ev.get("quote") for ev in e.get("evidence", []))
+    )
     return {
         "quotes": records,
         "summary": {
             "total_quotes": len(records),
+            "unauditable_no_quotes": unauditable,
             "papers_missing": sum(1 for r in records if r.get("status") == "paper_missing"),
             "stage_a_passed": sum(1 for r in audited if r["stage_a_found"]),
             "stage_b_passed": sum(1 for r in audited if r["stage_b_found"]),
@@ -120,6 +126,8 @@ def main() -> int:
 
     s = report["summary"]
     print(f"\nquotes: {s['total_quotes']}  stage A: {s['stage_a_passed']}  stage B: {s['stage_b_passed']}")
+    if s["unauditable_no_quotes"]:
+        print(f"unauditable, no evidence quotes (by design): {', '.join(s['unauditable_no_quotes'])}")
     if s["fuzzy_matches_need_review"]:
         print(f"fuzzy (needs human review): {', '.join(s['fuzzy_matches_need_review'])}")
     if s["quotes_cut_mid_word"]:

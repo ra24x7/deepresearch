@@ -75,7 +75,7 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
             claims_by_paper[claim.arxiv_id].append((claim.claim_hash, claim.claim_text))
 
     size = max(settings.over_fetch_multiplier * k, settings.min_candidates)
-    records, unreachable, no_relevant = [], [], []
+    records, unreachable, no_evidence, unmatched = [], [], [], []
 
     for q in answerable:
         relevant: set[str] = set()
@@ -90,7 +90,10 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
         # retrieving the chunk already answers the question, so counting an
         # unfound claim as a miss would punish 25 questions to measure 4.
         if not relevant:
-            no_relevant.append(q["id"])
+            # No quotes at all is by design (g038: metadata-computed answer);
+            # quotes that match nothing mean the golden set and index drifted.
+            has_quotes = any(ev.get("quote") for ev in q["evidence"])
+            (unmatched if has_quotes else no_evidence).append(q["id"])
             continue
 
         query = q["question"]
@@ -150,7 +153,8 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
         "questions_with_a_relevant_claim": len([r for r in records if r["relevant_claims"]]),
         "claims_channel_found_it": len([r for r in records if r["claim_found"]]),
         "unreachable_questions": unreachable,
-        "questions_without_relevant_chunk": no_relevant,
+        "excluded_no_evidence": no_evidence,
+        "evidence_unmatched": unmatched,
     }
 
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -174,8 +178,10 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
     print("by type:", {t: f"{v['n']}q {fmt(v['recall'])}" for t, v in summary["by_type"].items()})
     if unreachable:
         print(f"unreachable: {', '.join(unreachable)}")
-    if no_relevant:
-        print(f"no relevant chunk found (excluded): {', '.join(no_relevant)}")
+    if no_evidence:
+        print(f"excluded, no evidence by design: {', '.join(no_evidence)}")
+    if unmatched:
+        print(f"WARNING — evidence quotes matched no chunk, golden set and index have drifted: {', '.join(unmatched)}")
     print(f"report: {REPORT_PATH}")
     return 0
 
