@@ -14,11 +14,72 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-10 | R5 retrieval, rerank-then-diversify cap 3, Cohere | golden 150 (136 scored) | fused recall@10 **0.875** — rejected |
 | 2026-08-09 | R4 retrieval, per-paper cap 3, identity rerank | golden 150 (136 scored) | fused recall@10 **0.719** — cap rejected |
 | 2026-08-08 | R3 retrieval, Cohere rerank | golden 150 (136 scored) | fused recall@10 **0.940**, NDCG **0.817** |
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## R5 — 2026-08-10 — Rerank-then-diversify, cap 3, Cohere reranker — REJECTED
+
+**Command:** `uv run python scripts/eval_retrieval.py --corpus evalv1 --k 10 --reranker cohere_bedrock`
+**Report:** `notebooks/phase3_retrieval/retrieval_eval_cohere_diversify.json`
+**Cost:** ~$0.15 (136 rerank calls at 60 docs each, plus query embeddings). Live Bedrock, user-authorized.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set / corpus / config | identical to R3 |
+| Code | **uncommitted working tree on `13b5236`**: reranker scores all 60 fused candidates (`top_n = len(fused)`), then greedy selection with `diversify_cap=3` per paper and backfill from skipped hits |
+
+### Hypothesis under test
+
+R4's lesson applied: the pre-rerank cap died because it deleted gold before
+relevance scoring, so constrain *selection* instead — every candidate gets a
+relevance score, the per-paper cap only chooses among scored hits. Decision
+rule pre-registered: accept iff `multi_paper` improves vs R3 without
+material regression elsewhere; cap fixed at 3, no sweep.
+
+### Results — paired against R3 (only the selection stage differs)
+
+| | R3 | R5 |
+|---|---|---|
+| **fused recall@10** | **0.940** | **0.875** |
+| fused NDCG | 0.817 | 0.792 |
+
+| type | n | R3 | R5 |
+|---|---|---|---|
+| factual_single | 33 | 1.000 | 0.970 |
+| entity_anchored | 18 | 1.000 | 0.944 |
+| negation | 21 | 0.976 | 0.929 |
+| definitional | 30 | 0.967 | 0.867 |
+| computable | 22 | 0.932 | 0.788 |
+| multi_paper | 12 | 0.569 | 0.597 |
+
+Per-question: **10 worse, 1 better** (g017, 0.333 → 0.667), 125 unchanged.
+Nine of the ten regressions fell from 1.000, four of them in `computable`.
+
+### Verdict
+
+**Rejected on the pre-registered rule: `multi_paper` gained +0.028 (about a
+third of one question at n=12) at the cost of 10 whole questions
+elsewhere.** The mechanism survives relevance scoring: on the regressed
+questions the reranker places three or more same-paper chunks *above* the
+gold chunk, so the selection cap skips gold exactly as the pre-rerank cap
+did. The R4 lesson generalizes — within-paper order is unreliable under
+*both* RRF and cross-encoder scoring, so **per-paper caps are the wrong
+lever for `multi_paper` entirely**, at any stage of the pipeline. The
+plausible right lever is query decomposition: a two-paper question becomes
+two sub-queries, each retrieved on its own merits — an architecture change,
+not a selection tweak; not built, not measured, recorded here as the
+surviving direction.
+
+Also confirmed live: the new exclusion buckets from `13b5236` — g038 now
+prints as `excluded, no evidence by design`, `evidence_unmatched` empty.
 
 ---
 
