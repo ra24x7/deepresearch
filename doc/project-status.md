@@ -3,9 +3,10 @@
 > Living document. Update at the end of every working session:
 > current phase, what moved, what's blocked, what's next.
 
-**Current phase:** 3 — Staged Retrieval Engine (read path built and measured;
-golden set at 150 and fully verified — next is the eval re-run)
-**Last updated:** 2026-08-08
+**Current phase:** 3 — Staged Retrieval Engine (read path built and measured
+at n=136; both open anomalies diagnosed — next is the channel keep/delete
+ADRs, which are the last exit criterion)
+**Last updated:** 2026-08-14
 
 ## Roadmap
 
@@ -146,8 +147,9 @@ this (2026-08-04):
 
 **Exit criteria:** recall@10 and NDCG measured per-retriever and fused on the
 golden set ✅; each retriever proves added recall or is deleted (ADR either
-way) — **unblocked 2026-08-08: golden set at 150, fully verified; awaiting
-the eval re-run**. The number is evidence for
+way) — **the re-run happened 2026-08-08 (R3, n=136); the ADRs are now the
+only outstanding exit criterion, and the entity channel's 0.260 recall is
+the evidence they turn on**. The number is evidence for
 a decision, not a certification — Voorhees & Buckley found >10% gaps that still
 mis-ranked systems at 50 topics, so a hard recall figure for a Phase 6 SLO must
 come from production traffic, not this set.
@@ -191,7 +193,12 @@ keep/delete ADRs.
 
 ### Phase 4 — Cost-Aware Agent Orchestration
 
-- [ ] LangGraph: guardrail → route → retrieve → generate as the happy path
+- [ ] LangGraph: guardrail → route → retrieve → generate as the happy path.
+      **Fix the router before routing becomes load-bearing:** `_is_artefact_token`
+      treats any acronym as an entity anchor, so every question mentioning LLM,
+      RAG or BERT routes `entity_anchored` — g080 does, while the entity channel
+      returns zero hits for it (`doc/eval-log.md` D1). Inert today only because
+      `src/retrieval/search.py` runs all four channels regardless of route.
 - [ ] Grade-and-rewrite as escape hatch, fired only on low rerank confidence
 - [ ] Supervisor tools: search_papers, sql_metadata, get_claims, ingest_by_id
 - [ ] Token/cost budget tracked per query (Langfuse)
@@ -242,6 +249,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-14 | Both open R3 anomalies diagnosed (`doc/eval-log.md` D1, 4 embed calls ~$0.00002; no source file changed). **g080 — the defect is in the question, not the retriever.** Its gold chunks are indexed with vectors, but the question's only content words (`llm`, `papers`, `weakness`) occur **zero** times in either gold chunk: bm25 returns the right paper's wrong section at rank 0, entities returns nothing at all. It is a corpus-level meta-question whose referent no retriever receives, so it is also *not* evidence about query decomposition — expect it to stay at 0.0 there. It alone holds reachability at 0.993, and `multi_paper` would read 0.621 rather than 0.569 without it. **g084 — a knife-edge, not a lever.** The semantic gate is exonerated (both gold chunks pass it); gold lands at fused ranks 10 and 13 against a k=10 cutoff decided by **0.00007**, with 8 of the top-10 being one paper's boilerplate. Entity weight and the RRF constant each flip the outcome non-monotonically and the shipped values of both land on the wrong side, so no config exceeds 0.500 — tuning either would be fitting the dev set. Corrects an earlier reading: R4's cap does not rescue g084's gold, it swaps which gold survives. First empirical support for query decomposition, since every within-one-ranking lever tops out at 0.500. A free corpus-wide anchor scan (r=+0.42 vs fused recall) found `multi_paper` systematically anchor-poor (mean 2.87 vs 4.24–4.87) and two questions worse-anchored than g080 — g088 (`the`, 0.02) and g087 (`with`, 0.23). |
 | 2026-08-10 | Rerank-then-diversify experiment: rejected (`doc/eval-log.md` R5, ~$0.15). Applying the per-paper cap of 3 at selection time — after Cohere scores all 60 candidates, R4's lesson applied — still lost 10 questions to gain a third of one: fused recall 0.940 → 0.875, `multi_paper` 0.569 → 0.597. The reranker itself ranks 3+ same-paper chunks above gold on the regressed questions, so within-paper order is unreliable under both RRF and cross-encoder scoring: per-paper caps are the wrong lever for `multi_paper` at any pipeline stage. Surviving direction, recorded not built: query decomposition (a two-paper question retrieves as two sub-queries). Code reverted; both experiments cost two eval runs and ~30 lines each, which is the eval-first loop working as intended. |
 | 2026-08-09 | Per-paper cap experiment: rejected on a pre-registered paired comparison (`doc/eval-log.md` R4, free run). A cap of 3 fused hits per paper between fusion and rerank — built to attack `multi_paper` 0.569 — regressed 30 questions and improved 1: identity fused recall 0.907 → 0.719, every type down including `multi_paper`. Root cause: within-paper RRF rank is a poor relevance proxy, so the cap deletes gold chunks from the candidate pool before anything relevance-aware sees them; the lesson (diversify after relevance scoring, never filter before it) is in the R4 entry. Same entry corrects R3's g038 anomaly — no bug, empty evidence by design pending the SQL-over-metadata route — and formalizes golden-set dev-set discipline. Cap code revert pending user decision. |
 | 2026-08-08 | Retrieval eval re-run at n=136 (`doc/eval-log.md` R2/R3, ~$0.15). Fused recall@10 0.940 / NDCG 0.817 with Cohere rerank, 0.907 / 0.681 without — the reranker's +0.136 NDCG is now decisive (better on 56 questions, worse on 14), where at n=29 it was only suggestive. Every headline number fell against the n=29 run and none of it is a regression: the retriever is unchanged, the exam got harder. Two things only the larger set could show — `multi_paper` recall 0.569 across 12 questions while every other type sits at 0.93–1.00, and the entity channel weakening to 0.260, which is the evidence the deferred keep/delete decision was waiting on. Two anomalies logged unexplained: g080 is unreachable by every channel, and g038 is silently excluded for having no matching chunk despite passing the solvability audit. |
@@ -258,6 +266,15 @@ not just demoed.
 
 ## Decisions pending
 
+- **Disposition of g080, g087, g088** (`doc/eval-log.md` D1). Three
+  `multi_paper` questions whose wording gives retrieval nothing to match:
+  g080's content words appear zero times in its own gold chunks, and g087 and
+  g088 share only `with` and `the` with theirs. Options per question: reword
+  to carry retrievable content, retire with the reason recorded, or keep as a
+  documented ceiling on `multi_paper` and reachability. **User's call** —
+  golden-set authority. Until then `multi_paper` (0.569, n=12) is bounded by
+  defects in three of its twelve questions, and any decomposition experiment
+  should exclude g080 from its decision rule.
 - **Held-out golden split.** The golden set is a dev set: it has tuned
   `entity_weight`, the gate config, and the rejected per-paper cap (R4), so
   its numbers measure fit to these 150 questions, not generalization. When

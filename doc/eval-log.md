@@ -14,12 +14,207 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-14 | D1 diagnostic, g080 + g084 (not a scored run) | golden 150 (nothing scored) | both anomalies explained; **no dataset-level numbers** |
 | 2026-08-10 | R5 retrieval, rerank-then-diversify cap 3, Cohere | golden 150 (136 scored) | fused recall@10 **0.875** — rejected |
 | 2026-08-09 | R4 retrieval, per-paper cap 3, identity rerank | golden 150 (136 scored) | fused recall@10 **0.719** — cap rejected |
 | 2026-08-08 | R3 retrieval, Cohere rerank | golden 150 (136 scored) | fused recall@10 **0.940**, NDCG **0.817** |
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## D1 — 2026-08-14 — Diagnostic: g080 unreachable, g084 lost in fusion
+
+**Commands:** ad-hoc probes against the live `evalv1` index (channel calls,
+`fuse()` counterfactuals, a corpus-wide anchor scan), plus re-analysis of the
+stored R2–R5 reports. No harness run; no report file written.
+**Cost:** 4 live Cohere embed calls (~$0.00002), user-authorized. No rerank calls.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150 questions, human-verified — identical to R2–R5 |
+| Scored | **none** — this entry produces no recall/NDCG over the dataset |
+| Corpus | `evalv1`, verified live: 1,518 indexed chunks / 638 claims / 1,624 entities |
+| Code | commit `ff1a9c9`, **unmodified** — no source file was changed |
+| Config | k=10, over-fetch 60, entity weight 0.1, gate `(dense_chunks, dense_claims)` |
+
+### Comparable to
+
+**Nothing — and it supersedes nothing.** This is a diagnostic entry, not a
+run. Every per-question number quoted below is either read from the stored
+R2/R3/R4/R5 reports or recomputed live against the same index, code and
+config those runs used. It changes no headline figure.
+
+---
+
+### g080 — root cause: the question, not the retriever
+
+R3 logged g080 as unreachable by every channel and left it unexplained. It is
+now explained, and the cause is in the golden set.
+
+**Not an indexing gap.** Both gold chunks are present in `dr-chunks-evalv1`
+with vectors: `2607.26952` abstract (p1, 199 words) and `2607.27191` sec 4.4
+(p11–12, 379 words). Each evidence quote resolves to exactly one chunk. This
+matters because `relevant_chunk_ids` is computed from **Postgres**, not the
+index — a chunk can count as gold while being absent from OpenSearch (ADR
+0003 excludes 106 bibliography chunks that way). Checked explicitly here;
+both are indexed.
+
+**The query shares no content with its own evidence.** After stopwording,
+g080's question has three content words — `llm`, `papers`, `weakness`. Term
+counts inside the gold chunks:
+
+| gold chunk | `llm` | `weakness` |
+|---|---|---|
+| 2607.26952 (abstract) | 0 | 0 |
+| 2607.27191 (sec 4.4) | 0 | 0 |
+
+BM25 cannot match on absent terms. What the channels do instead confirms the
+index is healthy and the query is empty: **bm25** returns a full 60 hits with
+rank 0 at `2607.27191::4-7-wefound-no-significant-reward-hacking` — the right
+paper, the wrong section — and **entities returns 0 hits**, no query n-gram
+matching any entity key.
+
+g080 is a corpus-level meta-question (*"Two of these papers…"*) whose referent
+no retriever receives, and whose discriminating content — credit-card
+reasoning, financial rules, AI peer review, the generator–verifier gap —
+appears nowhere in the query string. **No retriever operating on this query
+can reach this evidence.** The defect is in the question.
+
+**Consequence for the numbers:** g080 is the only unreachable question, so it
+alone holds reachability at 0.993 rather than 1.000. It contributes a hard 0.0
+to `multi_paper`, which reads 0.569 with it and would read 0.621 without it.
+**It is also not evidence about query decomposition** — decomposing g080
+yields equally contentless sub-queries. Expect it to stay at 0.0 under any
+decomposition experiment.
+
+**Incidental finding — router false positive (real, currently inert).** The
+router labels g080 `entity_anchored` because `LLM` matches `_ACRONYM_PATTERN`
+in `_is_artefact_token` (`src/retrieval/router.py`), while the entity channel
+returns zero hits for that same query. It changes nothing today:
+`src/retrieval/search.py` runs all four channels regardless of route and only
+`out_of_domain` short-circuits. It will misfire the moment Phase 4 routes
+selectively. Any question mentioning LLM, RAG or BERT routes this way.
+
+---
+
+### g084 — root cause: a knife-edge fusion margin, not one lever
+
+R3 recorded g084 at fused 0.000 with bm25 0.500 and dense_chunks 0.500 — the
+pipeline scoring below its own best channel. Reproduced live.
+
+**Gold is found by three channels and survives the gate.** The semantic gate
+was the prime suspect and is **exonerated**: all 60 candidates pass it, and
+both gold chunks are in `dense_chunks`' 60.
+
+| gold chunk | bm25 | dense_chunks | dense_claims | entities | fused |
+|---|---|---|---|---|---|
+| `2607.27136` KAMR abstract | 26 | 7 | — | 16 | **10** |
+| `2607.26470` CMT-RAG abstract | 4 | 33 | — | — | **13** |
+
+**The cutoff is decided by 0.00007.** Fused rank 9 scores 0.02757; the KAMR
+gold at rank 10 scores 0.02750 — a 0.25% difference. The top-10 is **8 of 10
+chunks from KAMR**: its introduction, related work, task definition,
+inference and additional-experiments sections evict its own abstract. Each
+entity-channel hit contributes ~0.0013 to the fused score, roughly **19× the
+margin that decides the outcome**, and the entity channel's 17 hits are all
+tied at score 0.383 — so its rank order, and therefore this question's
+result, is insertion-order arbitrary.
+
+**No tested configuration retrieves both gold chunks. The ceiling is 0.500.**
+
+| lever | result |
+|---|---|
+| entity weight 0.1 (**shipped**) | **0.000** |
+| entity weight 0.0 / 0.05 / 0.3 / 1.0 | 0.500 (all four) |
+| entity channel removed entirely | 0.500 |
+| RRF `k` = 20, 30 | 0.500 |
+| RRF `k` = 10, **60 (shipped)**, 120 | 0.000 |
+| per-paper cap 2 / 3 / 5 | 0.500 — but KAMR gold **drops out**, CMT-RAG enters |
+
+Three unrelated parameters flip the outcome non-monotonically, and the
+shipped values of two of them land on the wrong side. **This is noise, not a
+bug with a fix.** Tuning `entity_weight` or the RRF constant to recover g084
+would be fitting the dev set, which R4's dev-set discipline forbids.
+
+**Correction to an earlier reading of R4.** R4's per-paper cap is the only
+config where g084 scores 0.500, which invited the reading that the cap
+*rescued* the crowded-out gold. It does not — it **swaps** which gold
+survives. KAMR's abstract sits at fused rank 10, making it roughly the 9th
+KAMR chunk, so a cap of 3 deletes it before relevance scoring. That is
+exactly R4's recorded lesson, now observed at chunk level.
+
+**What survives every config:** the top-10 holds 8–9 chunks from a single
+paper. Two gold abstracts from two papers never co-occur, and the only lever
+that promotes one demotes the other. This is the first **empirical** support
+for query decomposition, which R5 recorded as a plausible direction with no
+evidence behind it: running each sub-question separately is the only route by
+which both abstracts could occupy the result set, since every
+within-one-ranking lever tops out at 0.500.
+
+---
+
+### Corpus-wide anchor scan (free, no API)
+
+To test whether g080 represents a class, each scored question was given a
+**weakest-anchor IDF**: over its weakest gold chunk, the highest IDF among
+terms shared with the question. IDF replaces a hand-written stopword list, so
+corpus-generic words score low on their own merits. IDF was computed over
+1,639 Postgres chunks against 1,518 indexed; the gap reconciles exactly as 15
+sandbox-corpus chunks + 106 ADR-0003 bibliography exclusions.
+
+**The metric predicts recall:** Pearson r = **+0.420** against fused recall,
+**+0.429** against bm25, **+0.256** against dense_chunks — strongest for the
+lexical channel, which is the sanity check passing. Questions with anchor
+< 3.0 average **0.537** fused recall (n=9); those ≥ 3.0 average **0.969**
+(n=127).
+
+**`multi_paper` is systematically anchor-poor** — mean 2.87 against 4.24–4.87
+for every other type, min 0.02. The four lowest-anchor questions in the entire
+golden set are all `multi_paper`, and the type fills 4 of the 9 sub-3.0 slots
+while being 8.8% of the set. Two are worse-anchored than g080 by any measure:
+**g088** (only shared term `the`, IDF 0.02) and **g087** (`with`, 0.23), both
+capped at 0.500 fused.
+
+**Stated limits of the metric.** It has false positives — g063 (2.25) and
+g010 (2.85) both score 1.000 because dense rescues them — and one notable
+false negative: **g080 itself ranks 21st at 3.38**, because its only shared
+term is the verb *"find"*. IDF rewards rare function words, not topical
+specificity. Screening heuristic, not a verdict.
+
+### Gold retrieved, then lost — measured across the set
+
+Comparing each question's fused recall against its own best single channel
+(a per-query oracle, not a selectable strategy):
+
+| run | questions below best channel | recall lost | of which `multi_paper` |
+|---|---|---|---|
+| R3 (Cohere) | 5 | 2.17 | 3 |
+| R2 (identity) | 9 | 5.67 | 3 |
+
+Mean oracle best-channel recall is 0.945 against fused 0.940, so the pipeline
+captures 99.5% of it — **this is not a broken pipeline**. It also
+independently re-confirms the reranker, which more than halves the loss. But
+it concentrates: 3 of 12 `multi_paper` questions have gold in a channel's
+top-10 and lose it downstream (g084, g034, g017).
+
+### What this entry does and does not license
+
+- **Does not support deleting the entity channel.** g084 was probed as
+  evidence for that pending ADR and does not serve as such — two of the four
+  alternative weights work equally well. The decision still rests on the
+  n=136 recall of 0.260 from R3.
+- **Does not license tuning** `entity_weight` or the RRF constant on these
+  results. Both flip g084 non-monotonically at margins of ~1e-4.
+- **Closes R3's g080 anomaly** — cause identified, in the golden set. The
+  disposition of g080, g087 and g088 is the user's, per golden-set authority.
+- **Leaves open** whether the knife-edge is general. The stored reports record
+  recall only, not scores or ranks, so counting how many questions sit within
+  a hair of the k=10 cutoff needs the eval instrumented to emit gold's fused
+  rank and its margin to the cutoff, plus one re-run (free with identity).
 
 ---
 
