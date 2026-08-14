@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-14 | D2 spike, `multi_paper` fix candidates (not a scored run) | golden 150 (9 questions probed) | **no achievable variant reaches the oracle — do not build decomposition yet**; most losses are `k=10` cutoff artefacts |
 | 2026-08-14 | D1 diagnostic, g080 + g084 (not a scored run) | golden 150 (nothing scored) | both anomalies explained; **no dataset-level numbers** |
 | 2026-08-10 | R5 retrieval, rerank-then-diversify cap 3, Cohere | golden 150 (136 scored) | fused recall@10 **0.875** — rejected |
 | 2026-08-09 | R4 retrieval, per-paper cap 3, identity rerank | golden 150 (136 scored) | fused recall@10 **0.719** — cap rejected |
@@ -21,6 +22,182 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## D2 — 2026-08-14 — Spike: what would actually fix `multi_paper`? — BUILD NOTHING YET
+
+**Commands:** throwaway probes in the session scratchpad against the live
+`evalv1` index, reusing `score_question` / `relevant_chunk_ids` from
+`src/evals/retrieval_eval.py` and the shipped channels and `fuse()` so numbers
+are comparable to the stored reports by construction. No harness run, no report
+file written, **no source file changed**.
+**Cost:** ~70 live Cohere embed calls (query embeddings, cached per unique
+string), well under $0.01, user-authorized. Identity reranker throughout — **no
+rerank calls**. Note: the plan estimated 40–60 calls; the extra probe (d) took
+it to ~70.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150 questions, human-verified — identical to R2–R5 |
+| Scored | **none dataset-wide**; 9 `multi_paper` questions probed individually |
+| Corpus | `evalv1`, verified live: 1,518 chunks / 638 claims / 1,624 entities |
+| Code | commit `bffbc6f`, **unmodified** |
+| Config | k=10, over-fetch 60, entity weight 0.1, gate `(dense_chunks, dense_claims)`, **identity** reranker |
+
+### Comparable to
+
+**Nothing dataset-wide, and it supersedes nothing.** Per-question baselines are
+the identity-reranker numbers from **R2** (not R3 — R3 used Cohere). Probe 0
+below is the trust check that makes the rest comparable at all.
+
+### Scope and why
+
+D1 classified the twelve `multi_paper` questions: 4 already fine, 3 lost
+downstream (g034, g017, g084), 5 coverage gaps — of which g080, g087 and g088
+are **question defects**, not retrieval failures. Excluding those three leaves
+**five genuine failures**, split 3 downstream / 2 coverage. Targets: g034,
+g017, g084, g148, g108. Controls: g016, g071, g077, g138.
+
+### Probe 0 — trust check: PASS
+
+The spike harness reproduced all 27 stored per-question numbers exactly
+(fused vs R2, bm25 and dense_chunks vs R3). **Correction to the plan's control
+criterion:** under the identity reranker the controls are not all 1.000 —
+g016 is 0.667 and only reaches 1.000 with Cohere. Controls were therefore
+judged against their identity baselines.
+
+### Probe 1 — loss forensics
+
+| question | where the gold went |
+|---|---|
+| g034 | 2 of 3 gold in top-10; third **out at fused rank 15, margin 0.00263**. Top-10 is 7 chunks from one paper, 3 from the other. BM25 alone had all three at k=10. |
+| g017 | 1 of 3 in top-10; the two `2607.24663` chunks out at ranks 29 and 13. That paper holds **5 of the 10 slots — none of them its gold**. |
+| g084 | both out, at ranks 10 and 13; margins **0.00007** and 0.00154. Top-10 is 8/10 one paper. |
+| g148 | 1 of 2 in; the other out at **rank 58, margin 0.01451**, found only by dense_chunks (bm25 never returned it). |
+| g108 | **fused top-10 is 10/10 a single paper** — the second paper gets zero slots. One of its gold chunks is returned by **no channel at all** inside the over-fetch; another sits at rank 11 with margin 0.00076. |
+
+Two more knife-edges beyond D1's g084: g108 at 0.00076 and g034 at 0.00263.
+Paper monopoly of the top-10 is the recurring shape, not a one-off.
+
+### Probe 2 — four candidate fixes, scored identically
+
+Mean recall@10 over the five targets; controls listed separately.
+
+| variant | g034 | g017 | g084 | g148 | g108 | **mean** |
+|---|---|---|---|---|---|---|
+| baseline (shipped) | 0.667 | 0.333 | 0.000 | 0.500 | 0.000 | **0.300** |
+| **(a) question-only split** | 0.667 | 0.333 | 0.000 | 0.500 | 0.000 | **0.300** |
+| **(b) ORACLE split** *(ceiling)* | 1.000 | 0.667 | 1.000 | 1.000 | 0.333 | **0.800** |
+| **(c) per-paper round 2** *(no LLM)* | 0.667 | 0.333 | 0.500 | 0.500 | 0.333 | 0.467 |
+| **(d) title-augmented** *(no LLM)* | 1.000 | 0.333 | 1.000 | 0.500 | 0.000 | 0.567 |
+
+Controls (identity baseline → variant):
+
+| | g016 | g071 | g077 | g138 |
+|---|---|---|---|---|
+| baseline | 0.667 | 1.000 | 1.000 | 1.000 |
+| (c) per-paper round 2 | 0.667 | **0.500** | **0.500** | 1.000 |
+| (d) title-augmented | **0.000** | **0.500** | **0.000** | 1.000 |
+
+### Findings
+
+**1. Question-only decomposition is worth nothing — 0 of 5, not a single
+question moved.** This includes the two questions that name both subjects in
+the question text (g017 "A-RAG and APS-RAG", g108 "accounting and office-work"),
+where a clean per-paper split is trivially derivable. **This kills the
+rule-based decomposer**, which was the free option.
+
+**2. The oracle ceiling is real and high** — 0.300 → 0.800, with g084 going
+0.000 → 1.000. The gold chunks *are* retrievable. What is missing is knowing
+what to ask.
+
+**3. But the ceiling is partly circular, so it overstates.** The oracle
+sub-queries encode where the answer lives ("five-dimensional rubric score
+range", "cost ablation budget cap") — the very thing retrieval is supposed to
+find. The genuinely achievable half of the oracle is *paper identity*, which is
+available for free from paper titles. That is exactly what (d) tested.
+
+**4. Both no-LLM approximations are net negative.** (c) helps two targets and
+halves two controls. (d) helps two targets and takes **two controls to 0.000**.
+
+**5. (d)'s wins are an artifact, and the correlation is perfect.** Gold chunk
+location explains every result: g084 (2/2 gold are abstract chunks) 0.000 →
+1.000 and g034 (1/3 abstract) 0.667 → 1.000, while **every question with zero
+abstract gold either stayed flat or regressed** — g016, g071 and g077 all have
+0/N abstract gold and all fell. Putting a paper's title in the query biases
+retrieval toward that paper's abstract. It is not finding answers better; it is
+finding abstracts.
+
+### The cheapest lever is not a fix at all — it is `k`
+
+Derived from Probe 1's recorded fused ranks; **no new retrieval and no new API
+calls**. Most lost gold is not lost, only past the cutoff:
+
+| question | gold ranks (0-indexed) | recall@10 | recall@20 |
+|---|---|---|---|
+| g034 | in top-10, in top-10, **15** | 0.667 | **1.000** |
+| g017 | in top-10, **13**, 29 | 0.333 | **0.667** |
+| g084 | **10**, **13** | 0.000 | **1.000** |
+| g148 | in top-10, 58 | 0.500 | 0.500 |
+| g108 | **11**, **18**, absent | 0.000 | **0.667** |
+| | | **0.300** | **0.767** |
+
+**0.767 beats every variant built and tested above, with zero new code**, and
+sits just under the unshippable oracle's 0.800.
+
+**This is not evidence that retrieval improved.** Comparing recall@20 against
+recall@10 is not a fair comparison — a larger k always helps, and the figure
+above is reported only against these five questions, not the set. What it *is*
+evidence for is that **k=10 may be the wrong product parameter**. The binding
+constraint is not 10; it is how many chunks the Phase 4 generation step can
+afford in context. If that budget is 20, most of these failures cease to be
+failures without any retrieval change at all.
+
+**Do not read this as a tuning result and do not change k on it.** The proper
+test is end-to-end answer quality at k=10 vs k=20 against cost and latency,
+which needs the generation step that does not exist yet. Recorded here so the
+option is not lost.
+
+### Verdict
+
+**Build nothing yet.** No achievable variant reproduces the oracle's gains, and
+the two mechanical approximations both trade control questions for target
+questions — the same failure shape that sank R4 and R5.
+
+The only untested route to the oracle is an LLM decomposer. This spike does not
+clear it: the achievable information an LLM could add (which papers) is what (d)
+supplied and (d) failed; the information that actually drives the ceiling (which
+*section* holds the answer) is what retrieval exists to discover. That is the
+circularity, and it should be stated in any future proposal rather than assumed
+away.
+
+Independently: **n=5 cannot support an architectural decision.** Nine of the
+twelve `multi_paper` questions are usable at best, three of those are defective,
+and R4's dev-set discipline applies to every number here. Growing the
+`multi_paper` count should precede any build.
+
+### What this changes
+
+- **Decomposition is no longer "the surviving direction" by default.** R5
+  recorded it as plausible-but-unmeasured and D1 gave it first support; D2 shows
+  the cheap forms of it do not work and the ceiling that motivated it is
+  partly circular.
+- **The recurring mechanism is paper monopoly of the top-10** (7/10, 8/10 and
+  10/10 in three of the five), with losses concentrated at knife-edge margins
+  (0.00007, 0.00076, 0.00263). Whatever is tried next should target slot
+  allocation at the k cutoff — but note R4 and R5 already rejected the obvious
+  form of that, so it needs a genuinely different mechanism, not a third cap.
+- **g148 is the one coverage gap with no cheap explanation** — its second gold
+  chunk sits at fused rank 58 with a wide 0.01451 margin and BM25 never returns
+  it at all. Nothing tested here moved it, and it is also the only target `k=20`
+  does not rescue.
+- **`k` becomes a Phase 4 question.** The k=20 arithmetic above says most of
+  this type's failures are cutoff artefacts, not retrieval failures. That
+  decision belongs with the generation step's context budget, measured on
+  answer quality against cost and latency — not settled here.
 
 ---
 
