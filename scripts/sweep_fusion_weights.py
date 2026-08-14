@@ -27,7 +27,7 @@ from db.session import get_engine, get_session_factory
 from evals.retrieval_eval import ndcg_at_k, recall_at_k, relevant_chunk_ids
 from ingestion.embeddings.factory import build_provider
 from retrieval.channels.bm25 import search_bm25
-from retrieval.channels.dense import search_dense_chunks, search_dense_claims
+from retrieval.channels.dense import search_dense_chunks
 from retrieval.channels.entities import search_entities
 from retrieval.fusion import fuse
 
@@ -79,7 +79,6 @@ def main(k: int) -> int:
                 {
                     "bm25": search_bm25(client, "evalv1", query, size),
                     "dense_chunks": search_dense_chunks(client, "evalv1", provider, query, size),
-                    "dense_claims": search_dense_claims(client, "evalv1", provider, query, size),
                     **{
                         f"entities@{ceiling}": search_entities(
                             client, "evalv1", query, size, settings.entity_damping, ceiling
@@ -96,7 +95,7 @@ def main(k: int) -> int:
     rows = []
     for ceiling in LINK_CEILINGS:
       for weight in ENTITY_WEIGHTS:
-        weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": weight}
+        weights = {"bm25": 1.0, "dense_chunks": 1.0, "entities": weight}
         recalls, ndcgs, by_type = [], [], defaultdict(list)
         for q, relevant, hits in cached:
             selected = {n: h for n, h in hits.items() if not n.startswith("entities@")}

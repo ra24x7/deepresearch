@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 from config import RetrievalSettings
 from retrieval.channels.bm25 import search_bm25
-from retrieval.channels.dense import search_dense_chunks, search_dense_claims
+from retrieval.channels.dense import search_dense_chunks
 from retrieval.channels.entities import search_entities
 from retrieval.fusion import fuse
 from retrieval.router import route as route_query
@@ -46,14 +46,16 @@ def search(
         )
 
     size = max(settings.over_fetch_multiplier * settings.top_k, settings.min_candidates)
+    # Claims are indexed and queryable, but not fused: removing them moved recall
+    # and NDCG by +-0.0000 over 136 questions (ADR 0005 / eval-log R6), and their
+    # knn call cost a second query embedding on every search.
     hits_by_channel = {
         "bm25": search_bm25(search_client, corpus, query, size),
         "dense_chunks": search_dense_chunks(search_client, corpus, provider, query, size),
-        "dense_claims": search_dense_claims(search_client, corpus, provider, query, size),
         "entities": search_entities(search_client, corpus, query, size, settings.entity_damping),
     }
 
-    weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": settings.entity_weight}
+    weights = {"bm25": 1.0, "dense_chunks": 1.0, "entities": settings.entity_weight}
     fused = fuse(hits_by_channel, weights=weights, top_k=size)
     hits = reranker.rerank(query, fused, settings.top_k) if fused else []
 

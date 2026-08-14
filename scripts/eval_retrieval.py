@@ -103,9 +103,12 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
             "dense_claims": search_dense_claims(search_client, corpus, provider, query, size),
             "entities": search_entities(search_client, corpus, query, size, settings.entity_damping),
         }
-        # must mirror the orchestrator, or the eval measures a system we do not ship
-        weights = {"bm25": 1.0, "dense_chunks": 1.0, "dense_claims": 1.0, "entities": settings.entity_weight}
-        fused = fuse(hits_by_channel, weights=weights, top_k=size)
+        # must mirror the orchestrator, or the eval measures a system we do not ship.
+        # Claims are still retrieved above, but scored on their own terms only
+        # (ADR 0005): they left fusion, so they must not be fused here either.
+        fusion_inputs = {name: hits for name, hits in hits_by_channel.items() if name != "dense_claims"}
+        weights = {"bm25": 1.0, "dense_chunks": 1.0, "entities": settings.entity_weight}
+        fused = fuse(fusion_inputs, weights=weights, top_k=size)
         reranked = reranker.rerank(query, fused, k) if fused else []
 
         scored = score_question(hits_by_channel, reranked, relevant, k)

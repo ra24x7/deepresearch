@@ -24,7 +24,6 @@ def channels(mocker):
     return {
         "bm25": mocker.patch("retrieval.search.search_bm25", return_value=[]),
         "dense_chunks": mocker.patch("retrieval.search.search_dense_chunks", return_value=[]),
-        "dense_claims": mocker.patch("retrieval.search.search_dense_claims", return_value=[]),
         "entities": mocker.patch("retrieval.search.search_entities", return_value=[]),
     }
 
@@ -48,6 +47,14 @@ class TestRouting:
         result = search("how does the method work?", "evalv1", MagicMock(), PROVIDER, IdentityReranker(), SETTINGS)
 
         assert result.route == "semantic"
+
+    def test_claims_are_not_part_of_the_retrieval_path(self, channels):
+        # ADR 0005: removing dense_claims from fusion moved recall and NDCG by
+        # +-0.0000 over 136 questions (R6), so it leaves the retrieval path.
+        # Claims stay indexed and queryable as a product surface.
+        result = search("how do agents choose retrieval tools?", "evalv1", MagicMock(), PROVIDER, IdentityReranker(), SETTINGS)
+
+        assert set(result.channel_counts) == {"bm25", "dense_chunks", "entities"}
 
 
 class TestOverFetch:

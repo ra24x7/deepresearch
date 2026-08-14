@@ -3,9 +3,8 @@
 > Living document. Update at the end of every working session:
 > current phase, what moved, what's blocked, what's next.
 
-**Current phase:** 3 — Staged Retrieval Engine (read path built and measured
-at n=136; both open anomalies diagnosed — next is the channel keep/delete
-ADRs, which are the last exit criterion)
+**Current phase:** 4 — Cost-Aware Agent Orchestration (Phase 3 closed
+2026-08-14: every retriever now has an ADR, per its exit criterion)
 **Last updated:** 2026-08-14
 
 ## Roadmap
@@ -81,7 +80,7 @@ usefulness and pipeline durability, not evaluation quality; the
 SLO-realism argument is dropped (~14k chunks is not where index
 performance gets interesting).
 
-### Phase 3 — Staged Retrieval Engine
+### Phase 3 — Staged Retrieval Engine ✅ (2026-08-14)
 
 The core of the project. Explicit stages, clean interfaces, each testable.
 
@@ -147,9 +146,9 @@ this (2026-08-04):
 
 **Exit criteria:** recall@10 and NDCG measured per-retriever and fused on the
 golden set ✅; each retriever proves added recall or is deleted (ADR either
-way) — **the re-run happened 2026-08-08 (R3, n=136); the ADRs are now the
-only outstanding exit criterion, and the entity channel's 0.260 recall is
-the evidence they turn on**. The number is evidence for
+way) ✅ — **met 2026-08-14 by ADR 0004 (entity channel kept at weight 0.1) and
+ADR 0005 (claims removed from the retrieval path, kept indexed), both grounded
+in the R6 sweep and ablation at n=136**. The number is evidence for
 a decision, not a certification — Voorhees & Buckley found >10% gaps that still
 mis-ranked systems at 50 topics, so a hard recall figure for a Phase 6 SLO must
 come from production traffic, not this set.
@@ -249,6 +248,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-14 | **Phase 3 closed.** R6 (`doc/eval-log.md`, 136 embed calls ~$0.001, identity reranker) supplied the two numbers both pending ADRs were missing. Entity weight re-swept at n=136: 0.1 confirmed as the recall optimum, but worth **+0.0111 recall, not the +0.0345** the superseded n=29 sweep claimed — and it buys `factual_single` (+0.030) and `negation` (+0.047) while costing `multi_paper` (−0.042) and NDCG (−0.0041), without moving `entity_anchored` at all. Claims ablation: removing `dense_claims` from fusion changes recall and NDCG by **exactly ±0.0000** across all 136 questions and every type; claim docs occupy 15 of 1,360 top-10 slots and displace only non-gold chunks. Decisions: **ADR 0004** keeps the entity channel at 0.1 with its two defects (tied scores, generic entities) recorded as deferred known issues — the tied-score cause is explicitly marked *inferred, not verified*; **ADR 0005** removes claims from the retrieval path while keeping them indexed, which also halves the per-query embedding cost since `search_dense_chunks` and `search_dense_claims` each embedded the query separately. Code: `search.py`, `eval_retrieval.py` and `sweep_fusion_weights.py` updated (the eval still measures claims on their own terms, just does not fuse them); `fuse()` deliberately untouched, per its own docstring warning about gate edits. TDD: test written red first, suite green at 357 passed / 1 skipped. |
 | 2026-08-14 | `multi_paper` fix spike (`doc/eval-log.md` D2, ~70 embed calls <$0.01, identity reranker, no source changed). **Verdict: build nothing yet.** Four candidates measured on the 5 genuine failures (g034, g017, g084, g148, g108) with 4 controls. **Question-only decomposition moved nothing — 0 of 5**, including the two questions that name both subjects outright (g017, g108), which kills the free rule-based decomposer. A hand-written **oracle** split lifts 0.300 → 0.800 with g084 going 0.000 → 1.000, so the chunks are retrievable and the missing ingredient is knowing what to ask — but the oracle is **partly circular**, since its wording encodes which section holds the answer, i.e. what retrieval exists to find. The achievable half (paper identity, free from titles) was tested as title-augmented sub-queries: it lifts two targets to 1.000 and takes two controls to **0.000**, and the correlation with gold-chunk location is perfect — it biases retrieval toward abstracts, so it helps only when the gold *is* an abstract. A no-LLM per-paper second round likewise helps 2 targets and halves 2 controls. Both approximations trade controls for targets, the exact shape that sank R4 and R5. Forensics also found the recurring mechanism: paper monopoly of the top-10 (7/10, 8/10, and **10/10** on g108, where the second paper gets zero slots and one of its gold chunks is returned by no channel at all), with losses landing at knife-edge margins of 0.00007, 0.00076 and 0.00263. Decomposition is no longer the default surviving direction. n=5 cannot carry an architectural decision regardless — grow `multi_paper` first. |
 | 2026-08-14 | Both open R3 anomalies diagnosed (`doc/eval-log.md` D1, 4 embed calls ~$0.00002; no source file changed). **g080 — the defect is in the question, not the retriever.** Its gold chunks are indexed with vectors, but the question's only content words (`llm`, `papers`, `weakness`) occur **zero** times in either gold chunk: bm25 returns the right paper's wrong section at rank 0, entities returns nothing at all. It is a corpus-level meta-question whose referent no retriever receives, so it is also *not* evidence about query decomposition — expect it to stay at 0.0 there. It alone holds reachability at 0.993, and `multi_paper` would read 0.621 rather than 0.569 without it. **g084 — a knife-edge, not a lever.** The semantic gate is exonerated (both gold chunks pass it); gold lands at fused ranks 10 and 13 against a k=10 cutoff decided by **0.00007**, with 8 of the top-10 being one paper's boilerplate. Entity weight and the RRF constant each flip the outcome non-monotonically and the shipped values of both land on the wrong side, so no config exceeds 0.500 — tuning either would be fitting the dev set. Corrects an earlier reading: R4's cap does not rescue g084's gold, it swaps which gold survives. First empirical support for query decomposition, since every within-one-ranking lever tops out at 0.500. A free corpus-wide anchor scan (r=+0.42 vs fused recall) found `multi_paper` systematically anchor-poor (mean 2.87 vs 4.24–4.87) and two questions worse-anchored than g080 — g088 (`the`, 0.02) and g087 (`with`, 0.23). |
 | 2026-08-10 | Rerank-then-diversify experiment: rejected (`doc/eval-log.md` R5, ~$0.15). Applying the per-paper cap of 3 at selection time — after Cohere scores all 60 candidates, R4's lesson applied — still lost 10 questions to gain a third of one: fused recall 0.940 → 0.875, `multi_paper` 0.569 → 0.597. The reranker itself ranks 3+ same-paper chunks above gold on the regressed questions, so within-paper order is unreliable under both RRF and cross-encoder scoring: per-paper caps are the wrong lever for `multi_paper` at any pipeline stage. Surviving direction, recorded not built: query decomposition (a two-paper question retrieves as two sub-queries). Code reverted; both experiments cost two eval runs and ~30 lines each, which is the eval-first loop working as intended. |
@@ -264,6 +264,8 @@ not just demoed.
 - Generation: gpt-4o-mini; Judge: Claude Sonnet 4.6 on Bedrock — [ADR 0001](adr/0001-model-choices.md)
 - Embeddings: Cohere Embed v4 on Bedrock, behind a swappable provider interface; provider re-decided in Phase 3 on measured recall — [ADR 0002](adr/0002-embedding-provider.md)
 - Bibliographies excluded from the search index, captured as citation entities instead — [ADR 0003](adr/0003-exclude-bibliography-from-index.md)
+- Entity channel kept at `entity_weight = 0.1`; two defects (tied scores, generic entities) recorded as deferred known issues — [ADR 0004](adr/0004-entity-channel.md)
+- Claims removed from the retrieval path but kept indexed as a product surface; halves the per-query embedding cost — [ADR 0005](adr/0005-claims-channel.md)
 
 ## Decisions pending
 

@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-14 | R6 entity-weight sweep + claims ablation, identity | golden 150 (136 scored) | entity 0.1 confirmed optimal but worth only **+0.0111**; claims **±0.0000** |
 | 2026-08-14 | D2 spike, `multi_paper` fix candidates (not a scored run) | golden 150 (9 questions probed) | **no achievable variant reaches the oracle — do not build decomposition yet**; most losses are `k=10` cutoff artefacts |
 | 2026-08-14 | D1 diagnostic, g080 + g084 (not a scored run) | golden 150 (nothing scored) | both anomalies explained; **no dataset-level numbers** |
 | 2026-08-10 | R5 retrieval, rerank-then-diversify cap 3, Cohere | golden 150 (136 scored) | fused recall@10 **0.875** — rejected |
@@ -22,6 +23,97 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## R6 — 2026-08-14 — Entity-weight sweep and claims ablation at n=136, identity reranker
+
+**Command:** one retrieval pass over the scored set in the session scratchpad,
+reusing the shipped channels, `fuse()` and `score_question`; every variant
+recomputed from the same cached channel results, so the API cost is one query
+embedding per question.
+**Report:** no JSON written — the numbers are in this entry.
+**Cost:** 136 live Cohere embed calls, ~$0.001, user-authorized. Identity
+reranker, **no rerank calls**.
+
+**Purpose:** supply the two numbers ADR 0004 and ADR 0005 each identified as
+missing. Run before closing Phase 3, whose exit criterion requires an ADR for
+every retriever either way.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150 questions, human-verified — identical to R2–R5 |
+| Scored | 136 — same exclusions as R2/R3 (8 `unanswerable`, 4 `out_of_domain`, g038) |
+| Corpus | `evalv1`, 1,518 chunks / 638 claims / 1,624 entities |
+| Code | commit `e15d1b5`, **unmodified** |
+| Config | k=10, over-fetch 60, gate `(dense_chunks, dense_claims)`, **identity** reranker; `entity_weight` and `dense_claims` membership are the swept variables |
+
+### Comparable to
+
+**R2 — directly, and used as the trust check.** At the shipped
+`entity_weight = 0.1` with claims in fusion, R6 reproduces R2 exactly: recall
+**0.9069**, NDCG **0.6814**. Not comparable to R3/R5, which used Cohere rerank.
+
+### Results — entity weight sweep (claims in fusion, as shipped)
+
+| entity weight | recall@10 | NDCG@10 |
+|---|---|---|
+| 0.0 (off) | 0.8958 | **0.6855** |
+| 0.05 | 0.9032 | 0.6844 |
+| **0.1 (shipped)** | **0.9069** | 0.6814 |
+| 0.25 | 0.8971 | 0.6756 |
+| 0.5 | 0.8750 | 0.6689 |
+| 1.0 | 0.8750 | 0.6607 |
+
+Per type, weight 0.0 → 0.1: `factual_single` 0.970 → 1.000, `negation`
+0.929 → 0.976, **`multi_paper` 0.556 → 0.514**; `computable` (0.871),
+`definitional` (0.917) and `entity_anchored` (0.944) unchanged at both.
+
+### Results — claims ablation (`entity_weight` held at 0.1)
+
+| | |
+|---|---|
+| claim docs in fused top-10 | 15 slots of 1,360 (**1.10%**) |
+| questions with ≥1 claim in top-10 | 8 of 136 |
+| chunk recall / NDCG **with** `dense_claims` | 0.9069 / 0.6814 |
+| chunk recall / NDCG **without** `dense_claims` | **0.9069 / 0.6814** |
+| delta | **+0.0000 / +0.0000**, every type unchanged |
+
+The entity sweep is identical with claims removed from fusion, so the two
+variables do not interact.
+
+### Findings
+
+**1. `entity_weight = 0.1` is confirmed as the recall optimum at n=136 — and
+is worth a third of what n=29 claimed.** The superseded sweep credited it with
++0.0345 recall; the current instrument says **+0.0111**. NDCG falls
+monotonically with the weight, so the channel always costs ranking quality and
+is repaid only in recall, in a narrow band around 0.1.
+
+**2. The channel's gain is paid for by the weakest type.** It buys
+`factual_single` (+0.030) and `negation` (+0.047) and costs `multi_paper`
+(−0.042). It does **not** move `entity_anchored`, the type named after it,
+which weakens the intuition that it has a distinct competence.
+
+**3. `dense_claims` is inert for chunk retrieval — provably.** Removing it from
+fusion changes recall and NDCG by exactly zero across all 136 questions and
+every type. It occupies 1.10% of top-10 slots, and those slots displace only
+non-gold chunks. This kills both the argument that it steals slots and any
+retrieval-side argument for keeping it.
+
+### What this settles
+
+Both ADR gaps are closed. **ADR 0004** is no longer justified by a superseded
+number: it is a real but marginal trade (+0.0111 recall vs −0.0041 NDCG and
+−0.042 on the weakest type). **ADR 0005** becomes a product decision rather
+than a retrieval one, since retrieval is measurably indifferent to the claims
+channel.
+
+Standing caveat: R4's dev-set discipline applies. These 150 questions have now
+been used to tune `entity_weight` twice; the held-out split in
+`doc/project-status.md` remains pending.
 
 ---
 
