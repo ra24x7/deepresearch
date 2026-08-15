@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-15 | C1 cost correction (no re-run) | — | recorded rerank costs understated **≥1.8×**; embed costs unpriced |
 | 2026-08-14 | R6 entity-weight sweep + claims ablation, identity | golden 150 (136 scored) | entity 0.1 confirmed optimal but worth only **+0.0111**; claims **±0.0000** |
 | 2026-08-14 | D2 spike, `multi_paper` fix candidates (not a scored run) | golden 150 (9 questions probed) | **no achievable variant reaches the oracle — do not build decomposition yet**; most losses are `k=10` cutoff artefacts |
 | 2026-08-14 | D1 diagnostic, g080 + g084 (not a scored run) | golden 150 (nothing scored) | both anomalies explained; **no dataset-level numbers** |
@@ -23,6 +24,86 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## C1 — 2026-08-15 — Cost correction: recorded rerank spend understated
+
+**No run.** No question was retrieved, scored or judged. This entry corrects
+**cost figures only** — every recall, NDCG and verdict in this log stands
+unchanged.
+
+**Trigger:** building the per-model rate table for `src/llm/cost.py` (Phase 4)
+required looking up Cohere's published Bedrock rates for the first time.
+
+### What the published rate actually is
+
+AWS Bedrock, Cohere section: **Rerank 3.5 is $2.00 per 1,000 queries**, where
+
+> a query can contain up to 100 document chunks. If the query contains more
+> than 100 document chunks, it is counted as multiple queries… each document
+> can only contain up to 500 tokens (inclusive of the query and document's
+> total tokens), and if the token length is higher than 512 tokens, it is
+> broken down into multiple documents.
+
+### The correction
+
+| run | rerank calls | recorded cost | rerank alone, at list |
+|---|---|---|---|
+| R3 (2026-08-08) | 136 @ 60 docs | ~$0.15 | **≥ $0.272** |
+| R5 (2026-08-10) | 136 @ 60 docs | ~$0.15 | **≥ $0.272** |
+
+Each run's recorded figure is **at least 1.8× too low**, and the recorded
+figure was supposed to cover query embeddings *as well as* rerank.
+
+**"At least" is doing real work in that sentence.** 60 documents is under the
+100-document cap, so each call bills as one query *only if every document fits
+in 512 tokens*. Chunks in this corpus run 100–800 words, so the longer ones
+split into multiple documents; a call can therefore cross 100 documents and
+bill as two queries. The true figure is somewhere between $0.272 and roughly
+double that, and cannot be pinned down without per-document token counts.
+
+### Two further corrections to embed accounting
+
+**Embed v4 has no published price.** Cohere Embed **v4** — the model this
+project uses (`global.cohere.embed-v4:0`) — does not appear on the public
+Bedrock pricing page at all; only Embed **3**, and only as provisioned-throughput
+hourly rates. So **every embedding cost in this log is unverified**, not merely
+imprecise. `CostLedger` now counts embed calls and reports them through an
+`unpriced` field rather than costing them at zero.
+
+**Embed call counts are themselves understated ~2×.** Until ADR 0005,
+`search_dense_chunks` and `search_dense_claims` each called `embed_query`
+independently, so one question cost **two** embed calls, not one. R3 and R5
+predate that change: each made ~272 embed calls, not the 136 implied by their
+entries. R6 and D2 used a caching wrapper and are unaffected.
+
+### Root cause: the harness never measured cost
+
+The figures in R1–R5 were **estimates written by hand at the time**, not
+measurements — `scripts/eval_retrieval.py` computes no cost and records none.
+There was nothing to catch the error, which is why it survived five entries and
+surfaced only when an unrelated task required the published rate.
+
+This is the same failure shape as the `ingestion_runs` gap found the same week:
+the schema for recording cost exists and works, but the run that mattered never
+wrote to it.
+
+### What this changes
+
+- **No result changes.** Recall, NDCG, reachability, verdicts and every
+  keep/delete decision are untouched. Cost never entered a decision rule.
+- **Treat every dollar figure in R1–R5 as a lower bound of unknown tightness**,
+  not as a measurement. The same applies to `$0.0079/paper` and the `$0.389`
+  full-corpus enrichment figure, which were computed from token counts at
+  **Anthropic first-party rates** — also unverified against Bedrock.
+- **Phase 4 must record cost, not estimate it.** The exit criterion is
+  cost-per-query measured; that means persisted per run from token counts and
+  call counts, with `unpriced` surfaced alongside, so a gap like this announces
+  itself instead of waiting for someone to read a pricing page.
+- **Still open:** the AWS bill reconciliation (~$0.80 claimed, 2026-07-28 to
+  2026-08-14) that would settle whether first-party Claude rates apply on
+  Bedrock at all.
 
 ---
 

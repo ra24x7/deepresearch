@@ -1,14 +1,23 @@
 import json
 import time
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, Protocol
 
 from botocore.exceptions import ClientError
 
-from config import EnrichmentSettings
 from llm.exceptions import LLMInvocationError, LLMJSONParseError
 
 _THROTTLING_ERROR_CODE = "ThrottlingException"
 _BACKOFF_BASE_SECONDS = 2.0
+
+
+class ConverseSettings(Protocol):
+    """The four fields this module reads. Enrichment, generation and judging
+    each carry their own settings class; all three satisfy this."""
+
+    model_id: str
+    max_tokens: int
+    temperature: float
+    max_retries: int
 
 
 class Usage(NamedTuple):
@@ -16,13 +25,13 @@ class Usage(NamedTuple):
     output_tokens: int
 
 
-def invoke(prompt: str, client: Any, settings: EnrichmentSettings) -> tuple[str, Usage]:
+def invoke(prompt: str, client: Any, settings: ConverseSettings) -> tuple[str, Usage]:
     response = _converse_with_retry(prompt, client, settings)
     text = response["output"]["message"]["content"][0]["text"]
     return text, _extract_usage(response)
 
 
-def invoke_json(prompt: str, client: Any, settings: EnrichmentSettings) -> tuple[dict, Usage]:
+def invoke_json(prompt: str, client: Any, settings: ConverseSettings) -> tuple[dict, Usage]:
     text, usage = invoke(prompt, client, settings)
     parsed = _try_parse_json(text)
     if parsed is not None:
@@ -54,7 +63,7 @@ def _strip_markdown_fence(text: str) -> str:
     return stripped.strip()
 
 
-def _converse_with_retry(prompt: str, client: Any, settings: EnrichmentSettings) -> dict:
+def _converse_with_retry(prompt: str, client: Any, settings: ConverseSettings) -> dict:
     last_error: Exception | None = None
     for attempt in range(settings.max_retries):
         if attempt > 0:

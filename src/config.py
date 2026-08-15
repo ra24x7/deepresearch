@@ -110,3 +110,25 @@ class EnrichmentSettings(FrozenSettings):
     timeout_seconds: float = 60.0
     max_retries: int = 3
     prompt_max_chars: int = 12000
+
+
+class GenerationSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="GENERATION__")
+
+    model_id: str = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+    max_tokens: int = 1024
+    temperature: float = 0.0
+    max_retries: int = 3
+    # Ten reranked chunks of 100-800 words fit well inside this; the cap exists
+    # so a pathological chunk cannot push the instructions out of the prompt.
+    prompt_max_chars: int = 24000
+
+
+class JudgeSettings(FrozenSettings):
+    model_config = SettingsConfigDict(env_prefix="JUDGE__")
+
+    model_id: str = "global.anthropic.claude-sonnet-4-6"
+    # The rubric asks for a verdict and one sentence; Phase 1 calibrated at 200.
+    max_tokens: int = 200
+    temperature: float = 0.0
+    max_retries: int = 3

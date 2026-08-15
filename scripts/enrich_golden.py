@@ -72,7 +72,7 @@ def main(arxiv_ids: list[str]) -> int:
                 failures.append(f"{arxiv_id}: {exc}")
                 print(f"[{i}/{len(arxiv_ids)}] {arxiv_id}: FAILED — {exc}", flush=True)
                 continue
-            ledger = ledger.add(Usage(stats["input_tokens"], stats["output_tokens"]))
+            ledger = ledger.add(Usage(stats["input_tokens"], stats["output_tokens"]), settings.enrichment.model_id)
             processed += 1
             warn = f"  WARNING: {stats['warning']}" if stats.get("warning") else ""
             print(

@@ -4,10 +4,11 @@ cost_per_paper_usd is a tracked number (Phase 2 exit criterion), computed from
 measured token usage rather than estimated.
 """
 
+from config import EnrichmentSettings
 from dag_tasks.common import session_factory
 from db.models import IngestionRun
-from llm.cost import CostLedger
 from llm.bedrock import Usage
+from llm.cost import CostLedger
 
 
 def _sum(stats: list[dict], key: str) -> int:
@@ -24,7 +25,10 @@ def write_run_report(**context) -> dict:
     papers = len(parse_stats)
     ledger = CostLedger()
     for row in enrich_stats:
-        ledger = ledger.add(Usage(input_tokens=row.get("input_tokens", 0), output_tokens=row.get("output_tokens", 0)))
+        ledger = ledger.add(
+            Usage(input_tokens=row.get("input_tokens", 0), output_tokens=row.get("output_tokens", 0)),
+            EnrichmentSettings().model_id,
+        )
 
     failures = [
         {"arxiv_id": row["arxiv_id"], "errors": row["errors"][:3]}
