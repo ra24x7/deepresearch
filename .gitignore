@@ -31,3 +31,4 @@ data/papers/
 
 # Coverage artifacts
 .coverage
+.gstack/

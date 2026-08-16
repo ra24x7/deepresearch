@@ -16,6 +16,8 @@ dependencies = [
     "python-dateutil>=2.9",
     "rapidfuzz>=3.0",
     "opensearch-py>=3.2.0",
+    "langgraph>=1.2.11",
+    "langfuse>=4.14.4",
 ]
 
 [project.optional-dependencies]
