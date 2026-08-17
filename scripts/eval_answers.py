@@ -36,7 +36,7 @@ from config import (
     RerankSettings,
     RetrievalSettings,
 )
-from evals.answer_eval import is_pass
+from evals.answer_eval import accumulate_cost, is_pass
 from evals.judge import judge_answer, load_rubric
 from generation.answer import generate_answer
 from graph.pipeline import build_pipeline, initial_state
@@ -159,19 +159,20 @@ def _score_one(
         judge_llm, judge_settings,
     )
 
-    ledger = state["ledger"].add(verdict.usage, judge_settings.model_id)
-    # the graph's ledger only knows generation; fold in this question's
-    # retrieval-side usage so cost-per-query covers everything that billed
-    ledger = ledger.add_embed(calls=1)
-    if reranker_name != "identity":
-        ledger = ledger.add_rerank(documents=counters["rerank_documents"])
-    counters["rerank_documents"] = 0
-
-    # the graph's ledger holds generation usage only, so its flat totals are
-    # exactly this question's generation call
+    # the graph's ledger holds this question's generation call and nothing else,
+    # so its flat totals are exactly that call's usage
     generation_usage = Usage(
         input_tokens=state["ledger"].input_tokens, output_tokens=state["ledger"].output_tokens
     )
+    ledger = accumulate_cost(
+        ledger,
+        generation_usage=generation_usage,
+        generation_model=generation_settings.model_id,
+        judge_usage=verdict.usage,
+        judge_model=judge_settings.model_id,
+        rerank_documents=counters["rerank_documents"] if reranker_name != "identity" else 0,
+    )
+    counters["rerank_documents"] = 0
     tracer.generation(
         name=f"answer:{q['id']}",
         model=generation_settings.model_id,

@@ -18,8 +18,37 @@ avoids changing the judge prompt, which would bump the rubric version and
 invalidate every verdict recorded under v2.
 """
 
+from llm.bedrock import Usage
+from llm.cost import CostLedger
+
 # The two types where declining to answer is the correct behaviour.
 ABSTAIN_IS_CORRECT = frozenset({"unanswerable", "out_of_domain"})
+
+
+def accumulate_cost(
+    ledger: CostLedger,
+    *,
+    generation_usage: Usage,
+    generation_model: str,
+    judge_usage: Usage,
+    judge_model: str,
+    rerank_documents: int,
+    embed_calls: int = 1,
+) -> CostLedger:
+    """Fold one question's spend onto a running total.
+
+    Lives here, not in the driver, because the first version of this lived in
+    the driver and silently rebased the running total on each question's own
+    graph ledger — so a 150-question run reported the cost of its last question.
+    A function that takes the running total as an argument can be tested for
+    accumulation; four lines inline in a loop cannot.
+    """
+    ledger = ledger.add(generation_usage, generation_model)
+    ledger = ledger.add(judge_usage, judge_model)
+    ledger = ledger.add_embed(calls=embed_calls)
+    if rerank_documents:
+        ledger = ledger.add_rerank(documents=rerank_documents)
+    return ledger
 
 
 def is_pass(question_type: str, verdict: str, abstained: bool) -> bool:

@@ -50,3 +50,47 @@ class TestAbstentionTypes:
 class TestTypeCoverage:
     def test_the_two_abstention_types_are_the_ones_the_golden_set_uses(self):
         assert ABSTAIN_IS_CORRECT == {"unanswerable", "out_of_domain"}
+
+
+class TestCostAccumulation:
+    def test_two_questions_sum_rather_than_the_second_replacing_the_first(self):
+        # the regression this exists for: the driver rebased the running total
+        # on each question's own ledger, so a 150-question run reported the
+        # cost of its last question and nothing else
+        from llm.bedrock import Usage
+        from llm.cost import HAIKU_4_5, SONNET_4_6, CostLedger
+
+        from evals.answer_eval import accumulate_cost
+
+        ledger = CostLedger()
+        for _ in range(2):
+            ledger = accumulate_cost(
+                ledger,
+                generation_usage=Usage(input_tokens=1_000_000, output_tokens=0),
+                generation_model=HAIKU_4_5,
+                judge_usage=Usage(input_tokens=1_000_000, output_tokens=0),
+                judge_model=SONNET_4_6,
+                rerank_documents=60,
+            )
+
+        assert ledger.input_tokens == 4_000_000
+        assert ledger.rerank_queries == 2
+        assert ledger.embed_calls == 2
+        assert ledger.total_usd == pytest.approx(2 * (1.00 + 3.00) + 2 / 1_000 * 2.00)
+
+    def test_an_identity_rerank_run_records_no_rerank_queries(self):
+        from llm.bedrock import Usage
+        from llm.cost import HAIKU_4_5, SONNET_4_6, CostLedger
+
+        from evals.answer_eval import accumulate_cost
+
+        ledger = accumulate_cost(
+            CostLedger(),
+            generation_usage=Usage(input_tokens=10, output_tokens=1),
+            generation_model=HAIKU_4_5,
+            judge_usage=Usage(input_tokens=10, output_tokens=1),
+            judge_model=SONNET_4_6,
+            rerank_documents=0,
+        )
+
+        assert ledger.rerank_queries == 0

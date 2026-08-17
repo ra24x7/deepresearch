@@ -14,7 +14,8 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
-| 2026-08-17 | S1 answer-path sample, 8 questions, Cohere | golden 150 (8 sampled) | wiring proven; **$0.00183/query**; two defects found and fixed |
+| 2026-08-17 | A1 first end-to-end answer eval, Cohere | golden 150 (150 scored) | pass rate **0.800**; `multi_paper` **0.417**; guardrail catches **1 of 4**; **cost figures invalid** |
+| 2026-08-17 | S1 answer-path sample, 8 questions, Cohere | golden 150 (8 sampled) | wiring proven; two defects found and fixed; **cost figure retracted — see A1** |
 | 2026-08-15 | C1 cost correction (no re-run) | — | recorded rerank costs understated **≥1.8×**; embed costs unpriced |
 | 2026-08-14 | R6 entity-weight sweep + claims ablation, identity | golden 150 (136 scored) | entity 0.1 confirmed optimal but worth only **+0.0111**; claims **±0.0000** |
 | 2026-08-14 | D2 spike, `multi_paper` fix candidates (not a scored run) | golden 150 (9 questions probed) | **no achievable variant reaches the oracle — do not build decomposition yet**; most losses are `k=10` cutoff artefacts |
@@ -25,6 +26,138 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## A1 — 2026-08-17 — First end-to-end answer eval, 150 questions, Cohere reranker
+
+**Command:** `uv run python scripts/eval_answers.py --corpus evalv1 --k 10 --reranker cohere_bedrock`
+**Report:** `notebooks/phase4_orchestration/answer_eval.json`
+**Cost:** **not measurable from this run — see the correction below.** Live
+Bedrock, user-authorized.
+
+The first time this system has answered a question end to end. Every prior
+entry measured retrieval in isolation.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150, all human-verified, **all 150 scored** |
+| Corpus | `evalv1`, 1,518 chunks |
+| Code | commit `81263a7` |
+| Config | k=10, over-fetch 60, entity weight 0.1, Cohere rerank, Haiku 4.5 generation, Sonnet 4.6 judge, **rubric v2** |
+
+**Scored differently from R1–R6 on purpose.** Those score 136 questions because
+recall over zero gold chunks is undefined. This scores all 150: the 8
+`unanswerable` and 4 `out_of_domain` entries are the only measurement of
+whether the system abstains rather than bluffs, and abstaining is the pass on
+those types (rubric rule 4). Abstention is detected structurally, by exact
+match on the sentinel, not from the judge's label — see S1 defect 1.
+
+### Results
+
+| | |
+|---|---|
+| **pass rate** | **0.800** (120 of 150) |
+| verdicts | 120 CORRECT, 22 WRONG, 8 ABSTAINED, **0 ERROR** |
+| latency p50 / p95 | **3.49s / 6.18s** |
+
+| type | n | pass rate |
+|---|---|---|
+| `unanswerable` | 8 | **1.000** |
+| `negation` | 21 | 0.952 |
+| `factual_single` | 33 | 0.848 |
+| `entity_anchored` | 18 | 0.833 |
+| `definitional` | 30 | 0.800 |
+| `out_of_domain` | 4 | 0.750 |
+| `computable` | 24 | 0.708 |
+| **`multi_paper`** | 12 | **0.417** |
+
+### Comparable to
+
+**Nothing in this log.** A1 measures answer correctness; R1–R6 measure
+retrieval recall. Different instrument, different metric, different scored set.
+A1 is the baseline that future answer runs compare against.
+
+**Against the Phase 1 no-retrieval baseline (0/29), read with care.** Phase 1
+established that the generation model answers **none** of 29 questions without
+retrieval, with zero parametric leakage. A1 answers 120 of 150 with retrieval.
+That is the with-retrieval ablation delta deferred since 2026-07-29 — but the
+sets differ (29 vs 150 questions, and A1's set is deliberately harder), so it
+is a directional result, not a clean subtraction. A true delta needs the
+no-retrieval baseline re-run on the current 150.
+
+### Finding 1 — the rule-based guardrail catches 1 of 4 out-of-domain questions
+
+This is the measurement that Phase 4's guardrail decision was waiting on, and
+it goes against the incumbent.
+
+| id | route | hits | abstained | result |
+|---|---|---|---|---|
+| g021 | `out_of_domain` | 0 | yes | PASS — caught by the router |
+| g076 | `semantic` | 10 | no | **FAIL — answered an out-of-domain question** |
+| g106 | `semantic` | 10 | yes | PASS — saved by the generator, not the router |
+| g150 | `semantic` | 10 | yes | PASS — saved by the generator, not the router |
+
+Only **g021** was short-circuited. The other three ran full retrieval and paid
+for it; two were rescued by the generator declining on ungrounded passages, and
+one was not. So the free guardrail is doing roughly a quarter of the job it was
+kept for, and **grounded generation is doing the rest**.
+
+This is the evidence the eval-before-feature rule demanded before considering
+Bedrock Guardrails (`doc/project-status.md`, Phase 4). It does not by itself
+say "adopt Guardrails" — n=4 is far too small to conclude anything, and the
+system still passed 3 of 4. It does say the router's `out_of_domain` term list
+is not the mechanism keeping out-of-domain questions unanswered.
+
+### Finding 2 — `multi_paper` is the weakest type in answers as well as retrieval
+
+0.417 (5 of 12), against 0.708–1.000 everywhere else — the same type R3
+measured worst at 0.569 recall. The failures are largely the same questions:
+
+- **g080, g087, g088** — the three entries D1 and D2 identified as **question
+  defects**, whose disposition is still open. They fail here too, so they drag
+  the answer number exactly as they drag the retrieval number.
+- **g084, g108** — D2's downstream-loss and coverage-gap cases.
+- **g034, g077** — new at the answer stage.
+
+Retrieval quality and answer quality are **not** tightly coupled: g017 passes
+here despite retrieval recall of 0.333, while g077 fails despite recall of
+1.000. Retrieving the right chunk is necessary, not sufficient.
+
+### Finding 3 — abstention behaviour is now correct and measured
+
+`unanswerable` scores **1.000** (8 of 8): the system declines on every question
+whose reference answer is that no answer exists, and the run recorded 8
+ABSTAINED verdicts. Before the S1 fixes this measured 0.000 — the defect was in
+the measurement, not the behaviour.
+
+### Correction — cost figures in this run and in S1 are invalid
+
+`scripts/eval_answers.py` rebased its running total on each question's own
+graph ledger instead of accumulating onto the total it was given. **The
+reported total was therefore the last question's cost alone**, and per-query
+was that divided by the question count.
+
+Retracted as unreliable:
+
+- A1's `$0.0131 total / $0.00009 per query`
+- S1's `$0.00183 per query` — in fact one question's cost divided by eight
+- Every projection built on them, including "a full run costs ~$0.27" and the
+  revised "~$0.50"
+
+**Unaffected:** pass rates, verdicts, latency, and every finding above. None of
+them read the ledger.
+
+Fixed by moving the accumulation into `evals.answer_eval.accumulate_cost`,
+which takes the running total as an argument and is therefore testable; the
+regression test asserts two questions sum rather than the second replacing the
+first. Four lines inline in a loop could not be tested, which is why the bug
+survived three runs.
+
+**Phase 4's cost-per-query criterion is therefore still unmet.** It needs one
+more run on the fixed code.
 
 ---
 
