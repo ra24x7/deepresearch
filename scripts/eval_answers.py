@@ -59,8 +59,11 @@ def fmt(value: float | None) -> str:
     return f"{value:.3f}" if value is not None else "  -  "
 
 
-def main(corpus: str, k: int, reranker_name: str, limit: int | None, dry_run: bool) -> int:
+def main(corpus: str, k: int, reranker_name: str, limit: int | None, ids: str | None, dry_run: bool) -> int:
     questions = [json.loads(line) for line in GOLDEN_PATH.read_text().splitlines() if line.strip()]
+    if ids:
+        wanted = {i.strip() for i in ids.split(",") if i.strip()}
+        questions = [q for q in questions if q["id"] in wanted]
     if limit:
         questions = questions[:limit]
 
@@ -141,7 +144,7 @@ def main(corpus: str, k: int, reranker_name: str, limit: int | None, dry_run: bo
             cost_usd=ledger.total_usd,
         )
 
-        passed = is_pass(q["type"], verdict.verdict)
+        passed = is_pass(q["type"], verdict.verdict, state["abstained"])
         records.append(
             {
                 "id": q["id"],
@@ -234,6 +237,7 @@ if __name__ == "__main__":
     parser.add_argument("--k", type=int, default=10)
     parser.add_argument("--reranker", default="cohere_bedrock", choices=["identity", "cohere_bedrock"])
     parser.add_argument("--limit", type=int, default=None, help="score only the first N questions")
+    parser.add_argument("--ids", default=None, help="comma-separated question ids, e.g. g001,g021")
     parser.add_argument("--dry-run", action="store_true", help="print the cost shape and exit")
     args = parser.parse_args()
-    raise SystemExit(main(args.corpus, args.k, args.reranker, args.limit, args.dry_run))
+    raise SystemExit(main(args.corpus, args.k, args.reranker, args.limit, args.ids, args.dry_run))

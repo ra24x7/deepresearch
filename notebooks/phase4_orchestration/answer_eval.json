@@ -1,0 +1,161 @@
+{
+  "summary": {
+    "questions": 8,
+    "k": 10,
+    "reranker": "cohere.rerank-v3-5:0",
+    "pass_rate": 0.75,
+    "by_type": {
+      "computable": {
+        "n": 1,
+        "pass_rate": 0.0
+      },
+      "definitional": {
+        "n": 1,
+        "pass_rate": 0.0
+      },
+      "entity_anchored": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "factual_single": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "multi_paper": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "negation": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "out_of_domain": {
+        "n": 1,
+        "pass_rate": 1.0
+      },
+      "unanswerable": {
+        "n": 1,
+        "pass_rate": 1.0
+      }
+    },
+    "verdicts": {
+      "CORRECT": 6,
+      "WRONG": 2,
+      "ABSTAINED": 0
+    },
+    "abstention_rate": 0.25,
+    "latency_s": {
+      "p50": 3.3063291250145994,
+      "p95": 6.392070166009944
+    },
+    "cost": {
+      "total_usd": 0.014607,
+      "per_query_usd": 0.001825875,
+      "input_tokens": 7283,
+      "output_tokens": 378,
+      "rerank_queries": 1,
+      "embed_calls": 1,
+      "unpriced": [
+        "global.cohere.embed-v4:0"
+      ]
+    }
+  },
+  "questions": [
+    {
+      "id": "g001",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "CORRECT",
+      "reason": "Paraphrase equivalence: the candidate answer correctly identifies all three retrieval tools (keyword_search, semantic_search, chunk_read) matching the reference answer on substance.",
+      "passed": true,
+      "latency_s": 4.81,
+      "answer": "The three retrieval tools that the A-RAG framework provides to the agent are: keyword_search, semantic_search, and chunk_read [1][3].\n\n- **Keyword_search**: Performs exact lexical matching to locate chunks containing specific terms [3]\n- **Semantic_search**: Finds semantically similar passages using dense retrieval [3]\n- **Chunk_read**: Allows the agent to access the complete content of chunks based on snippets returned by the other tools [3]"
+    },
+    {
+      "id": "g007",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "CORRECT",
+      "reason": "Paraphrase equivalence: the candidate answer matches the reference on substance, correctly identifying Gemini-3.1-Pro-Preview as the model used for retrieval labeling and sample verification.",
+      "passed": true,
+      "latency_s": 3.209,
+      "answer": "Gemini-3.1-Pro-Preview is used for retrieval labeling and sample verification in the EvoTrain-180K construction pipeline [1]."
+    },
+    {
+      "id": "g016",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "CORRECT",
+      "reason": "Paraphrase equivalence: the candidate answer matches the reference on both parts (Qwen3-Embedding-0.6B for A-RAG experiments, e5-large-v2 for APS-RAG), and the cited sources appear to support the claims based on the supporting evidence provided.",
+      "passed": true,
+      "latency_s": 3.192,
+      "answer": "A-RAG's experiments use Qwen3-Embedding-0.6B [2602.03442], while the deployed APS-RAG system uses e5-large-v2 [2607.24663]."
+    },
+    {
+      "id": "g018",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "abstained": true,
+      "verdict": "CORRECT",
+      "reason": "Rule 4: the question is unanswerable (no supporting evidence exists), and the candidate correctly abstained rather than fabricating an answer.",
+      "passed": true,
+      "latency_s": 3.037,
+      "answer": "I cannot answer this from the provided sources."
+    },
+    {
+      "id": "g020",
+      "type": "computable",
+      "route": "computable",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "WRONG",
+      "reason": "The candidate answer states 1 paper was published in 2026, which contradicts the reference answer of 54 papers, making this a factually wrong response per the numeric exactness rule.",
+      "passed": false,
+      "latency_s": 3.306,
+      "answer": "According to the passages, 1 paper in the corpus was published in 2026 [arXiv 2607.26670]. However, this count is noted as necessarily incomplete because the search was conducted early in 2026 [arXiv 2607.26670]."
+    },
+    {
+      "id": "g021",
+      "type": "out_of_domain",
+      "route": "out_of_domain",
+      "hits": 0,
+      "abstained": true,
+      "verdict": "CORRECT",
+      "reason": "Rule 4: the question is unanswerable (no reference answer or evidence), so abstention is the correct response.",
+      "passed": true,
+      "latency_s": 0.002,
+      "answer": "I cannot answer this from the provided sources."
+    },
+    {
+      "id": "g035",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "CORRECT",
+      "reason": "Paraphrase equivalence applies: the candidate correctly states the backbone is frozen and only LoRA modules in the projection layers are trained, matching the reference substance despite minor wording differences.",
+      "passed": true,
+      "latency_s": 3.562,
+      "answer": "No, the underlying Mamba backbone is not updated during training. According to the passages, \"all pretrained backbone parameters remain frozen\" [3]. During fine-tuning, \"LoRA adapters are inserted only into the input and output projection layers of each Mamba-2 block, while all pretrained backbone parameters remain frozen\" [3]. Additionally, \"All remaining backbone parameters remain frozen\" [2], with only the LoRA modules being trained."
+    },
+    {
+      "id": "g036",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "abstained": false,
+      "verdict": "WRONG",
+      "reason": "Rule 3 (no partial credit): the candidate answer correctly identifies that subversion requires adoption beyond mere surfacing, but omits the required detail that E2 is false when the agent quotes the memory to reject it, warns about it, asks for confirmation, or follows the safe authority \u2014 these specific behavioral distinctions are part of the reference answer's substance and are missing.",
+      "passed": false,
+      "latency_s": 6.392,
+      "answer": "According to MemSecBench, an agent is genuinely subverted by poisoned memory only when the malicious semantics are not merely surfaced but actually **adopted and produce a case-defined external consequence**. \n\nThe benchmark distinguishes between intermediate outcomes and completed attacks through its evidence-based adjudication. A Write operation (W1) or mere Persistence (W2) alone constitutes \"an intermediate outcome rather than evidence of a completed attack\" [1]. Instead, \"An attack succeeds only if the malicious semantics persist (W2), recalled (E1), influence the agent (E2), and produce the case-defined consequence (E3)\" [1].\n\nThe critical separator is the **Execute stage**, where the poisoned memory must be \"recalled, adopted, and translated into a case-defined external consequence\" [5]. This requires verification through \"a task-scoped service record\" and \"final-state evidence\" rather than \"tool invocations, ordinary returns, and agent self-reports\" [3]. The consequence must be \"verified in service, environment, or artifact state\" [6].\n\nThus, merely retrieving or surfacing malicious content does not constitute genuine subversion\u2014the agent must actually adopt the malicious semantics and externalize them through verifiable consequences in the agent's actions or outputs."
+    }
+  ]
+}

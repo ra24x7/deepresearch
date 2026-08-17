@@ -14,7 +14,10 @@ QUESTION: {question}
 
 Rules:
 - Answer only from the passages above. Do not use outside knowledge.
-- If the passages do not contain the answer, reply with exactly this sentence and nothing else: {sentinel}
+- If the passages do not contain the answer, your entire reply must be this one
+  sentence: {sentinel}
+  Do not add anything after it — no explanation, no summary of what the
+  passages do say, no partial answer. The sentence alone is the whole reply.
 - Cite the arXiv id of every passage you rely on, in square brackets.
 - Answer directly, with no preamble.
 """

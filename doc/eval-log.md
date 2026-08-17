@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-17 | S1 answer-path sample, 8 questions, Cohere | golden 150 (8 sampled) | wiring proven; **$0.00183/query**; two defects found and fixed |
 | 2026-08-15 | C1 cost correction (no re-run) | — | recorded rerank costs understated **≥1.8×**; embed costs unpriced |
 | 2026-08-14 | R6 entity-weight sweep + claims ablation, identity | golden 150 (136 scored) | entity 0.1 confirmed optimal but worth only **+0.0111**; claims **±0.0000** |
 | 2026-08-14 | D2 spike, `multi_paper` fix candidates (not a scored run) | golden 150 (9 questions probed) | **no achievable variant reaches the oracle — do not build decomposition yet**; most losses are `k=10` cutoff artefacts |
@@ -24,6 +25,94 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## S1 — 2026-08-17 — Answer-path sample, 8 questions — wiring proven, two defects found
+
+**Command:** `uv run python scripts/eval_answers.py --corpus evalv1 --ids g001,g007,g016,g018,g020,g021,g035,g036`
+**Report:** `notebooks/phase4_orchestration/answer_eval.json`
+**Cost:** $0.0146 per pass, run twice (before and after the fixes below) — $0.029
+total. Live Bedrock, user-authorized.
+
+**Purpose:** first end-to-end execution of the Phase 4 path. Not a measurement
+of quality — eight questions cannot measure anything. It exists to prove the
+wiring and to replace an estimated cost-per-query with a measured one.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150, human-verified; **8 sampled**, one per type |
+| Corpus | `evalv1`, 1,518 chunks |
+| Code | commit `e26aa61` (first pass), plus the two fixes below (second pass) |
+| Config | k=10, over-fetch 60, Cohere rerank, Haiku generation, Sonnet 4.6 judge, rubric v2 |
+
+### Comparable to
+
+**Nothing.** This is a different instrument measuring a different thing —
+answer pass rate, not retrieval recall — at n=8. It sets no baseline. The
+first comparable figure will be the full 150-question run.
+
+### Measured
+
+| | |
+|---|---|
+| cost per query | **$0.00183** |
+| implied full 150-question run | **~$0.27** |
+| latency p50 / p95 | 3.3s / 6.4s |
+| pass rate | 0.750 after fixes (6/8) — **not meaningful at n=8** |
+
+The prior estimate for a full run was ~$2.70, an order of magnitude high. The
+guardrail also demonstrated its purpose: the `out_of_domain` question completed
+in 0.0s having made no retrieval and no generation call, so it cost nothing.
+
+### Defect 1 — the judge does not use the ABSTAINED label on unanswerable questions
+
+On g021 the system abstained perfectly and the judge returned **CORRECT** while
+citing rule 4 by name in its reason ("the candidate correctly abstained rather
+than bluffing"). The rubric defines ABSTAINED as "the system declined to
+answer" and rule 4 makes ABSTAINED the pass on these types, so scoring on the
+verdict marked a textbook abstention as a failure.
+
+**This path was never calibrated.** Phase 1's 29 pairs were all *answerable*
+questions against a uniformly abstaining baseline, so abstention on an
+*unanswerable* question never occurred once — the caveat recorded in
+`notebooks/phase1_eval_harness/README.md`, arriving as predicted.
+
+**Fix:** abstention is now decided structurally, by exact match against the
+sentinel the generator and guardrail both emit, and the judge's label is
+ignored on those two types (`src/evals/answer_eval.py`). Chosen over adding
+`expected_behavior` to the judge prompt, which would have bumped the rubric
+version and invalidated every verdict recorded under v2.
+
+### Defect 2 — the generator appended prose after refusing
+
+On g018 the model emitted the abstention sentence and then continued for
+another 1,200 characters describing what the passages *do* contain. Exact-match
+detection failed, and a refusal followed by substantive content is bluffing
+with a disclaimer attached.
+
+**Fix:** the generation prompt now states that the sentence is the entire
+reply, naming the specific failure (no explanation, no summary of what the
+passages say, no partial answer). After the fix g018's answer is 47 characters
+— the sentinel alone.
+
+Both fixes verified by re-running the identical sample: pass rate 0.500 → 0.750,
+with g018 and g021 moving to PASS.
+
+### Two failures that remain, both known
+
+- **g020 (`computable`)** — answered "1 paper" against a reference of 54. This
+  is the unbuilt SQL-over-metadata route: the router classifies `computable`
+  and then falls through to semantic retrieval, exactly as
+  `doc/project-status.md` predicts. Not an answer-quality failure.
+- **g036 (`definitional`)** — the answer states the core distinction correctly
+  and omits the enumerated counter-examples; the judge applied **rule 3, no
+  partial credit**. Answers were checked against the token cap and are not
+  truncated (longest ~324 tokens against 1024), so this is a genuine rule-3
+  outcome — the **first live instance of the revisit condition the rubric
+  itself records** for rule 3. Whether it is unfair is the user's call.
 
 ---
 
