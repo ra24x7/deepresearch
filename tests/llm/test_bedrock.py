@@ -99,6 +99,38 @@ class TestInvokeJson:
 
         assert data == {"a": 1}
 
+    def test_extracts_json_that_follows_a_prose_preamble(self):
+        # the judge reasons in prose before answering on hard questions; Phase 1
+        # tolerated this by scanning for the outermost braces, and a full
+        # 150-question run died at question 34 when that tolerance was lost
+        client = MagicMock()
+        client.converse.return_value = _converse_response(
+            'Looking at the candidate answer, I need to check both claims.\n\n'
+            '{"verdict": "WRONG", "reason": "Rule 3: incomplete."}'
+        )
+
+        data, _ = invoke_json("prompt", client, SETTINGS)
+
+        assert data == {"verdict": "WRONG", "reason": "Rule 3: incomplete."}
+        assert client.converse.call_count == 1
+
+    def test_extracts_json_wrapped_in_prose_on_both_sides(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response(
+            'Here is my assessment.\n{"a": 1}\nLet me know if you need more.'
+        )
+
+        data, _ = invoke_json("prompt", client, SETTINGS)
+
+        assert data == {"a": 1}
+
+    def test_prose_with_no_json_at_all_still_raises(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response("I cannot grade this answer.")
+
+        with pytest.raises(LLMJSONParseError):
+            invoke_json("prompt", client, SETTINGS)
+
     def test_retries_same_prompt_once_on_malformed_json_then_succeeds(self):
         client = MagicMock()
         client.converse.side_effect = [

@@ -53,6 +53,20 @@ def _try_parse_json(text: str) -> dict | None:
     try:
         return json.loads(_strip_markdown_fence(text))
     except json.JSONDecodeError:
+        return _extract_braced_json(text)
+
+
+def _extract_braced_json(text: str) -> dict | None:
+    # A model asked for JSON may still reason in prose first — the judge does
+    # this on hard questions. Phase 1's notebook scanned for the outermost
+    # braces; reusing invoke_json lost that tolerance and killed a 150-question
+    # run at question 34.
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end <= start:
+        return None
+    try:
+        return json.loads(text[start : end + 1])
+    except json.JSONDecodeError:
         return None
 
 

@@ -111,64 +111,89 @@ def main(corpus: str, k: int, reranker_name: str, limit: int | None, ids: str | 
     ledger = CostLedger()
     records, latencies = [], []
 
+    errors: list[str] = []
+
     for i, q in enumerate(questions, 1):
-        started = time.monotonic()
-        state = pipeline.invoke(initial_state(q["question"]))
-        elapsed = time.monotonic() - started
-        latencies.append(elapsed)
-
-        verdict = judge_answer(
-            q["question"], state["answer"], q.get("reference_answer"), q.get("evidence", []), rubric,
-            judge_llm, judge_settings,
-        )
-
-        ledger = state["ledger"].add(verdict.usage, judge_settings.model_id)
-        # the graph's ledger only knows generation; fold in this question's
-        # retrieval-side usage so cost-per-query covers everything that billed
-        ledger = ledger.add_embed(calls=1)
-        if reranker_name != "identity":
-            ledger = ledger.add_rerank(documents=counters["rerank_documents"])
-        counters["rerank_documents"] = 0
-
-        # the graph's ledger holds generation usage only, so its flat totals
-        # are exactly this question's generation call
-        generation_usage = Usage(
-            input_tokens=state["ledger"].input_tokens, output_tokens=state["ledger"].output_tokens
-        )
-        tracer.generation(
-            name=f"answer:{q['id']}",
-            model=generation_settings.model_id,
-            prompt=q["question"],
-            output=state["answer"] or "",
-            usage=generation_usage,
-            cost_usd=ledger.total_usd,
-        )
-
-        passed = is_pass(q["type"], verdict.verdict, state["abstained"])
-        records.append(
-            {
-                "id": q["id"],
-                "type": q["type"],
-                "route": state["route"],
-                "hits": len(state["hits"]),
-                "abstained": state["abstained"],
-                "verdict": verdict.verdict,
-                "reason": verdict.reason,
-                "passed": passed,
-                "latency_s": round(elapsed, 3),
-                "answer": state["answer"],
-            }
-        )
-        print(f"{q['id']:5} {q['type']:16} {verdict.verdict:10} {'PASS' if passed else 'FAIL'} "
-              f"{elapsed:5.1f}s", flush=True)
+        try:
+            record, ledger = _score_one(
+                q, pipeline, judge_llm, judge_settings, rubric, generation_settings,
+                reranker_name, counters, ledger, tracer, latencies,
+            )
+        except Exception as exc:  # noqa: BLE001 — one bad response must not abort a paid batch
+            errors.append(f"{q['id']}: {exc}")
+            records.append(
+                {"id": q["id"], "type": q["type"], "verdict": "ERROR", "reason": str(exc)[:300],
+                 "passed": False, "error": True}
+            )
+            print(f"{q['id']:5} {q['type']:16} {'ERROR':10} FAIL   — {str(exc)[:80]}", flush=True)
+            continue
+        records.append(record)
+        print(f"{q['id']:5} {q['type']:16} {record['verdict']:10} "
+              f"{'PASS' if record['passed'] else 'FAIL'} {record['latency_s']:5.1f}s", flush=True)
 
     tracer.flush()
     summary = _summarise(records, latencies, ledger, k, reranker.model_id)
+    summary["errors"] = errors
 
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(json.dumps({"summary": summary, "questions": records}, indent=2) + "\n")
     _print_summary(summary, records)
+    if errors:
+        print(f"\n{len(errors)} question(s) errored:")
+        for line in errors:
+            print(f"  {line[:160]}")
     return 0
+
+
+def _score_one(
+    q, pipeline, judge_llm, judge_settings, rubric, generation_settings,
+    reranker_name, counters, ledger, tracer, latencies,
+):
+    started = time.monotonic()
+    state = pipeline.invoke(initial_state(q["question"]))
+    elapsed = time.monotonic() - started
+    latencies.append(elapsed)
+
+    verdict = judge_answer(
+        q["question"], state["answer"], q.get("reference_answer"), q.get("evidence", []), rubric,
+        judge_llm, judge_settings,
+    )
+
+    ledger = state["ledger"].add(verdict.usage, judge_settings.model_id)
+    # the graph's ledger only knows generation; fold in this question's
+    # retrieval-side usage so cost-per-query covers everything that billed
+    ledger = ledger.add_embed(calls=1)
+    if reranker_name != "identity":
+        ledger = ledger.add_rerank(documents=counters["rerank_documents"])
+    counters["rerank_documents"] = 0
+
+    # the graph's ledger holds generation usage only, so its flat totals are
+    # exactly this question's generation call
+    generation_usage = Usage(
+        input_tokens=state["ledger"].input_tokens, output_tokens=state["ledger"].output_tokens
+    )
+    tracer.generation(
+        name=f"answer:{q['id']}",
+        model=generation_settings.model_id,
+        prompt=q["question"],
+        output=state["answer"] or "",
+        usage=generation_usage,
+        cost_usd=ledger.total_usd,
+    )
+
+    record = {
+        "id": q["id"],
+        "type": q["type"],
+        "route": state["route"],
+        "hits": len(state["hits"]),
+        "abstained": state["abstained"],
+        "verdict": verdict.verdict,
+        "reason": verdict.reason,
+        "passed": is_pass(q["type"], verdict.verdict, state["abstained"]),
+        "latency_s": round(elapsed, 3),
+        "answer": state["answer"],
+    }
+    return record, ledger
 
 
 def _summarise(records: list[dict], latencies: list[float], ledger: CostLedger, k: int, reranker_model: str) -> dict:
@@ -183,8 +208,8 @@ def _summarise(records: list[dict], latencies: list[float], ledger: CostLedger, 
         "reranker": reranker_model,
         "pass_rate": mean([1.0 if r["passed"] else 0.0 for r in records]),
         "by_type": {t: {"n": len(v), "pass_rate": mean([1.0 if p else 0.0 for p in v])} for t, v in sorted(by_type.items())},
-        "verdicts": {v: len([r for r in records if r["verdict"] == v]) for v in ("CORRECT", "WRONG", "ABSTAINED")},
-        "abstention_rate": mean([1.0 if r["abstained"] else 0.0 for r in records]),
+        "verdicts": {v: len([r for r in records if r["verdict"] == v]) for v in ("CORRECT", "WRONG", "ABSTAINED", "ERROR")},
+        "abstention_rate": mean([1.0 if r.get("abstained") else 0.0 for r in records]),
         "latency_s": {
             "p50": ordered[len(ordered) // 2] if ordered else None,
             "p95": ordered[int(len(ordered) * 0.95)] if ordered else None,

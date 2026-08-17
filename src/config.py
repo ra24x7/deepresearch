@@ -128,7 +128,10 @@ class JudgeSettings(FrozenSettings):
     model_config = SettingsConfigDict(env_prefix="JUDGE__")
 
     model_id: str = "global.anthropic.claude-sonnet-4-6"
-    # The rubric asks for a verdict and one sentence; Phase 1 calibrated at 200.
-    max_tokens: int = 200
+    # Phase 1 calibrated at 200, but every answer it graded was a uniform
+    # abstention with short reasoning. On a substantive multi-part answer the
+    # judge reasons at length and 200 truncates it before the JSON is emitted,
+    # which killed a 150-question run at question 34.
+    max_tokens: int = 1024
     temperature: float = 0.0
     max_retries: int = 3
