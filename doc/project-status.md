@@ -5,7 +5,7 @@
 
 **Current phase:** 4 — Cost-Aware Agent Orchestration (Phase 3 closed
 2026-08-14: every retriever now has an ADR, per its exit criterion)
-**Last updated:** 2026-08-16
+**Last updated:** 2026-08-18
 
 ## Roadmap
 
@@ -192,7 +192,8 @@ keep/delete ADRs.
 
 ### Phase 4 — Cost-Aware Agent Orchestration
 
-- [ ] LangGraph: guardrail → route → retrieve → generate as the happy path.
+- [x] LangGraph: guardrail → route → retrieve → generate as the happy path —
+      built, run over all 150 golden questions twice, pass rate 0.800 (A1/A2).
       **Fix the router before routing becomes load-bearing:** `_is_artefact_token`
       treats any acronym as an entity anchor, so every question mentioning LLM,
       RAG or BERT routes `entity_anchored` — g080 does, while the entity channel
@@ -200,9 +201,13 @@ keep/delete ADRs.
       `src/retrieval/search.py` runs all four channels regardless of route.
 - [ ] Grade-and-rewrite as escape hatch, fired only on low rerank confidence
 - [ ] Supervisor tools: search_papers, sql_metadata, get_claims, ingest_by_id
-- [ ] Token/cost budget tracked per query (Langfuse)
+- [ ] Token/cost budget tracked per query (Langfuse) — cost per query **is**
+      measured ($0.01300, A2) and assembled from every billing component, but
+      Langfuse itself receives nothing: `obs/tracing.py` no-ops without
+      credentials. Unticked until traces actually land somewhere.
 
-**Exit criteria:** p50/p95 latency and cost-per-query measured; grading fires
+**Exit criteria:** p50/p95 latency and cost-per-query measured ✅ (A2: p50 3.54s,
+p95 6.13s, $0.01300/query, reproduced across two runs); grading fires
 on <30% of queries; accuracy within noise of the always-grade variant.
 
 ### Phase 5 — Attribution & Grounding
@@ -248,6 +253,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-18 | Phase 4 measured end to end (`doc/eval-log.md` A1 + A2, $1.95 + a retracted run). **Pass rate 0.800** over all 150 questions — scored differently from retrieval on purpose, since the 8 `unanswerable` and 4 `out_of_domain` entries are the only measure of whether the system abstains rather than bluffs. A2 re-ran A1 on fixed cost code and reproduced it **exactly**: same pass rate, same verdict counts, same 30 failing ids, so the instrument is demonstrably deterministic. **Cost per query is $0.01300**, roughly 7× every estimate that preceded it, and input tokens dominate output 37:1 because the judge re-sends the whole rubric on every call — ~225k tokens of one static document, the clearest caching target available. Three findings worth carrying: the rule-based guardrail catches **1 of 4** out-of-domain questions (g076, the deliberately adversarial one, was answered — its topic is maximally in-domain, so the gap is intent classification, not a weak keyword list, and Bedrock Guardrails would not obviously catch it either); `multi_paper` is worst in answers (0.417) as in retrieval, failing largely on the same questions including the three still-undecided defective ones; and of 7 `computable` failures only 2 need the unbuilt SQL route, the other 5 being arithmetic-over-retrieved-text that no new tool fixes. Cost accounting itself had a bug that survived three runs — the driver rebased its running total on each question's own ledger — now fixed and regression-tested in `evals.answer_eval.accumulate_cost`. ADR 0006 records the Langfuse/Logfire split. |
 | 2026-08-16 | Phase 4 foundations built, all offline-testable (commits `6813ee9` + this one; suite 357 → 404). **Generation**: grounded answers over `FusedHit`s with an exact abstention sentence the harness can count without paying a judge — which matters for the 12 `unanswerable`/`out_of_domain` questions. **Judge**: lifted out of `calibration.ipynb`, where it was ~5.3k chars importing nothing from `src/` — the reason Phase 1's ablation delta has been deferred since July. Prompt reproduced verbatim; changing its wording would change what every past grade means and owe a rubric version bump. **Cost**: `CostLedger` is now per-model and every call site names the model it prices, because the bug being guarded against is the one the module already had — a rate assumed once and never re-examined. A model with no rate reports through `unpriced` rather than costing zero. **Graph**: `guardrail → retrieve → generate` on LangGraph, with retrieval and generation injected as callables so the whole path runs in tests with no OpenSearch, no Bedrock, no paid call; an `out_of_domain` question short-circuits to the abstention sentence and costs nothing, verified by mutation-testing the conditional edge. **Tracing**: `obs/tracing.py` degrades to `NullTracer` without Langfuse credentials, matching the identity-reranker precedent — and passes `CostLedger`'s figure through rather than recomputing cost, so a trace and an eval report cannot disagree. Also found while pricing Cohere: recorded rerank costs are understated ≥1.8× (`doc/eval-log.md` C1); no result moves, since cost never entered a decision rule. Still unwired to real clients and still unrun end-to-end, so no Phase 4 checklist box is ticked yet. |
 | 2026-08-14 | **Phase 3 closed.** R6 (`doc/eval-log.md`, 136 embed calls ~$0.001, identity reranker) supplied the two numbers both pending ADRs were missing. Entity weight re-swept at n=136: 0.1 confirmed as the recall optimum, but worth **+0.0111 recall, not the +0.0345** the superseded n=29 sweep claimed — and it buys `factual_single` (+0.030) and `negation` (+0.047) while costing `multi_paper` (−0.042) and NDCG (−0.0041), without moving `entity_anchored` at all. Claims ablation: removing `dense_claims` from fusion changes recall and NDCG by **exactly ±0.0000** across all 136 questions and every type; claim docs occupy 15 of 1,360 top-10 slots and displace only non-gold chunks. Decisions: **ADR 0004** keeps the entity channel at 0.1 with its two defects (tied scores, generic entities) recorded as deferred known issues — the tied-score cause is explicitly marked *inferred, not verified*; **ADR 0005** removes claims from the retrieval path while keeping them indexed, which also halves the per-query embedding cost since `search_dense_chunks` and `search_dense_claims` each embedded the query separately. Code: `search.py`, `eval_retrieval.py` and `sweep_fusion_weights.py` updated (the eval still measures claims on their own terms, just does not fuse them); `fuse()` deliberately untouched, per its own docstring warning about gate edits. TDD: test written red first, suite green at 357 passed / 1 skipped. |
 | 2026-08-14 | `multi_paper` fix spike (`doc/eval-log.md` D2, ~70 embed calls <$0.01, identity reranker, no source changed). **Verdict: build nothing yet.** Four candidates measured on the 5 genuine failures (g034, g017, g084, g148, g108) with 4 controls. **Question-only decomposition moved nothing — 0 of 5**, including the two questions that name both subjects outright (g017, g108), which kills the free rule-based decomposer. A hand-written **oracle** split lifts 0.300 → 0.800 with g084 going 0.000 → 1.000, so the chunks are retrievable and the missing ingredient is knowing what to ask — but the oracle is **partly circular**, since its wording encodes which section holds the answer, i.e. what retrieval exists to find. The achievable half (paper identity, free from titles) was tested as title-augmented sub-queries: it lifts two targets to 1.000 and takes two controls to **0.000**, and the correlation with gold-chunk location is perfect — it biases retrieval toward abstracts, so it helps only when the gold *is* an abstract. A no-LLM per-paper second round likewise helps 2 targets and halves 2 controls. Both approximations trade controls for targets, the exact shape that sank R4 and R5. Forensics also found the recurring mechanism: paper monopoly of the top-10 (7/10, 8/10, and **10/10** on g108, where the second paper gets zero slots and one of its gold chunks is returned by no channel at all), with losses landing at knife-edge margins of 0.00007, 0.00076 and 0.00263. Decomposition is no longer the default surviving direction. n=5 cannot carry an architectural decision regardless — grow `multi_paper` first. |
@@ -267,6 +273,7 @@ not just demoed.
 - Bibliographies excluded from the search index, captured as citation entities instead — [ADR 0003](adr/0003-exclude-bibliography-from-index.md)
 - Entity channel kept at `entity_weight = 0.1`; two defects (tied scores, generic entities) recorded as deferred known issues — [ADR 0004](adr/0004-entity-channel.md)
 - Claims removed from the retrieval path but kept indexed as a product surface; halves the per-query embedding cost — [ADR 0005](adr/0005-claims-channel.md)
+- Observability split: Langfuse owns LLM traces and evals, Logfire owns infra spans; correlated both ways, cost passed through from `CostLedger` rather than recomputed — [ADR 0006](adr/0006-observability-split.md)
 
 ## Decisions pending
 

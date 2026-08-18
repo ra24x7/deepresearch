@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-18 | A2 answer eval re-run, valid cost accounting | golden 150 (150 scored) | identical 0.800 pass rate; **$0.01300/query**, $1.95 total |
 | 2026-08-17 | A1 first end-to-end answer eval, Cohere | golden 150 (150 scored) | pass rate **0.800**; `multi_paper` **0.417**; guardrail catches **1 of 4**; **cost figures invalid** |
 | 2026-08-17 | S1 answer-path sample, 8 questions, Cohere | golden 150 (8 sampled) | wiring proven; two defects found and fixed; **cost figure retracted — see A1** |
 | 2026-08-15 | C1 cost correction (no re-run) | — | recorded rerank costs understated **≥1.8×**; embed costs unpriced |
@@ -26,6 +27,75 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## A2 — 2026-08-18 — Answer eval re-run with valid cost accounting
+
+**Command:** `uv run python scripts/eval_answers.py --corpus evalv1 --k 10 --reranker cohere_bedrock`
+**Report:** `notebooks/phase4_orchestration/answer_eval.json`
+**Cost:** $1.9497, measured rather than estimated. Live Bedrock, user-authorized.
+
+Re-run of A1 on commit `92c2c30`, which fixes the ledger bug A1 documents.
+Nothing else changed — same golden set, same corpus, same config, same code
+path for retrieval, generation and judging.
+
+### Comparable to
+
+**A1 — directly, and that is the point.** Only the cost accounting differs.
+
+### Quality reproduced exactly
+
+| | A1 | A2 |
+|---|---|---|
+| pass rate | 0.800 | **0.800** |
+| verdicts | 120 / 22 / 8 / 0 | **120 / 22 / 8 / 0** |
+| failing question ids | 30 ids | **the same 30 ids** |
+| latency p50 / p95 | 3.49s / 6.18s | 3.54s / 6.13s |
+
+Every per-type figure is identical, and the two runs fail on exactly the same
+questions. With `temperature=0` on both generation and judging this is the
+expected result, but it had never been demonstrated — **the instrument is
+reproducible across independent runs**, which is what makes a future
+before/after comparison meaningful.
+
+### Cost — Phase 4's criterion, now met
+
+| | |
+|---|---|
+| **cost per query** | **$0.01300** |
+| total, 150 questions | $1.9497 |
+| of which rerank | $0.2980 (149 queries) |
+| of which tokens | $1.6517 |
+| input / output tokens | 1,086,287 / 29,414 |
+
+**Every prior estimate was wrong, in the same direction.** The retracted
+figures were $0.00183/query (S1) and $0.00009/query (A1); the projections built
+on them were "~$0.27" and a revised "~$0.50" for a full run. The measured
+figure is **$1.95** — roughly 7x the first projection.
+
+**Input tokens dominate output 37 to 1.** The judge re-sends the entire rubric
+on every call, so roughly 225,000 of those input tokens are 150 copies of one
+static document. That is a textbook stable prefix and the clearest cost lever
+available: prompt-caching the rubric should cut judge input cost materially
+without touching the prompt text, and therefore without a rubric version bump.
+
+**149 rerank queries, not 150.** The one question the guardrail short-circuited
+(g021) made no rerank call — independent confirmation, from the billing side,
+that the `out_of_domain` route genuinely costs nothing when it fires.
+
+**The total remains a floor.** Cohere Embed v4 is still unpriced (C1), so 150
+embedding calls are counted and not costed, and the Claude token rates are
+still first-party figures unverified against Bedrock.
+
+### What this settles and what it does not
+
+- **Settled:** Phase 4's "p50/p95 latency and cost-per-query measured" — both
+  numbers now exist and are reproducible.
+- **Not settled:** the other two exit criteria concern the grade-and-rewrite
+  escape hatch, which is not built. Nothing here speaks to them.
+- **Recorded for the next run:** the report now also breaks tokens down per
+  model, so generation-versus-judge attribution will not need a third run.
 
 ---
 

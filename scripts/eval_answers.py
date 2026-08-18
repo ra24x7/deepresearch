@@ -222,6 +222,11 @@ def _summarise(records: list[dict], latencies: list[float], ledger: CostLedger, 
             "output_tokens": ledger.output_tokens,
             "rerank_queries": ledger.rerank_queries,
             "embed_calls": ledger.embed_calls,
+            # per-model split, so cost attribution does not need a second run
+            "tokens_by_model": {
+                m: {"input": t.input_tokens, "output": t.output_tokens}
+                for m, t in ledger.tokens_by_model.items()
+            },
             # non-empty means total_usd is a floor, not the bill (eval-log C1)
             "unpriced": list(ledger.unpriced),
         },
