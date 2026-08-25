@@ -2,6 +2,9 @@ import pytest
 
 from retrieval.router import route
 
+# A stand-in for the surface forms loaded from the entities table.
+VOCABULARY = frozenset({"a-rag", "aps-rag", "bge-m3", "bert4rec", "trek", "bm25"})
+
 
 class TestComputableRoute:
     @pytest.mark.parametrize(
@@ -49,17 +52,42 @@ class TestEntityAnchoredRoute:
             "What retrieval tools does the A-RAG framework provide?",
             "Where is bge-m3 used for embedding?",
             "Does BERT4Rec appear anywhere?",
-            "What is the RAG pipeline made of?",
         ],
     )
-    def test_acronym_and_hyphenated_artefacts_anchor_the_query(self, query):
-        assert route(query) == "entity_anchored"
+    def test_acronyms_the_entity_index_knows_anchor_the_query(self, query):
+        assert route(query, VOCABULARY) == "entity_anchored"
 
     @pytest.mark.parametrize(
         "query", ["Is state-of-the-art retrieval worth it?", "Explain the cross-encoder reranker."]
     )
     def test_ordinary_hyphenated_words_are_not_artefacts(self, query):
-        assert route(query) == "semantic"
+        assert route(query, VOCABULARY) == "semantic"
+
+
+class TestTheVocabularyGatesTheAnchor:
+    """An acronym anchors only when the entity channel can act on it.
+
+    Measured on the 150-question golden set against the live entity table:
+    24 of 76 acronym triggers matched no surface form at all (LLM, RAG, AI, QA,
+    GPU, POMDP, OSWorld...), routing 19 questions to a channel that returns
+    nothing for them -- the g080 defect (eval-log D1).
+    """
+
+    @pytest.mark.parametrize("query", ["What weakness do the LLM papers share?", "Is the RAG pipeline sound?"])
+    def test_an_acronym_absent_from_the_index_does_not_anchor(self, query):
+        assert route(query, VOCABULARY) == "semantic"
+
+    def test_with_no_vocabulary_no_acronym_anchors(self):
+        assert route("What retrieval tools does the A-RAG framework provide?") == "semantic"
+
+    def test_an_arxiv_id_anchors_without_a_vocabulary(self):
+        assert route("What does 2510.12345 propose?") == "entity_anchored"
+
+    def test_a_metric_at_k_anchors_without_a_vocabulary(self):
+        assert route("What is the reported NDCG@10?") == "entity_anchored"
+
+    def test_the_vocabulary_is_matched_after_normalisation(self):
+        assert route("Where is BGE-M3 used?", frozenset({"bge-m3"})) == "entity_anchored"
 
 
 class TestOutOfDomainRoute:

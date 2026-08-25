@@ -5,7 +5,14 @@ import pytest
 from pydantic import ValidationError
 
 from config import JudgeSettings
-from evals.judge import Verdict, build_judge_prompt, judge_answer, load_rubric
+from evals.judge import (
+    Verdict,
+    build_judge_body,
+    build_judge_prefix,
+    build_judge_prompt,
+    judge_answer,
+    load_rubric,
+)
 from llm.bedrock import Usage
 
 SETTINGS = JudgeSettings()
@@ -108,3 +115,56 @@ class TestVerdictModel:
 
         with pytest.raises(ValidationError):
             verdict.verdict = "WRONG"
+
+
+class TestRubricCaching:
+    """The rubric is ~1.5k tokens re-sent on every question -- 225k of A2's
+    1.09M input tokens were 150 copies of one static document. Splitting it out
+    as a cached prefix must not change a single character the model receives.
+    """
+
+    def test_the_prefix_and_body_concatenate_to_the_uncached_prompt(self):
+        prefix = build_judge_prefix(RUBRIC)
+        body = build_judge_body(
+            question="what rank?", answer="r=4", reference="r=4 or 8", evidence=[]
+        )
+
+        assert prefix + body == build_judge_prompt(
+            question="what rank?", answer="r=4", reference="r=4 or 8", evidence=[], rubric=RUBRIC
+        )
+
+    def test_the_prefix_holds_the_rubric_and_nothing_question_specific(self):
+        prefix = build_judge_prefix(RUBRIC)
+
+        assert RUBRIC in prefix
+        assert "QUESTION:" not in prefix
+
+    def test_by_default_the_rubric_is_sent_inline_as_one_prompt(self):
+        seen: list[str] = []
+
+        judge_answer(
+            "q", "a", "r", [], RUBRIC, _fake_llm({"verdict": "CORRECT", "reason": ""}, seen), SETTINGS
+        )
+
+        assert RUBRIC in seen[0]
+
+    def test_with_caching_on_the_rubric_travels_as_the_cached_prefix(self):
+        calls: list[tuple[str, str | None]] = []
+
+        def invoke_json(prompt: str, cached_prefix: str | None = None):
+            calls.append((prompt, cached_prefix))
+            return {"verdict": "CORRECT", "reason": ""}, Usage(input_tokens=50, output_tokens=10)
+
+        judge_answer("q", "a", "r", [], RUBRIC, invoke_json, SETTINGS, cache_rubric=True)
+
+        body, prefix = calls[0]
+        assert RUBRIC in prefix
+        assert RUBRIC not in body
+
+    def test_a_cached_verdict_is_parsed_the_same_way(self):
+        def invoke_json(prompt: str, cached_prefix: str | None = None):
+            return {"verdict": "WRONG", "reason": "rule 2"}, Usage(input_tokens=50, output_tokens=10)
+
+        verdict = judge_answer("q", "a", "r", [], RUBRIC, invoke_json, SETTINGS, cache_rubric=True)
+
+        assert (verdict.verdict, verdict.reason) == ("WRONG", "rule 2")

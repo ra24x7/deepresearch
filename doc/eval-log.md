@@ -14,6 +14,7 @@
 
 | Date | Run | Dataset | Headline |
 |---|---|---|---|
+| 2026-08-25 | P1 confidence probe, retrieval only, Cohere | golden 150 (150 probed) | rerank confidence **does not predict answer correctness** (AUC 0.587) — the specified escape-hatch gate is dead |
 | 2026-08-18 | A2 answer eval re-run, valid cost accounting | golden 150 (150 scored) | identical 0.800 pass rate; **$0.01300/query**, $1.95 total |
 | 2026-08-17 | A1 first end-to-end answer eval, Cohere | golden 150 (150 scored) | pass rate **0.800**; `multi_paper` **0.417**; guardrail catches **1 of 4**; **cost figures invalid** |
 | 2026-08-17 | S1 answer-path sample, 8 questions, Cohere | golden 150 (8 sampled) | wiring proven; two defects found and fixed; **cost figure retracted — see A1** |
@@ -27,6 +28,109 @@
 | 2026-08-08 | R2 retrieval, identity rerank | golden 150 (136 scored) | fused recall@10 0.907, NDCG 0.681 |
 | 2026-08-07 | R1 retrieval, both rerankers | golden ~39 (29 scored) | fused recall@10 0.977, NDCG 0.912 |
 | 2026-07-29 | Judge calibration + no-retrieval baseline | golden 33 (29 scored) | judge agreement 100%, baseline 0/29 |
+
+---
+
+## P1 — 2026-08-25 — Confidence probe: is rerank score a usable escape-hatch gate?
+
+**Command:** `uv run python scripts/probe_confidence.py --corpus evalv1 --k 10`
+**Report:** `notebooks/phase4_orchestration/confidence_probe.json`
+**Cost:** $0.30 rerank floor (150 queries) + 150 unpriced Cohere embeddings.
+Live Bedrock, user-authorized. No generation, no judge.
+
+Phase 4's checklist specifies grade-and-rewrite "fired only on low rerank
+confidence". This measures whether that gate carries any signal, **before**
+paying for an answer run built on it. Retrieval only: for each of the 150 golden
+questions it records the reranker's relevance score for its own top hit, then
+joins that against A2's pass/fail column.
+
+### State at time of run
+
+| | |
+|---|---|
+| Golden set | 150, all human-verified, all 150 probed |
+| Corpus | `evalv1`, 1,518 chunks |
+| Code | this commit; `search.py` unchanged since A2 |
+| Config | k=10, over-fetch 60, entity weight 0.1, Cohere rerank v3.5 |
+
+### Comparable to
+
+**A2, for the join only.** The pass/fail column comes from A2; the confidence
+column from this run. The join is valid because `search.py` fans out to every
+channel regardless of route, so the same-day router change (entity anchors now
+gated on the indexed vocabulary) moved no hits and no question changed into or
+out of `out_of_domain`. Nothing else here is comparable to a past entry — no
+prior run recorded rerank scores at all.
+
+### The gate does not work
+
+| | |
+|---|---|
+| mean confidence, questions A2 **passed** | 0.7565 |
+| mean confidence, questions A2 **failed** | 0.7176 |
+| median, passed / failed | 0.8158 / 0.7749 |
+| **separation (AUC)** | **0.587** (0.5 is chance) |
+
+Deciles across all 150: p5 0.418, p10 0.530, p25 0.644, p50 0.806, p75 0.880,
+p90 0.920. Cohere is confident nearly everywhere, including where the answer
+came out wrong.
+
+| threshold | fires on | precision | catches |
+|---|---|---|---|
+| 0.05–0.25 | 0.013 | 0.000 | 0.000 |
+| 0.30 | 0.020 | 0.333 | 0.033 |
+| 0.40 | 0.040 | 0.167 | 0.033 |
+| 0.50 | 0.080 | 0.250 | 0.100 |
+
+*precision* = share of fired queries A2 answered wrongly; *catches* = share of
+A2's 30 failures the hatch would get a chance to repair.
+
+**To catch half the failures the hatch must fire on 44.7% of queries** — the
+median failing question scores 0.7763, above the median passing question of a
+different type. Every threshold that satisfies the exit criterion catches at
+most 10% of failures.
+
+### This is also a finding about the exit criterion
+
+"Grading fires on <30% of queries" is satisfied by *every* threshold tested,
+including 0.05, which fires on 2 questions and catches nothing. **The criterion
+as written can be met in full by a gate that does nothing.** A firing rate is a
+cost bound, not evidence of value; it needs a companion criterion on what the
+firing buys.
+
+### Confidence is not an abstention signal either
+
+Worth checking, since the 12 `unanswerable`/`out_of_domain` entries are the
+only measure of whether the system abstains rather than bluffs, and A1 found the
+guardrail catching 1 of 4 out-of-domain questions.
+
+**11 of the 12 already pass** — the generator abstains correctly with no hatch
+at all. The one failure is **g076, at confidence 0.8018 — the highest of the
+twelve.** A confidence floor at 0.30 fires on 3 questions, 2 of which should
+abstain and already do; at 0.45 it fires on 11 and would lose 4 currently
+correct answers to catch nothing new. A1's reading holds: g076's gap is intent
+classification, and rerank confidence cannot see it.
+
+### Confidence separates question *type*, not correctness
+
+Mean confidence by type: `factual_single` 0.852, `entity_anchored` 0.814,
+`negation` 0.782, `definitional` 0.743, `computable` 0.696, `unanswerable`
+0.680, `multi_paper` 0.622, `out_of_domain` 0.304. The ordering matches the
+per-type pass rates loosely and puts `multi_paper` second-lowest, consistent
+with R3 and A1. So the score knows something about the *question*; it does not
+know whether the answer will be right.
+
+### What this settles and what it does not
+
+- **Settled:** grade-and-rewrite must not ship on a rerank-confidence gate. The
+  code is built, tested and **off by default**, which is the correct state.
+- **Not settled:** whether grade-and-rewrite helps *at all*. Nothing has ever
+  measured that — this run measured only the gate. An always-grade run is the
+  experiment that would, and it must carry controls: R4 and R5 both rejected
+  variants that traded control questions for target questions.
+- **Cost of finding out this way:** $0.30, against roughly $5 for the two
+  answer runs the checklist implies. Measuring the gate before building on it
+  is the eval-first loop working as intended.
 
 ---
 

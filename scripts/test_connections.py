@@ -6,6 +6,7 @@ Checks, with one cheap real call each:
   1. OpenAI  — generation + no-retrieval baseline model (gpt-4o-mini)
   2. Bedrock — discovers which Claude models this key can see in the
                configured region, then invokes the best judge candidate
+  3. Langfuse — auth only, no trace written; skipped when unconfigured
 """
 
 from __future__ import annotations
@@ -112,15 +113,35 @@ def check_bedrock(region: str) -> bool:
     return invoke_first(judge_candidates(models), "judge") & invoke_first(haikus, "generation")
 
 
+def check_langfuse() -> bool:
+    if not (os.environ.get("LANGFUSE_PUBLIC_KEY") and os.environ.get("LANGFUSE_SECRET_KEY")):
+        print("skip  Langfuse: no keys set — tracing degrades to NullTracer (ADR 0006)")
+        return True
+
+    import langfuse
+
+    try:
+        if langfuse.Langfuse().auth_check():
+            print("OK    Langfuse credentials accepted")
+            return True
+        print("FAIL  Langfuse: credentials rejected")
+        return False
+    except Exception as exc:
+        print(f"FAIL  Langfuse: {exc}")
+        return False
+
+
 def main() -> int:
     load_dotenv()
     if not check_env_vars():
         return 1
     openai_ok = check_openai()
     bedrock_ok = check_bedrock(os.environ["AWS_REGION"])
+    langfuse_ok = check_langfuse()
+    ok = openai_ok and bedrock_ok and langfuse_ok
     print()
-    print("All connections OK" if openai_ok and bedrock_ok else "Some connections FAILED")
-    return 0 if openai_ok and bedrock_ok else 1
+    print("All connections OK" if ok else "Some connections FAILED")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

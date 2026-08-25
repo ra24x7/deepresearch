@@ -19,10 +19,15 @@ RUBRIC_PATH = Path("doc/judge-rubric.md")
 
 _NO_EVIDENCE = "(none)"
 
-_PROMPT_TEMPLATE = """You are grading an answer to a research question. Apply these rules exactly:
+# Split at the rubric boundary so the stable half can travel as a cached
+# prefix. `_PREFIX_TEMPLATE + _BODY_TEMPLATE` reproduces the Phase 1 prompt
+# character for character, which `build_judge_prompt` still returns whole.
+_PREFIX_TEMPLATE = """You are grading an answer to a research question. Apply these rules exactly:
 
 {rubric}
+"""
 
+_BODY_TEMPLATE = """
 QUESTION: {question}
 REFERENCE ANSWER: {reference}
 SUPPORTING EVIDENCE: {evidence}
@@ -43,16 +48,23 @@ def load_rubric(path: Path = RUBRIC_PATH) -> str:
     return path.read_text()
 
 
+def build_judge_prefix(rubric: str) -> str:
+    """The half that is identical on every call -- the caching target."""
+    return _PREFIX_TEMPLATE.format(rubric=rubric)
+
+
+def build_judge_body(
+    question: str, answer: str, reference: str | None, evidence: list[dict]
+) -> str:
+    return _BODY_TEMPLATE.format(
+        question=question, reference=reference, evidence=_build_evidence(evidence), answer=answer
+    )
+
+
 def build_judge_prompt(
     question: str, answer: str, reference: str | None, evidence: list[dict], rubric: str
 ) -> str:
-    return _PROMPT_TEMPLATE.format(
-        rubric=rubric,
-        question=question,
-        reference=reference,
-        evidence=_build_evidence(evidence),
-        answer=answer,
-    )
+    return build_judge_prefix(rubric) + build_judge_body(question, answer, reference, evidence)
 
 
 def judge_answer(
@@ -61,11 +73,21 @@ def judge_answer(
     reference: str | None,
     evidence: list[dict],
     rubric: str,
-    llm_invoke_json: Callable[[str], tuple[dict, Usage]],
+    llm_invoke_json: Callable[..., tuple[dict, Usage]],
     settings: JudgeSettings,
+    cache_rubric: bool = False,
 ) -> Verdict:
-    prompt = build_judge_prompt(question, answer, reference, evidence, rubric)
-    data, usage = llm_invoke_json(prompt)
+    """`cache_rubric` sends the rubric as a cached prefix instead of inline.
+
+    The model receives the same characters either way, but not in the same
+    single content block, so verdicts under caching are only comparable to past
+    ones once a run has demonstrated they did not move. Default is off.
+    """
+    if cache_rubric:
+        body = build_judge_body(question, answer, reference, evidence)
+        data, usage = llm_invoke_json(body, cached_prefix=build_judge_prefix(rubric))
+    else:
+        data, usage = llm_invoke_json(build_judge_prompt(question, answer, reference, evidence, rubric))
     return Verdict(verdict=data.get("verdict"), reason=data.get("reason", ""), usage=usage)
 
 

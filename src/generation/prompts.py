@@ -55,3 +55,39 @@ def _pages(hit: FusedHit) -> str:
     if hit.page_end is None or hit.page_end == hit.page_start:
         return f" (p{hit.page_start})"
     return f" (p{hit.page_start}-{hit.page_end})"
+
+
+_GRADE_TEMPLATE = """You are checking whether retrieved passages can answer a question.
+
+{passages}
+
+QUESTION: {question}
+
+Can the question be answered from these passages alone? Judge coverage, not
+style: partial coverage that still supports a correct, complete answer counts
+as sufficient.
+
+Reply with JSON only: {{"sufficient": true or false, "reason": "one short sentence"}}
+"""
+
+_REWRITE_TEMPLATE = """You are rewriting a search query for a corpus of research papers.
+
+The question below retrieved passages that do not answer it. Rewrite it so a
+retriever is more likely to find the right passage: keep the information need
+identical, but state it in the vocabulary a paper would use, spell out acronyms
+alongside their expansion, and drop conversational framing.
+
+{passages}
+
+QUESTION: {question}
+
+Reply with the rewritten question alone — no preamble, no quotes, no explanation.
+"""
+
+
+def build_grade_prompt(question: str, hits: Sequence[FusedHit], max_chars: int) -> str:
+    return _GRADE_TEMPLATE.format(passages=_build_passages(hits, max_chars), question=question)
+
+
+def build_rewrite_prompt(question: str, hits: Sequence[FusedHit], max_chars: int) -> str:
+    return _REWRITE_TEMPLATE.format(passages=_build_passages(hits, max_chars), question=question)

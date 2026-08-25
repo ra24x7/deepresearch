@@ -152,3 +152,69 @@ class TestInvokeJson:
             invoke_json("prompt", client, SETTINGS)
 
         assert client.converse.call_count == 2
+
+
+class TestPromptCaching:
+    """A stable prefix sent ahead of a cache point is billed once per cache
+    lifetime instead of once per call. The judge re-sends one rubric on every
+    question, which is what this exists for (eval-log A2).
+    """
+
+    def test_without_a_cached_prefix_the_prompt_is_a_single_block(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response("ok")
+
+        invoke("just the prompt", client, SETTINGS)
+
+        _, kwargs = client.converse.call_args
+        assert kwargs["messages"][0]["content"] == [{"text": "just the prompt"}]
+
+    def test_a_cached_prefix_is_sent_ahead_of_a_cache_point(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response("ok")
+
+        invoke("the variable part", client, SETTINGS, cached_prefix="the stable rubric")
+
+        _, kwargs = client.converse.call_args
+        assert kwargs["messages"][0]["content"] == [
+            {"text": "the stable rubric"},
+            {"cachePoint": {"type": "default"}},
+            {"text": "the variable part"},
+        ]
+
+    def test_an_empty_cached_prefix_adds_no_cache_point(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response("ok")
+
+        invoke("just the prompt", client, SETTINGS, cached_prefix="")
+
+        _, kwargs = client.converse.call_args
+        assert kwargs["messages"][0]["content"] == [{"text": "just the prompt"}]
+
+    def test_cache_token_counts_are_read_off_the_response(self):
+        client = MagicMock()
+        response = _converse_response("ok")
+        response["usage"]["cacheReadInputTokens"] = 1_500
+        response["usage"]["cacheWriteInputTokens"] = 20
+        client.converse.return_value = response
+
+        _, usage = invoke("p", client, SETTINGS)
+
+        assert (usage.cache_read_tokens, usage.cache_write_tokens) == (1_500, 20)
+
+    def test_a_response_without_cache_counts_reports_zero(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response("ok")
+
+        _, usage = invoke("p", client, SETTINGS)
+
+        assert (usage.cache_read_tokens, usage.cache_write_tokens) == (0, 0)
+
+    def test_invoke_json_forwards_the_cached_prefix(self):
+        client = MagicMock()
+        client.converse.return_value = _converse_response('{"verdict": "CORRECT"}')
+
+        invoke_json("the variable part", client, SETTINGS, cached_prefix="the stable rubric")
+
+        _, kwargs = client.converse.call_args
+        assert kwargs["messages"][0]["content"][0] == {"text": "the stable rubric"}

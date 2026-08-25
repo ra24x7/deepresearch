@@ -7,9 +7,12 @@ figure is passed through, so the trace and the eval report can never disagree.
 
 Without credentials this degrades to `NullTracer`, matching `IdentityReranker`
 and `FakeEmbeddingProvider`: no part of the test suite or an offline eval run
-may require an account.
+may require an account. It degrades the same way when the client cannot be
+built or a write fails: by the time a trace is written the run is already paid
+for, so losing the trace is cheap and losing the answer is not.
 """
 
+import logging
 import os
 from typing import Any, Protocol, runtime_checkable
 
@@ -51,23 +54,46 @@ class LangfuseTracer:
     def generation(
         self, *, name: str, model: str, prompt: str, output: str, usage: Usage, cost_usd: float
     ) -> None:
-        self._client.create_generation(
-            name=name,
-            model=model,
-            input=prompt,
-            output=output,
-            usage_details={"input": usage.input_tokens, "output": usage.output_tokens},
-            cost_details={"total": cost_usd},
-        )
+        try:
+            observation = self._client.start_observation(
+                name=name,
+                as_type="generation",
+                input=prompt,
+                output=output,
+                model=model,
+                usage_details=_usage_details(usage),
+                # ADR 0006: cost is passed through from CostLedger, never
+                # recomputed, so a trace and an eval report cannot disagree.
+                cost_details={"total": cost_usd},
+            )
+            observation.end()
+        except Exception as exc:  # noqa: BLE001 — see module docstring
+            logging.getLogger(__name__).warning("langfuse trace dropped: %s", exc)
 
     def flush(self) -> None:
-        self._client.flush()
+        try:
+            self._client.flush()
+        except Exception as exc:  # noqa: BLE001 — see module docstring
+            logging.getLogger(__name__).warning("langfuse flush failed: %s", exc)
+
+
+def _usage_details(usage: Usage) -> dict[str, int]:
+    details = {"input": usage.input_tokens, "output": usage.output_tokens}
+    if usage.cache_read_tokens:
+        details["cache_read_input_tokens"] = usage.cache_read_tokens
+    if usage.cache_write_tokens:
+        details["cache_creation_input_tokens"] = usage.cache_write_tokens
+    return details
 
 
 def build_tracer() -> Tracer:
     if not (os.environ.get(_PUBLIC_KEY_ENV) and os.environ.get(_SECRET_KEY_ENV)):
         return NullTracer()
 
-    from langfuse import Langfuse
+    import langfuse
 
-    return LangfuseTracer(Langfuse())
+    try:
+        return LangfuseTracer(langfuse.Langfuse())
+    except Exception as exc:  # noqa: BLE001 — see module docstring
+        logging.getLogger(__name__).warning("langfuse unavailable, tracing disabled: %s", exc)
+        return NullTracer()

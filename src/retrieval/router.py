@@ -1,4 +1,5 @@
 import re
+from collections.abc import Collection
 
 from retrieval.schemas import Route
 from textnorm import normalize
@@ -113,14 +114,21 @@ _OUT_OF_DOMAIN_PATTERN = re.compile(r"\b(?:" + "|".join(_OUT_OF_DOMAIN_TERMS) + 
 _RESEARCH_PATTERN = re.compile(r"\b(?:" + "|".join(_RESEARCH_TERMS) + r")\w*")
 
 
-def route(query: str) -> Route:
-    """Pick a retrieval strategy from surface cues alone; semantic is the safe default."""
+def route(query: str, vocabulary: Collection[str] = frozenset()) -> Route:
+    """Pick a retrieval strategy from surface cues alone; semantic is the safe default.
+
+    `vocabulary` is the set of normalised entity surface forms the index holds
+    (see `load_entity_vocabulary`). An acronym anchors only if it is in there:
+    routing `entity_anchored` promises the entity channel can act on the query,
+    and the only authority on that is what was actually indexed. Passing nothing
+    is safe -- no acronym anchors and the query falls through to semantic.
+    """
     text = normalize(query)
     if _is_out_of_domain(text):
         return "out_of_domain"
     if _is_corpus_aggregate(text):
         return "computable"
-    if _has_entity_anchor(query, text):
+    if _has_entity_anchor(query, text, vocabulary):
         return "entity_anchored"
     return "semantic"
 
@@ -137,13 +145,17 @@ def _is_corpus_aggregate(text: str) -> bool:
     return has_cue and has_scope
 
 
-def _has_entity_anchor(query: str, text: str) -> bool:
+def _has_entity_anchor(query: str, text: str, vocabulary: Collection[str]) -> bool:
+    # arXiv ids and metric@k are structural: they anchor without a corpus.
     if _ARXIV_ID_PATTERN.search(text) or _METRIC_AT_K_PATTERN.search(text):
         return True
     # A shouted query carries no case signal, so every token would read as an acronym.
     if not any(char.islower() for char in query):
         return False
-    return any(_is_artefact_token(token) for token in _WORD_TOKEN_PATTERN.findall(query))
+    return any(
+        _is_artefact_token(token) and normalize(token) in vocabulary
+        for token in _WORD_TOKEN_PATTERN.findall(query)
+    )
 
 
 def _is_artefact_token(token: str) -> bool:

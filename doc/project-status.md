@@ -5,7 +5,7 @@
 
 **Current phase:** 4 — Cost-Aware Agent Orchestration (Phase 3 closed
 2026-08-14: every retriever now has an ADR, per its exit criterion)
-**Last updated:** 2026-08-18
+**Last updated:** 2026-08-25
 
 ## Roadmap
 
@@ -199,16 +199,51 @@ keep/delete ADRs.
       RAG or BERT routes `entity_anchored` — g080 does, while the entity channel
       returns zero hits for it (`doc/eval-log.md` D1). Inert today only because
       `src/retrieval/search.py` runs all four channels regardless of route.
-- [ ] Grade-and-rewrite as escape hatch, fired only on low rerank confidence
-- [ ] Supervisor tools: search_papers, sql_metadata, get_claims, ingest_by_id
+      **Fixed 2026-08-25 (ADR 0007):** an acronym now anchors only if the entity
+      index holds it. Measured against the live `entities` table, 52 of 76
+      acronym triggers matched a real surface form and 24 matched nothing;
+      gating on the vocabulary moves 19 of 150 questions to `semantic`, g080
+      among them, 66 → 47 `entity_anchored`. No recall number moves — the route
+      is still not load-bearing.
+- [x] Grade-and-rewrite built, **and its specified gate measured and rejected**
+      (`doc/eval-log.md` P1, $0.30). The mechanism is in
+      `src/generation/escape_hatch.py` and wired as an optional `EscapeHatch`
+      in the graph: one grade, one rewrite, one extra retrieval, loop-free, and
+      it answers the original question rather than the rewrite. It is **off by
+      default and must stay off**: rerank confidence does not predict answer
+      correctness (AUC **0.587** against A2's pass/fail, mean 0.757 passing vs
+      0.718 failing). Catching half the failures needs a 44.7% firing rate;
+      every threshold under 30% catches ≤10% of failures. Not an abstention
+      signal either — 11 of the 12 abstention questions already pass, and the
+      one that fails (g076) carries the group's *highest* confidence.
+- [x] Supervisor tools: `search_papers`, `sql_metadata`, `get_claims`,
+      `ingest_by_id` (ADR 0008). Rule-dispatched from the existing route, no LLM
+      supervisor — the bar that keeps the router model-free. `sql_metadata`
+      answers fixed parameterized aggregates and returns `None` otherwise; it
+      fires on exactly g020 and g038 across all 150 questions and answers both
+      correctly (54 papers in 2026; cs.AI in 27 papers), which A2 got wrong and
+      abstained on respectively. A metadata answer skips retrieval, generation
+      and the judge, so it costs nothing. `ingest_by_id` refuses without
+      `confirm=True` — a paid write that mutates the frozen corpus must not be
+      reachable implicitly from a query.
 - [ ] Token/cost budget tracked per query (Langfuse) — cost per query **is**
-      measured ($0.01300, A2) and assembled from every billing component, but
-      Langfuse itself receives nothing: `obs/tracing.py` no-ops without
-      credentials. Unticked until traces actually land somewhere.
+      measured ($0.01300, A2) and assembled from every billing component.
+      `obs/tracing.py` was also calling `create_generation`, which **does not
+      exist in the pinned SDK (v4.14.4)**: the first run with credentials would
+      have crashed on its first question, and nothing exercised the class. Now
+      on `start_observation(as_type="generation")`, failing soft with a warning,
+      with a free `auth_check` in `scripts/test_connections.py`. Still unticked:
+      no credentials are configured, so no trace has landed anywhere.
 
 **Exit criteria:** p50/p95 latency and cost-per-query measured ✅ (A2: p50 3.54s,
-p95 6.13s, $0.01300/query, reproduced across two runs); grading fires
-on <30% of queries; accuracy within noise of the always-grade variant.
+p95 6.13s, $0.01300/query, reproduced across two runs); ~~grading fires on <30%
+of queries~~ — **this criterion is defective and P1 proves it.** Every threshold
+tested satisfies it, including 0.05, which fires on 2 of 150 questions and
+catches nothing. A firing rate is a cost bound, not evidence of value; it needs
+a companion criterion on what the firing buys. Third criterion (accuracy within
+noise of always-grade) is untouched: **whether grade-and-rewrite helps at all
+has never been measured**, and the experiment that would measure it needs
+controls, per R4 and R5.
 
 ### Phase 5 — Attribution & Grounding
 
@@ -253,6 +288,7 @@ not just demoed.
 | 2026-07-28 | architecture.md written; Phase 1 scaffolded: calibration notebook, golden dataset seed (6 examples), judge rubric v1 |
 | 2026-07-28 | Bootstrap: uv + pyproject, connection test. Bedrock verified (judge: global.anthropic.claude-sonnet-4-6, see ADR 0001). OpenAI key pending. |
 | 2026-07-29 | Phase 1 closed: 33-question dataset verified, baseline 0/29 (zero leakage), judge-human agreement 100%/29 pairs at rubric v2. CI + ablation delta deferred. |
+| 2026-08-25 | Phase 4 continued: router fixed, escape hatch built and its gate rejected, supervisor tools landed, two latent bugs found. **The router defect is closed (ADR 0007)** — an acronym anchors only if the entity index holds it, measured from the write side: 52 of 76 acronym triggers match a real surface form, 24 (LLM, RAG, AI, QA, GPU, POMDP, OSWorld…) match nothing, and the index stores `large language models` rather than `llm`. 19 of 150 questions move to `semantic`, g080 among them. No recall moves; `search.py` still fans out regardless of route. **Grade-and-rewrite is built but its specified gate is dead** (`doc/eval-log.md` P1, $0.30, user-authorized): rerank confidence separates A2's passing from failing answers at **AUC 0.587**, barely above chance, and catching half the failures would need a 44.7% firing rate against a 30% budget. Measuring the gate before building on it cost $0.30 instead of the ~$5 the two answer runs would have. P1 also exposes a **defect in the exit criterion itself** — "fires on <30% of queries" is satisfied by a threshold of 0.05 that fires twice and catches nothing. **Supervisor tools landed rule-dispatched (ADR 0008)**: `sql_metadata` fires on exactly g020 and g038 across all 150 questions and answers both correctly, skipping retrieval, generation and the judge; `ingest_by_id` refuses without explicit confirmation, since it spends money and mutates the frozen corpus. **Two latent bugs found by writing the first tests that touch them**: `LangfuseTracer` called `create_generation`, absent from the pinned SDK, so the first credentialed run would have died on question one; and A2's caching claim over-counts — the rubric is 2,636 chars (~700 tokens), not the ~1,500 implied, so it is likely **below Bedrock's 1,024-token minimum cacheable prefix** and the cache point may be silently ignored. Judge caching is built behind `--cache-rubric`, defaulting off, with `build_judge_prefix + build_judge_body` proven byte-identical to the calibrated prompt; cache tokens are now priced (write 1.25x, read 0.1x) so a cached run cannot report a saving it did not make. Suite 404 → 520. |
 | 2026-08-18 | Phase 4 measured end to end (`doc/eval-log.md` A1 + A2, $1.95 + a retracted run). **Pass rate 0.800** over all 150 questions — scored differently from retrieval on purpose, since the 8 `unanswerable` and 4 `out_of_domain` entries are the only measure of whether the system abstains rather than bluffs. A2 re-ran A1 on fixed cost code and reproduced it **exactly**: same pass rate, same verdict counts, same 30 failing ids, so the instrument is demonstrably deterministic. **Cost per query is $0.01300**, roughly 7× every estimate that preceded it, and input tokens dominate output 37:1 because the judge re-sends the whole rubric on every call — ~225k tokens of one static document, the clearest caching target available. Three findings worth carrying: the rule-based guardrail catches **1 of 4** out-of-domain questions (g076, the deliberately adversarial one, was answered — its topic is maximally in-domain, so the gap is intent classification, not a weak keyword list, and Bedrock Guardrails would not obviously catch it either); `multi_paper` is worst in answers (0.417) as in retrieval, failing largely on the same questions including the three still-undecided defective ones; and of 7 `computable` failures only 2 need the unbuilt SQL route, the other 5 being arithmetic-over-retrieved-text that no new tool fixes. Cost accounting itself had a bug that survived three runs — the driver rebased its running total on each question's own ledger — now fixed and regression-tested in `evals.answer_eval.accumulate_cost`. ADR 0006 records the Langfuse/Logfire split. |
 | 2026-08-16 | Phase 4 foundations built, all offline-testable (commits `6813ee9` + this one; suite 357 → 404). **Generation**: grounded answers over `FusedHit`s with an exact abstention sentence the harness can count without paying a judge — which matters for the 12 `unanswerable`/`out_of_domain` questions. **Judge**: lifted out of `calibration.ipynb`, where it was ~5.3k chars importing nothing from `src/` — the reason Phase 1's ablation delta has been deferred since July. Prompt reproduced verbatim; changing its wording would change what every past grade means and owe a rubric version bump. **Cost**: `CostLedger` is now per-model and every call site names the model it prices, because the bug being guarded against is the one the module already had — a rate assumed once and never re-examined. A model with no rate reports through `unpriced` rather than costing zero. **Graph**: `guardrail → retrieve → generate` on LangGraph, with retrieval and generation injected as callables so the whole path runs in tests with no OpenSearch, no Bedrock, no paid call; an `out_of_domain` question short-circuits to the abstention sentence and costs nothing, verified by mutation-testing the conditional edge. **Tracing**: `obs/tracing.py` degrades to `NullTracer` without Langfuse credentials, matching the identity-reranker precedent — and passes `CostLedger`'s figure through rather than recomputing cost, so a trace and an eval report cannot disagree. Also found while pricing Cohere: recorded rerank costs are understated ≥1.8× (`doc/eval-log.md` C1); no result moves, since cost never entered a decision rule. Still unwired to real clients and still unrun end-to-end, so no Phase 4 checklist box is ticked yet. |
 | 2026-08-14 | **Phase 3 closed.** R6 (`doc/eval-log.md`, 136 embed calls ~$0.001, identity reranker) supplied the two numbers both pending ADRs were missing. Entity weight re-swept at n=136: 0.1 confirmed as the recall optimum, but worth **+0.0111 recall, not the +0.0345** the superseded n=29 sweep claimed — and it buys `factual_single` (+0.030) and `negation` (+0.047) while costing `multi_paper` (−0.042) and NDCG (−0.0041), without moving `entity_anchored` at all. Claims ablation: removing `dense_claims` from fusion changes recall and NDCG by **exactly ±0.0000** across all 136 questions and every type; claim docs occupy 15 of 1,360 top-10 slots and displace only non-gold chunks. Decisions: **ADR 0004** keeps the entity channel at 0.1 with its two defects (tied scores, generic entities) recorded as deferred known issues — the tied-score cause is explicitly marked *inferred, not verified*; **ADR 0005** removes claims from the retrieval path while keeping them indexed, which also halves the per-query embedding cost since `search_dense_chunks` and `search_dense_claims` each embedded the query separately. Code: `search.py`, `eval_retrieval.py` and `sweep_fusion_weights.py` updated (the eval still measures claims on their own terms, just does not fuse them); `fuse()` deliberately untouched, per its own docstring warning about gate edits. TDD: test written red first, suite green at 357 passed / 1 skipped. |
@@ -274,8 +310,34 @@ not just demoed.
 - Entity channel kept at `entity_weight = 0.1`; two defects (tied scores, generic entities) recorded as deferred known issues — [ADR 0004](adr/0004-entity-channel.md)
 - Claims removed from the retrieval path but kept indexed as a product surface; halves the per-query embedding cost — [ADR 0005](adr/0005-claims-channel.md)
 - Observability split: Langfuse owns LLM traces and evals, Logfire owns infra spans; correlated both ways, cost passed through from `CostLedger` rather than recomputed — [ADR 0006](adr/0006-observability-split.md)
+- An acronym anchors the entity route only if the entity index holds it; the router takes the indexed vocabulary and stays IO-free — [ADR 0007](adr/0007-entity-anchor-vocabulary.md)
+- Supervisor tools dispatch by rule, not by an LLM; `sql_metadata` runs fixed parameterized aggregates and `ingest_by_id` refuses without explicit confirmation — [ADR 0008](adr/0008-supervisor-tool-dispatch.md)
 
 ## Decisions pending
+
+- **Does grade-and-rewrite help at all?** (`doc/eval-log.md` P1). The mechanism
+  is built, tested and off. P1 killed the *gate* it was specified to use; it
+  says nothing about the repair itself, which has never been measured. The
+  cheap experiment is an always-grade run over A2's 30 failures **plus a
+  matched set of ~30 controls sampled from the passes** (~$1.10, roughly 60
+  questions) with a pre-registered decision rule — R4 and R5 both rejected
+  variants that bought targets by losing controls, and a targets-only run
+  could not have seen that. Until then the hatch stays off by default.
+- **Is the judge rubric even cacheable?** The rubric is 2,636 characters,
+  roughly 700 tokens, against a 1,024-token minimum cacheable prefix on Sonnet.
+  A2's "225,000 tokens" figure implies ~1,500 tokens per copy and is an
+  over-estimate; the real static overhead is ~105k, about 10% of input. The
+  test is `--limit 5 --cache-rubric` (~$0.07) and reading `cacheWriteInputTokens`
+  off the response. If it comes back zero, the lever named in A2 does not exist
+  and the split stays as dead code behind a default-off flag. Note the split
+  makes the rubric a separate content block: the characters are identical
+  (asserted in a test against the real rubric file), the encoding is not, so
+  verdicts under caching are comparable to A2's only once a run shows they did
+  not move.
+- **Langfuse credentials.** The tracer is fixed and verifiable but no keys are
+  set, so nothing has landed anywhere and the Phase 4 box stays open. Needs
+  `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` (cloud or self-hosted); after
+  that `scripts/test_connections.py` confirms auth for free.
 
 - **What, if anything, to do about `multi_paper`** (`doc/eval-log.md` D2).
   Four candidate fixes were measured and none is buildable as tested:

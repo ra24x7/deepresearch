@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict
@@ -29,9 +30,10 @@ def search(
     provider: Any,
     reranker: Any,
     settings: RetrievalSettings | None = None,
+    vocabulary: Collection[str] = frozenset(),
 ) -> SearchResult:
     settings = settings or RetrievalSettings()
-    routed = route_query(query)
+    routed = route_query(query, vocabulary)
 
     if routed == "out_of_domain":
         # Rejecting before retrieval is the point of the guardrail: an

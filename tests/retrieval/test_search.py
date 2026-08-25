@@ -43,6 +43,15 @@ class TestRouting:
         for name, stub in channels.items():
             assert stub.called, f"{name} was not queried"
 
+    def test_the_entity_vocabulary_reaches_the_router(self, channels):
+        # without a vocabulary an acronym cannot anchor, so the same query
+        # routes two ways depending on what the index actually holds
+        args = ("evalv1", MagicMock(), PROVIDER, IdentityReranker(), SETTINGS)
+        question = "What retrieval tools does the A-RAG framework provide?"
+
+        assert search(question, *args).route == "semantic"
+        assert search(question, *args, vocabulary=frozenset({"a-rag"})).route == "entity_anchored"
+
     def test_the_route_is_reported_on_the_result(self, channels):
         result = search("how does the method work?", "evalv1", MagicMock(), PROVIDER, IdentityReranker(), SETTINGS)
 

@@ -1,0 +1,1264 @@
+{
+  "k": 10,
+  "reranker": "cohere.rerank-v3-5:0",
+  "thresholds": [
+    {
+      "threshold": 0.05,
+      "fire_rate": 0.013333333333333334,
+      "meets_exit_criterion": true,
+      "precision": 0.0,
+      "recall_of_failures": 0.0
+    },
+    {
+      "threshold": 0.1,
+      "fire_rate": 0.013333333333333334,
+      "meets_exit_criterion": true,
+      "precision": 0.0,
+      "recall_of_failures": 0.0
+    },
+    {
+      "threshold": 0.15,
+      "fire_rate": 0.013333333333333334,
+      "meets_exit_criterion": true,
+      "precision": 0.0,
+      "recall_of_failures": 0.0
+    },
+    {
+      "threshold": 0.2,
+      "fire_rate": 0.013333333333333334,
+      "meets_exit_criterion": true,
+      "precision": 0.0,
+      "recall_of_failures": 0.0
+    },
+    {
+      "threshold": 0.25,
+      "fire_rate": 0.013333333333333334,
+      "meets_exit_criterion": true,
+      "precision": 0.0,
+      "recall_of_failures": 0.0
+    },
+    {
+      "threshold": 0.3,
+      "fire_rate": 0.02,
+      "meets_exit_criterion": true,
+      "precision": 0.3333333333333333,
+      "recall_of_failures": 0.03333333333333333
+    },
+    {
+      "threshold": 0.4,
+      "fire_rate": 0.04,
+      "meets_exit_criterion": true,
+      "precision": 0.16666666666666666,
+      "recall_of_failures": 0.03333333333333333
+    },
+    {
+      "threshold": 0.5,
+      "fire_rate": 0.08,
+      "meets_exit_criterion": true,
+      "precision": 0.25,
+      "recall_of_failures": 0.1
+    }
+  ],
+  "questions": [
+    {
+      "id": "g001",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.95334905,
+      "answer_passed": true
+    },
+    {
+      "id": "g002",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.85567063,
+      "answer_passed": false
+    },
+    {
+      "id": "g003",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.90985113,
+      "answer_passed": true
+    },
+    {
+      "id": "g004",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.91175514,
+      "answer_passed": true
+    },
+    {
+      "id": "g005",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.91175514,
+      "answer_passed": true
+    },
+    {
+      "id": "g006",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.90432173,
+      "answer_passed": true
+    },
+    {
+      "id": "g007",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.9240941,
+      "answer_passed": true
+    },
+    {
+      "id": "g008",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9227683,
+      "answer_passed": true
+    },
+    {
+      "id": "g009",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.83452857,
+      "answer_passed": true
+    },
+    {
+      "id": "g010",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8851659,
+      "answer_passed": true
+    },
+    {
+      "id": "g011",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7992077,
+      "answer_passed": true
+    },
+    {
+      "id": "g012",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.93885136,
+      "answer_passed": true
+    },
+    {
+      "id": "g013",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8106142,
+      "answer_passed": true
+    },
+    {
+      "id": "g014",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8315952,
+      "answer_passed": true
+    },
+    {
+      "id": "g015",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.9310187,
+      "answer_passed": true
+    },
+    {
+      "id": "g016",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.6399392,
+      "answer_passed": true
+    },
+    {
+      "id": "g017",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.6158511,
+      "answer_passed": true
+    },
+    {
+      "id": "g018",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8066246,
+      "answer_passed": true
+    },
+    {
+      "id": "g019",
+      "type": "unanswerable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.41948205,
+      "answer_passed": true
+    },
+    {
+      "id": "g020",
+      "type": "computable",
+      "route": "computable",
+      "hits": 10,
+      "confidence": 0.8455478,
+      "answer_passed": false
+    },
+    {
+      "id": "g021",
+      "type": "out_of_domain",
+      "route": "out_of_domain",
+      "hits": 0,
+      "confidence": 0.0,
+      "answer_passed": true
+    },
+    {
+      "id": "g022",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.6641271,
+      "answer_passed": true
+    },
+    {
+      "id": "g023",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.92980474,
+      "answer_passed": true
+    },
+    {
+      "id": "g024",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.933969,
+      "answer_passed": false
+    },
+    {
+      "id": "g025",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8827621,
+      "answer_passed": true
+    },
+    {
+      "id": "g026",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9257218,
+      "answer_passed": true
+    },
+    {
+      "id": "g027",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9061314,
+      "answer_passed": true
+    },
+    {
+      "id": "g028",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9421299,
+      "answer_passed": true
+    },
+    {
+      "id": "g029",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8773195,
+      "answer_passed": true
+    },
+    {
+      "id": "g030",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.87981987,
+      "answer_passed": false
+    },
+    {
+      "id": "g031",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8342047,
+      "answer_passed": false
+    },
+    {
+      "id": "g032",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.7520312,
+      "answer_passed": true
+    },
+    {
+      "id": "g033",
+      "type": "factual_single",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.6439794,
+      "answer_passed": true
+    },
+    {
+      "id": "g034",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7327644,
+      "answer_passed": false
+    },
+    {
+      "id": "g035",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.83932644,
+      "answer_passed": true
+    },
+    {
+      "id": "g036",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7185356,
+      "answer_passed": false
+    },
+    {
+      "id": "g037",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.9227683,
+      "answer_passed": true
+    },
+    {
+      "id": "g038",
+      "type": "computable",
+      "route": "computable",
+      "hits": 10,
+      "confidence": 0.6455898,
+      "answer_passed": false
+    },
+    {
+      "id": "g039",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.5463757,
+      "answer_passed": true
+    },
+    {
+      "id": "g040",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6158511,
+      "answer_passed": true
+    },
+    {
+      "id": "g041",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.51193684,
+      "answer_passed": false
+    },
+    {
+      "id": "g042",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8785752,
+      "answer_passed": true
+    },
+    {
+      "id": "g043",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.85624856,
+      "answer_passed": true
+    },
+    {
+      "id": "g044",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.77548623,
+      "answer_passed": true
+    },
+    {
+      "id": "g045",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8700796,
+      "answer_passed": true
+    },
+    {
+      "id": "g046",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9051298,
+      "answer_passed": true
+    },
+    {
+      "id": "g047",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9325087,
+      "answer_passed": false
+    },
+    {
+      "id": "g048",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.91936076,
+      "answer_passed": true
+    },
+    {
+      "id": "g049",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.71185225,
+      "answer_passed": true
+    },
+    {
+      "id": "g050",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.58237284,
+      "answer_passed": true
+    },
+    {
+      "id": "g051",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.86303437,
+      "answer_passed": true
+    },
+    {
+      "id": "g052",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.91137725,
+      "answer_passed": false
+    },
+    {
+      "id": "g053",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7077487,
+      "answer_passed": true
+    },
+    {
+      "id": "g054",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6439794,
+      "answer_passed": true
+    },
+    {
+      "id": "g055",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.95100147,
+      "answer_passed": true
+    },
+    {
+      "id": "g056",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6186197,
+      "answer_passed": true
+    },
+    {
+      "id": "g057",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.84215075,
+      "answer_passed": true
+    },
+    {
+      "id": "g058",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8622012,
+      "answer_passed": true
+    },
+    {
+      "id": "g059",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.68748367,
+      "answer_passed": true
+    },
+    {
+      "id": "g060",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.82186085,
+      "answer_passed": false
+    },
+    {
+      "id": "g061",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7763013,
+      "answer_passed": false
+    },
+    {
+      "id": "g062",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6829338,
+      "answer_passed": true
+    },
+    {
+      "id": "g063",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.35461238,
+      "answer_passed": true
+    },
+    {
+      "id": "g064",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.79022324,
+      "answer_passed": true
+    },
+    {
+      "id": "g065",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.580091,
+      "answer_passed": true
+    },
+    {
+      "id": "g066",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.62633044,
+      "answer_passed": true
+    },
+    {
+      "id": "g067",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.76659125,
+      "answer_passed": true
+    },
+    {
+      "id": "g068",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8624794,
+      "answer_passed": true
+    },
+    {
+      "id": "g069",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8464638,
+      "answer_passed": true
+    },
+    {
+      "id": "g070",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.88799405,
+      "answer_passed": true
+    },
+    {
+      "id": "g071",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.82288796,
+      "answer_passed": true
+    },
+    {
+      "id": "g072",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.6773251,
+      "answer_passed": true
+    },
+    {
+      "id": "g073",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7906115,
+      "answer_passed": true
+    },
+    {
+      "id": "g074",
+      "type": "unanswerable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.73642004,
+      "answer_passed": true
+    },
+    {
+      "id": "g075",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.5440511,
+      "answer_passed": true
+    },
+    {
+      "id": "g076",
+      "type": "out_of_domain",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8018276,
+      "answer_passed": false
+    },
+    {
+      "id": "g077",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.55883324,
+      "answer_passed": false
+    },
+    {
+      "id": "g078",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.77487355,
+      "answer_passed": true
+    },
+    {
+      "id": "g079",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.26678494,
+      "answer_passed": false
+    },
+    {
+      "id": "g080",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.69795954,
+      "answer_passed": false
+    },
+    {
+      "id": "g081",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7101667,
+      "answer_passed": true
+    },
+    {
+      "id": "g082",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.73322314,
+      "answer_passed": true
+    },
+    {
+      "id": "g083",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.9197076,
+      "answer_passed": true
+    },
+    {
+      "id": "g084",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.63750535,
+      "answer_passed": false
+    },
+    {
+      "id": "g085",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.58664185,
+      "answer_passed": true
+    },
+    {
+      "id": "g086",
+      "type": "negation",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.77792513,
+      "answer_passed": true
+    },
+    {
+      "id": "g087",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7036111,
+      "answer_passed": false
+    },
+    {
+      "id": "g088",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.55275756,
+      "answer_passed": false
+    },
+    {
+      "id": "g089",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7515939,
+      "answer_passed": true
+    },
+    {
+      "id": "g090",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.7106489,
+      "answer_passed": true
+    },
+    {
+      "id": "g091",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8524574,
+      "answer_passed": true
+    },
+    {
+      "id": "g092",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8512743,
+      "answer_passed": true
+    },
+    {
+      "id": "g093",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9134376,
+      "answer_passed": true
+    },
+    {
+      "id": "g094",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8757978,
+      "answer_passed": true
+    },
+    {
+      "id": "g095",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.9247491,
+      "answer_passed": true
+    },
+    {
+      "id": "g096",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8649622,
+      "answer_passed": true
+    },
+    {
+      "id": "g097",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8803145,
+      "answer_passed": true
+    },
+    {
+      "id": "g098",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8055255,
+      "answer_passed": true
+    },
+    {
+      "id": "g099",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.5993685,
+      "answer_passed": true
+    },
+    {
+      "id": "g100",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.79080546,
+      "answer_passed": false
+    },
+    {
+      "id": "g101",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6353361,
+      "answer_passed": true
+    },
+    {
+      "id": "g102",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7060491,
+      "answer_passed": true
+    },
+    {
+      "id": "g103",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.89121616,
+      "answer_passed": true
+    },
+    {
+      "id": "g104",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8745175,
+      "answer_passed": true
+    },
+    {
+      "id": "g105",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.64020914,
+      "answer_passed": true
+    },
+    {
+      "id": "g106",
+      "type": "out_of_domain",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.046106957,
+      "answer_passed": true
+    },
+    {
+      "id": "g107",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.64719695,
+      "answer_passed": true
+    },
+    {
+      "id": "g108",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.41805586,
+      "answer_passed": false
+    },
+    {
+      "id": "g109",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.75355774,
+      "answer_passed": true
+    },
+    {
+      "id": "g110",
+      "type": "computable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.52962893,
+      "answer_passed": false
+    },
+    {
+      "id": "g111",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.80625874,
+      "answer_passed": false
+    },
+    {
+      "id": "g112",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.89545894,
+      "answer_passed": true
+    },
+    {
+      "id": "g113",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8170061,
+      "answer_passed": true
+    },
+    {
+      "id": "g114",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.38748226,
+      "answer_passed": true
+    },
+    {
+      "id": "g115",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.4126491,
+      "answer_passed": true
+    },
+    {
+      "id": "g116",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8548001,
+      "answer_passed": true
+    },
+    {
+      "id": "g117",
+      "type": "entity_anchored",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8201387,
+      "answer_passed": true
+    },
+    {
+      "id": "g118",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8364614,
+      "answer_passed": false
+    },
+    {
+      "id": "g119",
+      "type": "computable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.46395484,
+      "answer_passed": true
+    },
+    {
+      "id": "g120",
+      "type": "definitional",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.72207695,
+      "answer_passed": true
+    },
+    {
+      "id": "g121",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.5863576,
+      "answer_passed": true
+    },
+    {
+      "id": "g122",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9161773,
+      "answer_passed": true
+    },
+    {
+      "id": "g123",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9065293,
+      "answer_passed": true
+    },
+    {
+      "id": "g124",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8868231,
+      "answer_passed": true
+    },
+    {
+      "id": "g125",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8259413,
+      "answer_passed": true
+    },
+    {
+      "id": "g126",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.83932644,
+      "answer_passed": true
+    },
+    {
+      "id": "g127",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8497846,
+      "answer_passed": true
+    },
+    {
+      "id": "g128",
+      "type": "entity_anchored",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.8473754,
+      "answer_passed": true
+    },
+    {
+      "id": "g129",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.52290934,
+      "answer_passed": true
+    },
+    {
+      "id": "g130",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.6266047,
+      "answer_passed": true
+    },
+    {
+      "id": "g131",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.86052185,
+      "answer_passed": true
+    },
+    {
+      "id": "g132",
+      "type": "factual_single",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.898277,
+      "answer_passed": true
+    },
+    {
+      "id": "g133",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.58721006,
+      "answer_passed": false
+    },
+    {
+      "id": "g134",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8952393,
+      "answer_passed": true
+    },
+    {
+      "id": "g135",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.42348245,
+      "answer_passed": false
+    },
+    {
+      "id": "g136",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.43367022,
+      "answer_passed": true
+    },
+    {
+      "id": "g137",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.7734393,
+      "answer_passed": false
+    },
+    {
+      "id": "g138",
+      "type": "multi_paper",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.5151571,
+      "answer_passed": true
+    },
+    {
+      "id": "g139",
+      "type": "unanswerable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8145405,
+      "answer_passed": true
+    },
+    {
+      "id": "g140",
+      "type": "unanswerable",
+      "route": "entity_anchored",
+      "hits": 10,
+      "confidence": 0.7038554,
+      "answer_passed": true
+    },
+    {
+      "id": "g141",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.90123636,
+      "answer_passed": true
+    },
+    {
+      "id": "g142",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.73023266,
+      "answer_passed": true
+    },
+    {
+      "id": "g143",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.65940565,
+      "answer_passed": true
+    },
+    {
+      "id": "g144",
+      "type": "negation",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.8302782,
+      "answer_passed": true
+    },
+    {
+      "id": "g145",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.918838,
+      "answer_passed": false
+    },
+    {
+      "id": "g146",
+      "type": "computable",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.82391036,
+      "answer_passed": false
+    },
+    {
+      "id": "g147",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.709684,
+      "answer_passed": true
+    },
+    {
+      "id": "g148",
+      "type": "multi_paper",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.5712171,
+      "answer_passed": true
+    },
+    {
+      "id": "g149",
+      "type": "definitional",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.9405774,
+      "answer_passed": true
+    },
+    {
+      "id": "g150",
+      "type": "out_of_domain",
+      "route": "semantic",
+      "hits": 10,
+      "confidence": 0.36752048,
+      "answer_passed": true
+    }
+  ]
+}

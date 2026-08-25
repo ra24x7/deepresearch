@@ -143,3 +143,49 @@ class TestModelIdentifiers:
         assert SONNET_4_6 == "global.anthropic.claude-sonnet-4-6"
         assert RERANK_3_5 == "cohere.rerank-v3-5:0"
         assert EMBED_V4 == "global.cohere.embed-v4:0"
+
+
+class TestPromptCachePricing:
+    """A cached run whose cache tokens are not priced reports a saving it did
+    not make. Anthropic bills a cache write at 1.25x the input rate and a cache
+    read at 0.1x -- both unverified against Bedrock, like every rate here.
+    """
+
+    def test_a_cache_write_costs_a_quarter_more_than_plain_input(self):
+        ledger = CostLedger().add(
+            Usage(input_tokens=0, output_tokens=0, cache_write_tokens=1_000_000), SONNET_4_6
+        )
+
+        assert ledger.total_usd == pytest.approx(3.00 * 1.25)
+
+    def test_a_cache_read_costs_a_tenth_of_plain_input(self):
+        ledger = CostLedger().add(
+            Usage(input_tokens=0, output_tokens=0, cache_read_tokens=1_000_000), SONNET_4_6
+        )
+
+        assert ledger.total_usd == pytest.approx(3.00 * 0.10)
+
+    def test_cache_tokens_are_reported_separately_from_plain_input(self):
+        ledger = CostLedger().add(
+            Usage(input_tokens=100, output_tokens=10, cache_read_tokens=1_000, cache_write_tokens=50),
+            SONNET_4_6,
+        )
+
+        totals = ledger.tokens_by_model[SONNET_4_6]
+        assert (totals.input_tokens, totals.cache_read_tokens, totals.cache_write_tokens) == (100, 1_000, 50)
+
+    def test_cache_tokens_accumulate_across_calls(self):
+        ledger = (
+            CostLedger()
+            .add(Usage(input_tokens=0, output_tokens=0, cache_read_tokens=500_000), SONNET_4_6)
+            .add(Usage(input_tokens=0, output_tokens=0, cache_read_tokens=500_000), SONNET_4_6)
+        )
+
+        assert ledger.cache_read_tokens == 1_000_000
+
+    def test_a_usage_without_cache_fields_still_prices(self):
+        # every existing call site builds Usage with two fields
+        ledger = CostLedger().add(Usage(input_tokens=1_000_000, output_tokens=0), SONNET_4_6)
+
+        assert ledger.total_usd == pytest.approx(3.00)
+        assert ledger.cache_read_tokens == 0

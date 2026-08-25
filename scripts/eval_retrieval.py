@@ -31,6 +31,7 @@ from retrieval.channels.entities import search_entities
 from retrieval.fusion import fuse
 from retrieval.rerank.factory import build_reranker
 from retrieval.router import route as route_query
+from retrieval.vocabulary import load_entity_vocabulary
 
 REPORT_PATH = Path("notebooks/phase3_retrieval/retrieval_eval.json")
 _TIMEOUT = 120
@@ -65,7 +66,9 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
     questions = [json.loads(line) for line in Path("data/golden_dataset.jsonl").read_text().splitlines() if line.strip()]
     answerable = [q for q in questions if q.get("expected_behavior") == "answer"]
 
-    session_factory = get_session_factory(get_engine(PostgresSettings()))
+    engine = get_engine(PostgresSettings())
+    session_factory = get_session_factory(engine)
+    vocabulary = load_entity_vocabulary(engine)
     with session_factory() as session:
         chunks_by_paper: dict[str, list[tuple[str, str]]] = defaultdict(list)
         for chunk in session.query(Chunk).all():
@@ -118,7 +121,7 @@ def main(corpus: str, k: int, reranker_name: str) -> int:
             {
                 "id": q["id"],
                 "type": q["type"],
-                "route": route_query(query),
+                "route": route_query(query, vocabulary),
                 "relevant_chunks": len(relevant),
                 "relevant_claims": len(claim_relevant),
                 "claim_found": bool(claim_relevant & {h.doc_id for h in hits_by_channel["dense_claims"][:k]}),

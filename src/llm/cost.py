@@ -20,6 +20,12 @@ EMBED_V4 = "global.cohere.embed-v4:0"
 
 _TOKENS_PER_MILLION = 1_000_000
 
+# Anthropic prompt caching: writing the cache costs a quarter more than plain
+# input, reading it costs a tenth. Unverified against Bedrock, like the rates
+# below.
+_CACHE_WRITE_MULTIPLIER = 1.25
+_CACHE_READ_MULTIPLIER = 0.10
+
 
 class ModelRate(NamedTuple):
     input_usd_per_million: float
@@ -47,6 +53,8 @@ class TokenTotals(BaseModel):
 
     input_tokens: int = 0
     output_tokens: int = 0
+    cache_read_tokens: int = 0
+    cache_write_tokens: int = 0
 
 
 class CostLedger(BaseModel):
@@ -61,6 +69,8 @@ class CostLedger(BaseModel):
         updated = TokenTotals(
             input_tokens=current.input_tokens + usage.input_tokens,
             output_tokens=current.output_tokens + usage.output_tokens,
+            cache_read_tokens=current.cache_read_tokens + usage.cache_read_tokens,
+            cache_write_tokens=current.cache_write_tokens + usage.cache_write_tokens,
         )
         return self.model_copy(update={"tokens_by_model": {**self.tokens_by_model, model_id: updated}})
 
@@ -83,10 +93,17 @@ class CostLedger(BaseModel):
         return sum(totals.output_tokens for totals in self.tokens_by_model.values())
 
     @property
+    def cache_read_tokens(self) -> int:
+        return sum(totals.cache_read_tokens for totals in self.tokens_by_model.values())
+
+    @property
+    def cache_write_tokens(self) -> int:
+        return sum(totals.cache_write_tokens for totals in self.tokens_by_model.values())
+
+    @property
     def total_usd(self) -> float:
         tokens = sum(
-            totals.input_tokens / _TOKENS_PER_MILLION * _TOKEN_RATES[model_id].input_usd_per_million
-            + totals.output_tokens / _TOKENS_PER_MILLION * _TOKEN_RATES[model_id].output_usd_per_million
+            _priced(totals, _TOKEN_RATES[model_id])
             for model_id, totals in self.tokens_by_model.items()
             if model_id in _TOKEN_RATES
         )
@@ -109,3 +126,14 @@ class CostLedger(BaseModel):
         if n_papers <= 0:
             raise ValueError("n_papers must be positive")
         return self.total_usd / n_papers
+
+
+def _priced(totals: TokenTotals, rate: ModelRate) -> float:
+    cached_input = (
+        totals.cache_read_tokens * _CACHE_READ_MULTIPLIER
+        + totals.cache_write_tokens * _CACHE_WRITE_MULTIPLIER
+    )
+    return (
+        (totals.input_tokens + cached_input) / _TOKENS_PER_MILLION * rate.input_usd_per_million
+        + totals.output_tokens / _TOKENS_PER_MILLION * rate.output_usd_per_million
+    )
